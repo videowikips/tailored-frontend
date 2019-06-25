@@ -12,7 +12,7 @@ const persistConfig = {
 //   whitelist: ['ui', 'auth'],
 }
 
-const middlewares = localStorage.getItem('redux-logger')
+const middlewares = process.env.NODE_ENV === 'development'
   ? applyMiddleware(reduxThunk, createLogger())
   : applyMiddleware(reduxThunk)
 
