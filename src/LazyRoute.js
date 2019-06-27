@@ -16,7 +16,14 @@ class LazyRoute extends React.Component {
     const { loader, title, ...rest } = this.props;
     const LoadableComponent = Loadable({
       loader,
-      loading: () => <LoaderOverlay loaderImage="/img/edit-loader.gif" />,
+      loading: (props) => {
+        if (props.error) {
+          console.log('error is', props.error);
+        }
+        return (
+          <LoaderOverlay loaderImage="/img/edit-loader.gif" />
+        )
+      },
     });
 
     return (

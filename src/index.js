@@ -7,6 +7,8 @@ import { store, persistor } from './store'
 import AppRouter from './AppRouter'
 
 import * as serviceWorker from './serviceWorker';
+import './stylesheets/main.scss'
+import '../node_modules/semantic-ui-css/semantic.min.css'
 
 ReactDOM.render(
     <Provider store={store}>
