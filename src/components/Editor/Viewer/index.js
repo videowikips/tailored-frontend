@@ -48,8 +48,12 @@ class Viewer extends Component {
 
   showItem (item, isActive) {
     if (!item) return;
-
-    const { media } = item;
+    let media;
+    if (isActive) {
+      media = item.content[this.props.currentSubslideIndex].media;
+    } else {
+      media = item.content[0].media;
+    }
     let component
     const mediaArray = [];
     if (media && media.length > 0) {
@@ -88,14 +92,13 @@ class Viewer extends Component {
         }
       }
 
-      console.log('current slide index', this.props.currentSlideIndex, mediaArray)
       component = (
         <div style={{ position: 'relative', width: '100%', height: '100%' }}>
           <SlideShow
             slides={mediaArray}
             playing={this.props.isPlaying && isActive}
             isActive={isActive}
-            key={`slideshow-${this.props.currentSlideIndex}`}
+            key={`slideshow-${this.props.currentSlideIndex}-${this.props.currentSubslideIndex}`}
             defaultStartTime={this.props.defaultSlideStartTime}
             onSlideChange={this.props.onSubMediaSlideChange}
           />
@@ -147,7 +150,7 @@ class Viewer extends Component {
       case 5: layout = <Five media={this.media} current={current} renderItem={(item, isActive) => this.showItem(item, isActive)} />; break;
       case 4: layout = <Four media={this.media} current={current} renderItem={(item, isActive) => this.showItem(item, isActive)} />; break;
       case 3: layout = <Three media={this.media} current={current} renderItem={(item, isActive) => this.showItem(item, isActive)} />; break;
-      case 1: layout = <One media={this.media} key={`slide-layout-${currentSlideIndex}`} current={current} renderItem={(item, isActive) => this.showItem(item, isActive)} />; break;
+      case 1: layout = <One media={this.media} current={current} renderItem={(item, isActive) => this.showItem(item, isActive)} />; break;
       default:layout = <Two media={this.media} current={current} renderItem={(item, isActive) => this.showItem(item, isActive)} />;
     }
     return <div key={this.chosenLayout} style={{ height: '100%' }}>{layout}</div>
@@ -157,7 +160,7 @@ class Viewer extends Component {
     const { currentSlideIndex, slides, onSlidePlayComplete, isPlaying, playbackSpeed } = this.props
     const currentSlide = slides[currentSlideIndex]
 
-    const { audio, text } = currentSlide
+    const { audio, text } = currentSlide.content[this.props.currentSubslideIndex];
     return (
       <div className="carousel">
         <ReactCSSTransitionGroup
@@ -190,22 +193,24 @@ class Viewer extends Component {
 Viewer.propTypes = {
   slides: PropTypes.array,
   currentSlideIndex: PropTypes.number.isRequired,
+  currentSubmediaIndex: PropTypes.number.isRequired,
+  currentSubslideIndex: PropTypes.number.isRequired,
   isPlaying: PropTypes.bool.isRequired,
   showDescription: PropTypes.bool,
   onSlidePlayComplete: PropTypes.func.isRequired,
   playbackSpeed: PropTypes.number.isRequired,
   onSubMediaSlideChange: PropTypes.func,
-  currentSubmediaIndex: PropTypes.number,
   onAudioLoad: PropTypes.func,
   muted: PropTypes.bool,
   defaultSlideStartTime: PropTypes.number,
-  layout: PropTypes.string,
+  layout: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 }
 
 Viewer.defaultProps = {
   onSubMediaSlideChange: () => {},
   onAudioLoad: () => {},
   currentcurrentSubmediaIndex: 0,
+  currentSubslideIndex: 0,
   defaultSlideStartTime: 0,
   showDescription: true,
   muted: false,

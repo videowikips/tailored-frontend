@@ -74,7 +74,6 @@ class ExportArticleVideo extends React.Component {
 
   onOptionSelect(value) {
     if (value === 'history') {
-      console.log('navigating to ', `/videos/history/${this.props.title}?wikiSource=${this.props.wikiSource}`)
       return this.props.history.push(`/${this.props.language}/videos/history/${this.props.title}?wikiSource=${this.props.wikiSource}`);
     } else if (value === 'export' && !this.props.authenticated) {
       this.setState({ isLoginModalVisible: true })
@@ -86,7 +85,6 @@ class ExportArticleVideo extends React.Component {
         NotificationManager.info('Only custom articles and articles with less than 50 slides can be exported.');
       }
     } else if (value === 'download') {
-      console.log('download the video ', this.props.articleVideo)
       fileUtils.downloadFile(this.props.articleVideo.video.url);
     }
   }

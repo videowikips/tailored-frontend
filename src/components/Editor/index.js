@@ -1,7 +1,8 @@
 import _ from 'lodash'
 import request from '../../shared/utils/requestAgent';
 import React, { Component } from 'react'
-import { withRouter, Redirect } from 'react-router-dom'
+import PropTypes from 'prop-types';
+import { withRouter } from 'react-router-dom'
 import { Sidebar, Segment, Progress, Modal, Button, Icon } from 'semantic-ui-react'
 import classnames from 'classnames'
 import queryString from 'query-string';
@@ -22,6 +23,9 @@ class Editor extends Component {
     super(props)
     this.state = {
       currentSlideIndex: 0,
+      currentSubslideIndex: 0,
+      currentSubmediaIndex: 0,
+      defaultSlideStartTime: 0,
       playbackSpeed: 1,
       isPlaying: props.autoPlay,
       showTextTransition: true,
@@ -29,8 +33,6 @@ class Editor extends Component {
       showDescription: props.mode === 'editor' || (props.mode === 'viewer' && props.viewerMode === 'editor'),
       audioLoaded: false,
       modalOpen: false,
-      currentSubmediaIndex: 0,
-      defaultSlideStartTime: 0,
     }
 
     this.handleClose = this.handleClose.bind(this)
@@ -49,16 +51,9 @@ class Editor extends Component {
       // this.props.dispatch(articleActions.updateArticle({ article }))
     }
     if (this.props.viewerMode !== nextProps.viewerMode) {
-      console.log('viewer mode change', nextProps.viewerMode)
       this.setState({ defaultSlideStartTime: 10, isPlaying: false }, () => {
         this.setState({ defaultSlideStartTime: 0, currentSlideIndex: 0, currentSubmediaIndex: 0, isPlaying: false });
       });
-    }
-    if (this.props.publishArticleState === 'loading' && nextProps.publishArticleState === 'done') {
-      // redirect to viewer
-      const title = this.props.match.params.title;
-      const { wikiSource } = queryString.parse(window.location.search);
-      return this.props.history.push(`/${this.props.language}/videowiki/${title}?wikiSource=${wikiSource}&notification=false`)
     }
     // If the isPlaying changes from the props, change in the state too
     if (this.props.isPlaying !== nextProps.isPlaying) {
@@ -134,6 +129,7 @@ class Editor extends Component {
       currentSlideIndex: index,
       audioLoaded: false,
       defaultSlideStartTime: 0,
+      currentSubslideIndex: 0,
       currentSubmediaIndex: 0,
     }, () => {
       this.props.onSlideChange(index);
@@ -141,37 +137,54 @@ class Editor extends Component {
   }
 
   _handleSlideBack() {
-    const { currentSlideIndex } = this.state
-    if (currentSlideIndex > 0) {
+    const { currentSlideIndex, currentSubslideIndex } = this.state
+
+    const update = {
+      currentSubslideIndex: 0,
+      currentSubmediaIndex: 0,
+      defaultSlideStartTime: 0,
+      audioLoaded: false,
+    }
+    if (currentSubslideIndex === 0 && currentSlideIndex > 0) {
       this.setState({
         currentSlideIndex: currentSlideIndex - 1,
-        currentSubmediaIndex: 0,
-        defaultSlideStartTime: 0,
-        audioLoaded: false,
+        ...update,
       }, () => {
         this.props.onSlideChange(currentSlideIndex - 1);
       });
+    } else if (currentSubslideIndex > 0) {
+      this.setState({
+        ...update,
+        currentSubslideIndex: currentSubslideIndex - 1,
+      })
     }
   }
 
   _handleSlideForward() {
-    const { currentSlideIndex } = this.state
+    const { currentSlideIndex, currentSubslideIndex } = this.state
 
     const { article } = this.props
     const { slides } = article
-
-    if (currentSlideIndex < slides.length - 1) {
-      this.setState({
-        currentSlideIndex: currentSlideIndex + 1,
-        currentSubmediaIndex: 0,
-        defaultSlideStartTime: 0,
-        audioLoaded: false,
-      }, () => {
+    const currentSlide = slides[currentSlideIndex];
+    const update = {
+      currentSubmediaIndex: 0,
+      defaultSlideStartTime: 0,
+      audioLoaded: false,      
+    }
+    if ((currentSubslideIndex + 1) <= (currentSlide.content.length - 1)) {
+      update.currentSubslideIndex  = currentSubslideIndex + 1;
+      this.setState(update);
+    } else if (currentSlideIndex < slides.length - 1) {
+      update.currentSlideIndex = currentSlideIndex  + 1;
+      update.currentSubslideIndex = 0;
+      this.setState(update, () => {
         this.props.onSlideChange(currentSlideIndex + 1);
       })
     } else {
-      this.setState({ isPlaying: false });
-      this.props.onPlayComplete();
+      update.isPlaying = false;
+      this.setState(update, () => {
+        this.props.onPlayComplete();
+      })
     }
   }
 
@@ -373,6 +386,7 @@ class Editor extends Component {
       <Viewer
         slides={renderedSlides}
         muted={this.props.muted}
+        currentSubslideIndex={this.state.currentSubslideIndex}
         showDescription={this.state.showDescription}
         currentSlideIndex={currentSlideIndex}
         isPlaying={isPlaying && this.state.audioLoaded}
@@ -393,23 +407,19 @@ class Editor extends Component {
   }
 
   _render() {
-    const { article, match, mode, uploadState, language } = this.props
+    const { article, match, mode, uploadState } = this.props
     const title = match.params.title
 
     if (!article) {
-      let redirectStr = `/${this.props.language}/wiki/${title}`;
-      const { wikiSource } = queryString.parse(window.location.search);
-      if (wikiSource) {
-        redirectStr += `?wikiSource=${wikiSource}`;
-      }
-      // redirect to convert page
-      return <Redirect to={redirectStr} />;
+      return (
+        <div>Loading...</div>
+      )
     }
 
     const { slides } = article
     const updatedAt = article.updated_at
 
-    const { currentSlideIndex, sidebarVisible } = this.state
+    const { currentSlideIndex, currentSubslideIndex, sidebarVisible } = this.state
     const currentSlide = slides[currentSlideIndex] || {};
 
     const mainContentClasses = classnames('c-main-content', {
@@ -430,7 +440,6 @@ class Editor extends Component {
           {/* Header */}
           <EditorHeader
             article={article}
-            language={language}
             // showViewerModeDropdown={this.props.showViewerModeDropdown}
             authenticated={true}
             currentSlide={currentSlide || {}}
@@ -453,6 +462,8 @@ class Editor extends Component {
                 toc={this._getTableOfContents()}
                 visible={sidebarVisible}
                 currentSlideIndex={currentSlideIndex}
+                currentSubslideIndex={currentSubslideIndex}
+                currentNumberOfSlides={currentSlide.content.length}
                 navigateToSlide={(slideStartPosition) => this._handleNavigateToSlide(slideStartPosition)}
               />
               <Sidebar.Pusher className={mainContentClasses}>
@@ -498,7 +509,6 @@ class Editor extends Component {
               currentSlideIndex={currentSlideIndex}
               currentSlide={currentSlide}
               currentSubmediaIndex={this.state.currentSubmediaIndex}
-              language={this.props.language}
             />
           )} */}
       </div>
@@ -545,41 +555,38 @@ Editor.defaultProps = {
   headerOptions: {},
 }
 
-// Editor.propTypes = {
-//   dispatch: PropTypes.func.isRequired,
-//   match: PropTypes.object.isRequired,
-//   article: PropTypes.object,
-//   mode: PropTypes.string,
-//   history: React.PropTypes.shape({
-//     push: React.PropTypes.func.isRequired,
-//   }).isRequired,
-//   publishArticleState: PropTypes.string,
-//   publishArticleStatus: PropTypes.object,
-//   publishArticleError: PropTypes.object,
-//   uploadState: PropTypes.string,
-//   uploadStatus: PropTypes.object,
-//   uploadProgress: PropTypes.number,
-//   playbackSpeed: PropTypes.number.isRequired,
-//   language: PropTypes.string.isRequired,
-//   auth: PropTypes.any,
-//   autoPlay: PropTypes.bool,
-//   showReferences: PropTypes.bool,
-//   editable: PropTypes.bool,
-//   isPlaying: PropTypes.bool,
-//   fetchArticleVideoState: PropTypes.string,
-//   articleVideo: PropTypes.object,
-//   articleLastVideo: PropTypes.object,
-//   onSlideChange: PropTypes.func,
-//   customPublish: PropTypes.bool,
-//   onPublish: PropTypes.func,
-//   showPublish: PropTypes.bool,
-//   muted: PropTypes.bool,
-//   currentSlideIndex: PropTypes.number,
-//   onPlayComplete: PropTypes.func,
-//   onPlay: PropTypes.func,
-//   controlled: PropTypes.bool,
-//   onViewerModeChange: PropTypes.func,
-//   viewerMode: PropTypes.string,
-//   layout: PropTypes.string,
-//   headerOptions: PropTypes.object,
-// }
+Editor.propTypes = {
+  match: PropTypes.object.isRequired,
+  article: PropTypes.object,
+  mode: PropTypes.string,
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired,
+  }).isRequired,
+  publishArticleState: PropTypes.string,
+  publishArticleStatus: PropTypes.object,
+  publishArticleError: PropTypes.object,
+  uploadState: PropTypes.string,
+  uploadStatus: PropTypes.object,
+  uploadProgress: PropTypes.number,
+  auth: PropTypes.any,
+  autoPlay: PropTypes.bool,
+  showReferences: PropTypes.bool,
+  editable: PropTypes.bool,
+  isPlaying: PropTypes.bool,
+  fetchArticleVideoState: PropTypes.string,
+  articleVideo: PropTypes.object,
+  articleLastVideo: PropTypes.object,
+  onSlideChange: PropTypes.func,
+  customPublish: PropTypes.bool,
+  onPublish: PropTypes.func,
+  showPublish: PropTypes.bool,
+  muted: PropTypes.bool,
+  currentSlideIndex: PropTypes.number,
+  onPlayComplete: PropTypes.func,
+  onPlay: PropTypes.func,
+  controlled: PropTypes.bool,
+  onViewerModeChange: PropTypes.func,
+  viewerMode: PropTypes.string,
+  layout: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  headerOptions: PropTypes.object,
+}

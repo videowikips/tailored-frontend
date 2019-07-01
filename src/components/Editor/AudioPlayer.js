@@ -49,7 +49,6 @@ class AudioPlayer extends Component {
 
   componentDidMount () {
     if (this.audioPlayer) {
-      console.log(this.props.playbackSpeed)
       this.audioPlayer.playbackRate = this.props.playbackSpeed
     }
     // this.registerLinksHoverAction();

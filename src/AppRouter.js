@@ -4,8 +4,8 @@ import {
   BrowserRouter as Router,
   Switch,
 } from 'react-router-dom'
-import Header from './components/common/Header';
-import Footer from './components/common/Footer';
+import Header from './shared/components/Header';
+import Footer from './shared/components/Footer';
 // import { connect } from 'react-redux'
 import LazyRoute from './LazyRoute';
 

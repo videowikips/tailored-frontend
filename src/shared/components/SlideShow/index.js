@@ -222,17 +222,18 @@ class Slideshow extends Component {
     const slideEffect = effect === undefined ? 'fade' : effect;
     const slideShowSlides = renderedSlides.map((slide, i) => {
       let showingEffect = '';
-      if (this.state.currentSlide === i) {
-        if ( this.state.fade === 'in') {
-          showingEffect = `showing-${slideEffect}`;
-        } else if (this.state.fade === 'out') {
-          showingEffect = `showing-${slideEffect}-out`;
+      if (this.props.showEffects) {
+        if (this.state.currentSlide === i) {
+          if ( this.state.fade === 'in') {
+            showingEffect = `showing-${slideEffect}`;
+          } else if (this.state.fade === 'out') {
+            showingEffect = `showing-${slideEffect}-out`;
+          }
         }
-        console.log('showing effect', showingEffect)
       }
       return (
         <li
-          className={`slide ${effect} ${showingEffect}`}
+          className={`slide ${this.props.showEffects ? `${effect} ${showingEffect}` : ''} ${this.state.currentSlide === i ? 'visible' : ''}`}
           key={`mutlimedia-slide-${slide.url}-${i}`}
         >
           {slide.component}
@@ -285,6 +286,7 @@ Slideshow.defaultProps = {
   slideInterval: 2000,
   defaultIndex: 0,
   effect: 'fade',
+  showEffects: false,
   slides: [],
   height: '100%',
   width: '100%',

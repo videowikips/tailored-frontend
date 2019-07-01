@@ -4,7 +4,7 @@ import {
   Route,
 } from 'react-router-dom';
 import DocumentMeta from 'react-document-meta';
-import LoaderOverlay from './components/common/LoaderOverlay';
+import LoaderOverlay from './shared/components/LoaderOverlay';
 
 class LazyRoute extends React.Component {
 

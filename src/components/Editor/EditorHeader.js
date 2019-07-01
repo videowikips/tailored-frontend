@@ -381,7 +381,6 @@ class EditorHeader extends Component {
         open={this.state.addHumanVoiceModalVisible}
         onClose={() => this.setState({ addHumanVoiceModalVisible: false })}
         skippable={false}
-        disabledLanguages={[this.props.language]}
         onSubmit={(val) => this.onAddHumanVoice(val)}
       />
     )
@@ -422,7 +421,6 @@ class EditorHeader extends Component {
 EditorHeader.propTypes = {
   article: PropTypes.object.isRequired,
   mode: PropTypes.string,
-  language: PropTypes.string.isRequired,
   history: PropTypes.object.isRequired,
   onPublishArticle: PropTypes.func.isRequired,
   currentSlide: PropTypes.object.isRequired,
@@ -458,7 +456,6 @@ EditorHeader.defaultProps = {
   showViewerModeDropdown: false,
   showTranslate: false,
   options: {},
-  language: 'en',
   isExportable: false,
 }
 

@@ -84,7 +84,6 @@ class EditorSlide extends Component {
     .post('/api/wiki/commons/video_by_name')
     .field('url', fileUrl)
     .then(response => {
-      console.log('response', response);
       this._handleImageUrlDrop(response.body.url, mimetype)
     })
     .catch((err) => {
@@ -103,7 +102,6 @@ class EditorSlide extends Component {
   }
 
   _handleFileUpload(acceptedFiles, rejectedFiles, evt) {
-    console.log('file dropped ', acceptedFiles, rejectedFiles, evt);
     const { uploadState } = this.props;
     if (rejectedFiles.length > 0) {
       const file = rejectedFiles[0]
@@ -116,7 +114,6 @@ class EditorSlide extends Component {
         if (evt && evt.dataTransfer && evt.dataTransfer.getData('text/html')) {
           const imageElement = evt.dataTransfer.getData('text/html')
 
-          console.log('image data ', evt.dataTransfer.getData('text/html'))
           const urlRex = /data-orig="?([^"\s]+)"?\s*/
           // const descriptionUrlRex = /data-orig-desc="?([^"\s]+)"?\s*/
           const mimetypeRex = /data-orig-mimetype="?([^"\s]+)"?\s*/

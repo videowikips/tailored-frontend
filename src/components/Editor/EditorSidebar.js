@@ -5,18 +5,20 @@ import { Scrollbars } from 'react-custom-scrollbars'
 
 export default class EditorSidebar extends Component {
   _renderMenuItem () {
-    const { toc, currentSlideIndex, navigateToSlide } = this.props
+    const { toc, currentSlideIndex, currentSubslideIndex, currentNumberOfSlides, navigateToSlide } = this.props
     return toc.map((item, index) => {
       // const title = `${item['tocnumber']} ${item['title']}`
 
       let active = false
+      let percent = 0
 
       if (currentSlideIndex === index) {
         active = true
+        percent = Math.floor(100 * (currentSubslideIndex + 1) / currentNumberOfSlides)
       }
 
       return active ? (
-        <Progress percent={100} className="c-menu-progress" key={index}>
+        <Progress percent={percent} className="c-menu-progress" key={index}>
           <div className="c-menu-progress-item">
             <Menu.Item
               name={ `${index}` }
