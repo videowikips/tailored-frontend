@@ -1,0 +1,17 @@
+
+.dropbox {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    outline: 2px dashed #92b0b3;
+    outline-offset: -1em;
+    height: 16rem;
+    transition: outline-offset .15s ease-in-out, background-color .15s linear;
+    background-color: #c8dadf;
+    font-size: 1.25em;
+}
+.dropbox:hover {
+    background-color: white !important;
+}
+  

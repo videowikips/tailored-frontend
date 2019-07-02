@@ -10,6 +10,7 @@ import Footer from './shared/components/Footer';
 import LazyRoute from './LazyRoute';
 
 const Home = () => import(/* webpackChunkName: "js/Home"  */'./Pages/Home');
+const Proofreading = () => import( /* webpackChunkName: "js/Proofreading" */ './Pages/Proofreading');
 
 class AppRouter extends React.Component {
 
@@ -21,6 +22,7 @@ class AppRouter extends React.Component {
           <div className="c-app__main">
             <Switch>
               <LazyRoute exact path="/" title="VideoWiki" loader={Home} />
+              <LazyRoute exact path="/proofreading" title="Proofreading" loader={Proofreading} />
             </Switch>
           </div>
           <Footer />
