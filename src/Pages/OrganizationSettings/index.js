@@ -1,6 +1,9 @@
 import React from 'react';
 import Avatar from 'react-avatar';
 import './OrganizationSettings.css';
+import InviteModal from './InviteModal';
+import UserTable from './UserTable';
+import { Button, Icon } from 'semantic-ui-react'
 
 export default class Home extends React.Component {
     render() {
@@ -17,20 +20,31 @@ export default class Home extends React.Component {
                 <div className="wrapper">
                     <h2>Users</h2>
 
-                    <div class="ui fluid card">
-                        <div class="content"><div class="header">About Amy</div></div>
-                        <div class="content">
-                            <div class="description">
-                                Amy is a violinist with 2 years experience in the wedding industry. She enjoys the outdoors
-                                and currently resides in upstate New York.
+                    <div className="ui fluid card">
+
+                        <div className="content">
+                            <div className="header">
+                                Organization Users
+
+                                <div className="pull-right">
+                                    <Button icon primary labelPosition='left'>
+                                        <Icon name='plus' />
+                                        Invite New User
+                                    </Button>
+                                </div>
                             </div>
+
+
                         </div>
-                        <div class="extra content">
-                            <i aria-hidden="true" class="user icon"></i>
-                            4 Friends
-                         </div>
+
+                        <div className="content">
+                            <UserTable />
+                        </div>
+
                     </div>
                 </div>
+
+                <InviteModal />
             </div>
         )
     }
