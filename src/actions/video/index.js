@@ -1,6 +1,7 @@
 import * as actionTypes from './types';
 import Api from '../../shared/api';
 import requestAgent from '../../shared/utils/requestAgent';
+import NotificationService from '../../shared/utils/NotificationService';
 
 const uploadVideoLoading = {
     type: actionTypes.UPLOAD_VIDEO_LOADING
@@ -34,9 +35,12 @@ export const uploadVideo = ({ title, numberOfSpeakers, video, langCode }) => (di
             dispatch(uploadVideoProgress(e.percent))
          })
         .then(res => {
+            NotificationService.success('Uploaded successfully');
             dispatch(uploadVideoDone(res.body));
         })
         .catch(err => {
+            const reason = err.response ? err.response.text : 'Something went wrong';
+            NotificationService.error(reason)
             dispatch(uploadVideoFailed)
         })
 }

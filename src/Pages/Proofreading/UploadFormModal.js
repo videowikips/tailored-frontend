@@ -22,7 +22,6 @@ class UploadFormModal extends React.Component {
         title: '',
         numberOfSpeakers: 1,
         langCode: 'en',
-        valid: false,
         video: null,
     };
 
@@ -35,16 +34,13 @@ class UploadFormModal extends React.Component {
 
     onFieldChange = (e, { name, value }) => {
         this.setState({ [name]: value }, () => {
-            this.validateForm();
         })
     }
 
-    validateForm = () => {
-        const { title, numberOfSpeakers, langCode, valid } = this.state;
-        if ((!title || !numberOfSpeakers || !langCode) && valid) return this.setState({ valid: false });
-        if (!valid) {
-            this.setState({ valid: true })
-        }
+    formValid = () => {
+        const { title, numberOfSpeakers, langCode, video, valid } = this.state;
+        if ((!title || !numberOfSpeakers || !langCode || !video)) return false;
+        return true;
     }
 
     onVideoChange = (file) => {
@@ -152,7 +148,7 @@ class UploadFormModal extends React.Component {
                 </Modal.Content>
                 <Modal.Actions>
                     <div style={{ display: 'flex', justifyContent: 'center' }}>
-                        <Button onClick={this.onSubmit} disabled={!this.state.valid || this.props.uploadState === 'loading'} loading={this.props.uploadState === 'loading'} primary size={'large'}>Submit</Button>
+                        <Button onClick={this.onSubmit} disabled={!this.formValid() || this.props.uploadState === 'loading'} loading={this.props.uploadState === 'loading'} primary size={'large'}>Submit</Button>
                     </div>
                 </Modal.Actions>
             </Modal>
