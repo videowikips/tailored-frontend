@@ -1,11 +1,43 @@
 import React from 'react';
 import './Home.css';
+import OrganizationSignupModal from './OrganizationSignupModal';
 
 export default class Home extends React.Component {
+    state = {
+        isOrganizationSignupOpen: false
+    }
+
+    onOrganizationSignup = () => {
+        this.setState({
+            isOrganizationSignupOpen: true
+        });
+    }
 
     render() {
         return (
             <div>
+                <div className="header-wrapper">
+                    <h2 className="ui header">
+                        <img src="/img/logo.png" className="logo" />
+
+                        <div className="pull-right">
+
+                            <button className="large ui green button" onClick={this.onOrganizationSignup}>
+                                Non-profit <br></br>
+                                Log in / Sign up
+                            </button>
+
+                            <button className="large ui blue button">
+                                Volunteer <br></br>
+                                Log in / Sign up
+                            </button>
+
+                        </div>
+                    </h2>
+                </div>
+
+                <OrganizationSignupModal open={this.state.isOrganizationSignupOpen} />
+
                 <div className="cover">
                     <img src="/img/cover.jpg"></img>
 
@@ -31,13 +63,13 @@ export default class Home extends React.Component {
                     <div className="row-3 steps">
                         <div>
                             <div className="step-header">STEP 01</div>
-                            <i aria-hidden="true" class="sign-out alternate massive icon"></i>
+                            <i aria-hidden="true" className="sign-out alternate massive icon"></i>
                             <div className="step-description">Sign up / Log in</div>
                         </div>
 
                         <div>
                             <div className="step-header">STEP 02</div>
-                            <i aria-hidden="true" class="translate massive icon"></i>
+                            <i aria-hidden="true" className="translate massive icon"></i>
                             <div className="step-description">
                                 Translate text <br></br>
                                 or add your voice over to videos <br></br>
@@ -47,7 +79,7 @@ export default class Home extends React.Component {
 
                         <div>
                             <div className="step-header">STEP 03</div>
-                            <i aria-hidden="true" class="users massive icon"></i>
+                            <i aria-hidden="true" className="users massive icon"></i>
                             <div className="step-description">
                                 Make an impact on millions of people <br></br>
                                 as non-profits will make the translated <br></br>

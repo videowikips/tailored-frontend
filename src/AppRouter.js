@@ -17,6 +17,7 @@ const Proofreading = () => import( /* webpackChunkName: "js/Proofreading" */ './
 const Demo = () => import(/* webpackChunkName: "js/Demo" */ './Pages/Demo');
 const Convert = () => import(/* webpackChunkName: "js/Convert/" */ './Pages/Convert');
 const OrganizationSignUp = () => import(/* webpackChunkName: "js/Home"  */'./Pages/OrganizationSignUp');
+const OrganizationSettings = () => import('./Pages/OrganizationSettings');
 
 class AppRouter extends React.Component {
 
@@ -32,6 +33,7 @@ class AppRouter extends React.Component {
               <LazyRoute exact path="/demo" title="Demo" loader={Demo} />
               <LazyRoute exact path="/convert/:videoId" title="Demo" loader={Convert} />
               <LazyRoute exact path="/organization/signup" title="VideoWiki" loader={OrganizationSignUp} />
+              <LazyRoute exact path="/organization/settings" title="VideoWiki" loader={OrganizationSettings} />
             </Switch>
           </div>
           <Footer />
