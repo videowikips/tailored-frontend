@@ -7,16 +7,22 @@ import { store, persistor } from './store'
 import AppRouter from './AppRouter'
 
 import * as serviceWorker from './serviceWorker';
+import './stylesheets/main.scss'
+import '../node_modules/semantic-ui-css/semantic.min.css'
+
+import { NotificationContainer } from 'react-notifications';
+import 'react-notifications/lib/notifications.css';
 
 ReactDOM.render(
-    <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        <AppRouter />
-      </PersistGate>
-    </Provider>,
-    document.getElementById('root'),
-  )
-  
+  <Provider store={store}>
+    <PersistGate loading={null} persistor={persistor}>
+      <AppRouter />
+      <NotificationContainer />
+    </PersistGate>
+  </Provider>,
+  document.getElementById('root'),
+)
+
 // ReactDOM.render(<App />, );
 
 // If you want your app to work offline and load faster, you can change

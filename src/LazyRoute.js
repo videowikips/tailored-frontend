@@ -4,7 +4,7 @@ import {
   Route,
 } from 'react-router-dom';
 import DocumentMeta from 'react-document-meta';
-import LoaderOverlay from './components/common/LoaderOverlay';
+import LoaderOverlay from './shared/components/LoaderOverlay';
 
 class LazyRoute extends React.Component {
 
@@ -16,7 +16,14 @@ class LazyRoute extends React.Component {
     const { loader, title, ...rest } = this.props;
     const LoadableComponent = Loadable({
       loader,
-      loading: () => <LoaderOverlay loaderImage="/img/edit-loader.gif" />,
+      loading: (props) => {
+        if (props.error) {
+          console.log('error is', props.error);
+        }
+        return (
+          <LoaderOverlay loaderImage="/img/edit-loader.gif" />
+        )
+      },
     });
 
     return (

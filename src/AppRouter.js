@@ -4,12 +4,15 @@ import {
   BrowserRouter as Router,
   Switch,
 } from 'react-router-dom'
-import Header from './components/common/Header';
-import Footer from './components/common/Footer';
+import Header from './shared/components/Header';
+import Footer from './shared/components/Footer';
 // import { connect } from 'react-redux'
 import LazyRoute from './LazyRoute';
 
 const Home = () => import(/* webpackChunkName: "js/Home"  */'./Pages/Home');
+const Proofreading = () => import( /* webpackChunkName: "js/Proofreading" */ './Pages/Proofreading');
+const Demo = () => import(/* webpackChunkName: "js/Demo" */ './Pages/Demo');
+const Convert = () => import(/* webpackChunkName: "js/Convert/" */ './Pages/Convert');
 
 class AppRouter extends React.Component {
 
@@ -21,6 +24,9 @@ class AppRouter extends React.Component {
           <div className="c-app__main">
             <Switch>
               <LazyRoute exact path="/" title="VideoWiki" loader={Home} />
+              <LazyRoute exact path="/proofreading" title="Proofreading" loader={Proofreading} />
+              <LazyRoute exact path="/demo" title="Demo" loader={Demo} />
+              <LazyRoute exact path="/convert/:videoId" title="Demo" loader={Convert} />
             </Switch>
           </div>
           <Footer />
