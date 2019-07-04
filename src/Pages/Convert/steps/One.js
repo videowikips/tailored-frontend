@@ -1,14 +1,12 @@
 import React from 'react';
 
-class Proofreading extends React.Component {
-    
+class One extends React.Component {
+ 
     render() {
         return (
             <div>
-                Proofreading
+                Step One
             </div>
         )
     }
 }
-
-export default Proofreading;

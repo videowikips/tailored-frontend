@@ -10,6 +10,7 @@ const persistConfig = {
   key: 'root',
   storage,
 //   whitelist: ['ui', 'auth'],
+  whitelist: ['auth']
 }
 
 const middlewares = process.env.NODE_ENV === 'development'

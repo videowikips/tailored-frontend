@@ -1,11 +1,10 @@
 import * as actionTypes from './types';
 import Api from '../../shared/api';
 import requestAgent from '../../shared/utils/requestAgent';
-import NotificationService from '../../shared/utils/NotificationService';
 
-const uploadVideoLoading = {
+const uploadVideoLoading = () => ({
     type: actionTypes.UPLOAD_VIDEO_LOADING
-};
+});
 
 const uploadVideoProgress = progress => ({
     type: actionTypes.UPLOAD_VIDEO_PROGRESS,
@@ -17,16 +16,29 @@ const uploadVideoDone = result => ({
     payload: result,
 })
 
-const uploadVideoFailed = {
+const uploadVideoFailed = (error) => ({
     type: actionTypes.UPLOAD_VIDEO_FAILED,
-}
+    payload: error,
+})
+
+const fetchVideoLoading = () => ({
+    type: actionTypes.FETCH_VIDEO_LOADING,
+})
+
+const fetchVideoSuccess = (video) => ({
+    type: actionTypes.FETCH_VIDEO_SUCCESS,
+    payload: video,
+})
+
+const fetchVideoFailed = (err) => ({
+    type: actionTypes.FETCH_VIDEO_FAILED,
+    payload: err,
+})
 
 export const uploadVideo = ({ title, numberOfSpeakers, video, langCode }) => (dispatch) => {
-    dispatch(uploadVideoLoading);
+    dispatch(uploadVideoLoading());
     requestAgent
-        .post(
-            Api.video.uploadVideo,
-        )
+        .post(Api.video.uploadVideo)
         .field('title', title)
         .field('numberOfSpeakers', numberOfSpeakers)
         .field('langCode', langCode)
@@ -35,12 +47,23 @@ export const uploadVideo = ({ title, numberOfSpeakers, video, langCode }) => (di
             dispatch(uploadVideoProgress(e.percent))
          })
         .then(res => {
-            NotificationService.success('Uploaded successfully');
             dispatch(uploadVideoDone(res.body));
         })
         .catch(err => {
             const reason = err.response ? err.response.text : 'Something went wrong';
-            NotificationService.error(reason)
-            dispatch(uploadVideoFailed)
+            dispatch(uploadVideoFailed(reason));
         })
+}
+
+export const fetchVideoById = videoId => dispatch => {
+    dispatch(fetchVideoLoading());
+    requestAgent
+    .get(Api.video.getVideoById(videoId))
+    .then(res => {
+        dispatch(fetchVideoSuccess(res.body));
+    })
+    .catch(err => {
+        const reason = err.response ? err.response.text : 'Something went wrong';
+        dispatch(fetchVideoFailed(reason));
+    })
 }
