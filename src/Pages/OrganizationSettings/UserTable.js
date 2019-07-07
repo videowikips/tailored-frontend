@@ -14,15 +14,15 @@ const TableExamplePadded = () => (
                     <span  className="invite-name bold-text">Pratik Shetty</span>  pratik.shetty@tlrindia.com
 
                     <div className="pull-right">
-                        <button class="ui red button">Delete</button>
+                        <button className="ui red button">Delete</button>
                     </div>
 
                 </div>
 
                 <div>
-                    <div class="ui blue horizontal label">Organization Owner</div>
-                    <div class="ui blue horizontal label">Admin</div>
-                    <div class="ui green horizontal label">Activated</div>
+                    <div className="ui blue horizontal label">Organization Owner</div>
+                    <div className="ui blue horizontal label">Admin</div>
+                    <div className="ui green horizontal label">Activated</div>
                 </div>
 
             </List.Content>
@@ -39,15 +39,15 @@ const TableExamplePadded = () => (
                     <span className="invite-name bold-text">Janith Kasun</span>  janithisipathana@gmail.com
             
                     <div className="pull-right">
-                        <button class="ui red button">Delete</button>
+                        <button className="ui red button">Delete</button>
                     </div>
 
                 </div>
 
                 <div>
-                    <div class="ui blue horizontal label">Organization Owner</div>
-                    <div class="ui blue horizontal label">Admin</div>
-                    <div class="ui red horizontal label">Not Activated</div>
+                    <div className="ui blue horizontal label">Organization Owner</div>
+                    <div className="ui blue horizontal label">Admin</div>
+                    <div className="ui red horizontal label">Not Activated</div>
                 </div>
 
             </List.Content>

@@ -3,7 +3,6 @@ import Avatar from 'react-avatar';
 import './OrganizationSettings.css';
 import InviteModal from './InviteModal';
 import UserTable from './UserTable';
-import { Button, Icon } from 'semantic-ui-react'
 
 export default class Home extends React.Component {
     render() {
@@ -27,10 +26,7 @@ export default class Home extends React.Component {
                                 Organization Users
 
                                 <div className="pull-right">
-                                    <Button icon primary labelPosition='left'>
-                                        <Icon name='plus' />
-                                        Invite New User
-                                    </Button>
+                                    <InviteModal />
                                 </div>
                             </div>
 
@@ -44,7 +40,6 @@ export default class Home extends React.Component {
                     </div>
                 </div>
 
-                <InviteModal />
             </div>
         )
     }

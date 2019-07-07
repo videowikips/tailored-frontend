@@ -3,10 +3,6 @@ import './Home.css';
 import OrganizationSignupModal from './OrganizationSignupModal';
 
 export default class Home extends React.Component {
-    state = {
-        isOrganizationSignupOpen: false
-    }
-
     onOrganizationSignup = () => {
         this.setState({
             isOrganizationSignupOpen: true
@@ -21,11 +17,7 @@ export default class Home extends React.Component {
                         <img src="/img/logo.png" className="logo" />
 
                         <div className="pull-right">
-
-                            <button className="large ui green button" onClick={this.onOrganizationSignup}>
-                                Non-profit <br></br>
-                                Log in / Sign up
-                            </button>
+                            <OrganizationSignupModal/>
 
                             <button className="large ui blue button">
                                 Volunteer <br></br>
@@ -35,8 +27,6 @@ export default class Home extends React.Component {
                         </div>
                     </h2>
                 </div>
-
-                <OrganizationSignupModal open={this.state.isOrganizationSignupOpen} />
 
                 <div className="cover">
                     <img src="/img/cover.jpg"></img>

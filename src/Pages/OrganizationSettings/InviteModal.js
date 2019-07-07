@@ -1,8 +1,23 @@
 import React, { Component } from 'react'
-import { Button, Modal, Form, Select } from 'semantic-ui-react'
+import { Button, Modal, Form, Select, Icon } from 'semantic-ui-react'
 
 class ModalExampleSize extends Component {
-    state = { open: true }
+    state = {
+        // modal state
+        open: false,
+
+        // invite form values
+        email: '',
+        firstName: '',
+        lastName: '',
+        role: ''
+    }
+
+    form = null;
+
+    close = () => this.setState({ open: false });
+
+    open = () => this.setState({ open: true });
 
     roles = [
         {
@@ -20,41 +35,81 @@ class ModalExampleSize extends Component {
         }
     ]
 
-    show = size => () => this.setState({ open: true })
-    close = () => this.setState({ open: false })
+    onFormSubmit = (e) => {
+        e.preventDefault();
+        console.log(this.state);
+    }
+
+    handleChange = (event, data) => {
+        if (data) {
+            const value = data.value;
+            const name = data.name;
+
+            console.log(value, name);
+
+            this.setState({
+                [name]: value
+            });
+        } else {
+            const target = event.target;
+            const value = target.type === 'checkbox' ? target.checked : target.value;
+            const name = target.name;
+
+            this.setState({
+                [name]: value
+            });
+        }
+    }
 
     render() {
         const { open } = this.state
 
         return (
             <div>
-                <Modal size="small" open={open} onClose={this.close}>
+                <Modal
+                    trigger={
+                        <Button icon primary labelPosition='left' onClick={this.open}>
+                            <Icon name='plus' />
+                            Invite New User
+                        </Button>
+                    }
+                    open={open}
+                    closeOnEscape={true}
+                    closeOnDimmerClick={true}
+                    onClose={this.close}
+                    size="small"
+                >
+
                     <Modal.Header className="invite-modal-header">Invite New User</Modal.Header>
 
                     <Modal.Content>
-                        <Form>
 
+                        <Form onSubmit={this.onFormSubmit}>
                             <Form.Field>
                                 <label>Email</label>
-                                <input />
+                                <input name="email" onChange={this.handleChange} value={this.state.email} />
                             </Form.Field>
 
                             <Form.Group widths='equal'>
-                                <Form.Input fluid label='First name'/>
-                                <Form.Input fluid label='Last name'/>
+                                <Form.Input name="firstName" onChange={this.handleChange} value={this.state.firstName} fluid label='First name' />
+                                <Form.Input name="lastName" onChange={this.handleChange} value={this.state.lastName} fluid label='Last name' />
                             </Form.Group>
 
                             <Form.Field>
                                 <label>Role</label>
-                                <Select options={this.roles} />
+                                <Select
+                                    name="role"
+                                    onChange={this.handleChange}
+                                    value={this.state.role}
+                                    options={this.roles} />
                             </Form.Field>
                         </Form>
 
                     </Modal.Content>
 
                     <Modal.Actions>
-                        <Button positive>Invite User</Button>
-                        <Button> Cancel </Button>
+                        <Button positive type="submit" onClick={this.onFormSubmit}>Invite User</Button>
+                        <Button onClick={this.close}> Cancel </Button>
                     </Modal.Actions>
 
                 </Modal>
