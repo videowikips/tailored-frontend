@@ -3,9 +3,10 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { Progress } from 'semantic-ui-react';
 
+import * as articleActions from '../../actions/article';
 import * as videoActions from '../../actions/video';
 import ProgressBoxes from '../../shared/components/ProgressBoxes';
-
+import Proofreading from '../../shared/components/Proofreading';
 
 function generateStages() {
     return [{
@@ -14,12 +15,12 @@ function generateStages() {
         active: false,
     },
     {
-        title: <div>Step 1: Proof Reading Script</div>,
+        title: <div>Step 2: Proof Reading Script</div>,
         completed: false,
         active: false,
     },
     {
-        title: <div>Step 1: Converting to a VideoWiki<br />video</div>,
+        title: <div>Step 3: Converting to a VideoWiki<br />video</div>,
         completed: false,
         active: false,
     }]
@@ -33,16 +34,11 @@ class Convert extends React.Component {
     }
 
     componentWillMount() {
-        const { videoId } = this.props.match.params;
-        this.props.fetchVideoById(videoId);
-        const intervalId = setInterval(() => {
-            this.props.fetchVideoById(videoId);
-        }, 10000);
-        this.setState({ intervalId });
+        this.startPoller();
     }
 
     componentWillUnmount() {
-        clearInterval(this.state.intervalId);
+        this.stopPoller();
     }
 
     componentWillReceiveProps(nextProps) {
@@ -53,6 +49,8 @@ class Convert extends React.Component {
                 case 'proofreading':
                     stages[0].completed = true;
                     stages[1].active = true;
+                    this.props.fetchArticleByVideoId(video._id);
+                    this.stopPoller();
                     break;
                 case 'converting':
                     stages[0].completed = true;
@@ -70,12 +68,25 @@ class Convert extends React.Component {
         }
     }
 
-    onVideoFailed(video) {
+    startPoller = () => {
+        const { videoId } = this.props.match.params;
+        this.props.fetchVideoById(videoId);
+        const intervalId = setInterval(() => {
+            this.props.fetchVideoById(videoId);
+        }, 10000);
+        this.setState({ intervalId });
+    }
+
+    stopPoller = () => {
         clearInterval(this.state.intervalId);
     }
 
+    onVideoFailed(video) {
+        this.stopPoller()
+    }
+
     onVideoDone(video) {
-        clearInterval(this.state.intervalId)
+        this.stopPoller();
     }
 
     getVideoStatus = () => {
@@ -103,18 +114,26 @@ class Convert extends React.Component {
                         Something went wrong while converting the video, please try again.
                     </div>
                 )}
+                {this.getVideoStatus() === 'proofreading' && (
+                    <div>
+                        <Proofreading video={this.props.video} article={this.props.article} />
+                    </div>
+                )}
             </div>
         )
     }
 }
 
-const mapStateToProps = ({ video }) => ({
+const mapStateToProps = ({ video, article }) => ({
     video: video.video,
     fetchVideoState: video.fetchVideoState,
+    article: article.article,
+    fetchArticleState: article.fetchArticleState,
 })
 
 const mapDispatchToProps = (dispatch) => ({
-    fetchVideoById: (id) => dispatch(videoActions.fetchVideoById(id))
+    fetchVideoById: (id) => dispatch(videoActions.fetchVideoById(id)),
+    fetchArticleByVideoId: id => dispatch(articleActions.fetchArticleByVideoId(id)),
 })
 
 export default withRouter(

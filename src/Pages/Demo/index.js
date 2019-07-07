@@ -14,7 +14,7 @@ class Demo extends React.Component {
         videoForm: {
             title: '',
             numberOfSpeakers: 1,
-            langCode: 'en',
+            langCode: 'en-US',
             video: null,
             fileContent: null,
         }

@@ -2,10 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Modal, Button, Input, Grid, Dropdown, Progress } from 'semantic-ui-react';
 import Dropzone from 'react-dropzone';
-import { isoLangsArray } from '../constants/langs';
+import { supportedLangs } from '../constants/langs';
 const speakersOptions = Array.apply(null, { length: 10 }).map(Number.call, Number).map((a, index) => ({ value: index + 1, text: index + 1 }));
-const langsOptions = isoLangsArray.map((lang) => ({ value: lang.code, text: `${lang.name} (${lang.nativeName})` }));
-
+const langsOptions = supportedLangs.map((lang) => ({ value: lang.code, text: `${lang.name} ( ${lang.code} )` }));
+console.log(langsOptions)
 const styles = {
     ModalCloseButton: {
         position: 'absolute',
@@ -16,12 +16,6 @@ const styles = {
 }
 
 class UploadNewVideoModal extends React.Component {
-    state = {
-        title: '',
-        numberOfSpeakers: 1,
-        langCode: 'en',
-        video: null,
-    };
 
     onSubmit = () => {
         this.props.onSubmit(this.props.value);
@@ -96,7 +90,7 @@ class UploadNewVideoModal extends React.Component {
                         <Grid.Row className="form-group">
                             <Grid.Column width={3} className="label">
                                 Title
-                                </Grid.Column>
+                            </Grid.Column>
                             <Grid.Column width={10}>
                                 <Input fluid type="text" value={this.props.value.title} onChange={this.onFieldChange} name="title" />
                             </Grid.Column>
@@ -118,7 +112,7 @@ class UploadNewVideoModal extends React.Component {
                         <Grid.Row className="form-group">
                             <Grid.Column width={3} className="label">
                                 Language
-                                </Grid.Column>
+                            </Grid.Column>
                             <Grid.Column width={10}>
                                 <Dropdown
                                     search
