@@ -78,6 +78,7 @@ class VideoTimeline extends React.Component {
 
     state = {
         deltaMS: 0,
+        deltas: [],
         left: 0,
         lastLeft: 0,
         barHalfSize: 0,
@@ -116,8 +117,25 @@ class VideoTimeline extends React.Component {
                 console.log('delta update', nextProps.currentTime, this.state.deltaMS, startTime, endTime);
 
                 const deltaMS = startTime;
-                this.setState({ deltaMS }, () => {
+                this.setState(({ deltas }) => ({ deltaMS, deltas: [...deltas, { deltaMS, startTime, endTime }] }), () => {
                     drawCanvas(this.canvasRef, 6000, 65, nextProps.duration, startTime, endTime);
+                })
+            } else if (this.state.deltaMS && (nextProps.currentTime - pixelsToDuration(this.state.barHalfSize, SCALE)) <= this.state.deltaMS) {
+                console.log('update backward');
+                this.setState(({ deltas }) => {
+                    let startTime = 0;
+                    let endTime = 60000;
+                    let deltaMS = 0;
+                    let newDeltas = [...deltas];
+                    if ( deltas.length > 0) {
+                        const lastDelta = newDeltas.pop();
+                        startTime = lastDelta.startTime;
+                        endTime = lastDelta.endTime;
+                        deltaMS = lastDelta.deltaMS;
+                    }
+
+                    drawCanvas(this.canvasRef, 6000, 65, nextProps.duration, startTime, endTime);
+                    return { deltas: newDeltas, deltaMS };
                 })
             }
         }
@@ -251,14 +269,31 @@ class VideoTimeline extends React.Component {
                         <React.Fragment key={slide.text + 'fragment'}>
                             <div
                                 key={slide.text}
-                                style={{ display: 'inline-block', width: durationToPixels(slide.endTime, SCALE) - durationToPixels(slide.startTime, SCALE), left: durationToPixels(slide.startTime, SCALE), position: 'absolute', top: 20, height: 20, background: 'white', color: 'black', padding: 2, paddingLeft: 5 }}
+                                style={{
+                                    display: 'inline-block',
+                                    position: 'absolute',
+                                    top: 20,
+                                    height: 20,
+                                    background: 'white',
+                                    color: 'black',
+                                    padding: 2,
+                                    paddingLeft: 5,
+                                    width: durationToPixels(slide.endTime, SCALE) - durationToPixels(slide.startTime, SCALE),
+                                    left: durationToPixels( slide.startTime, SCALE),
+                                }}
                                 draggable
                                 onDragStart={this.onDragStart}
                                 onDragCapture={(e) => this.onSlideDrag(e, index)}
                             >
                                 {slide.text}
                             </div>
-                            <div key={slide.text + 'handler'} style={{ position: 'absolute', top: 20, height: 20, left: durationToPixels(slide.startTime, SCALE) + durationToPixels(slide.endTime - slide.startTime, SCALE) }}>
+                            <div key={slide.text + 'handler'}
+                                style={{
+                                    position: 'absolute',
+                                    top: 20,
+                                    height: 20,
+                                    left: durationToPixels(slide.startTime, SCALE) + durationToPixels(slide.endTime - slide.startTime, SCALE) }}
+                                >
                                 <span
                                     href="javascript:void(0)"
                                     style={{ background: '#A2A3A4', right: 0, position: 'absolute', cursor: 'col-resize', height: '100%' }}
