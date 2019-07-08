@@ -1,4 +1,9 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
+import { Message } from 'semantic-ui-react';
+
+import { login } from '../../actions/authentication';
 
 class LoginForm extends Component {
     state = {
@@ -8,6 +13,8 @@ class LoginForm extends Component {
 
     onFormSubmit = (e) => {
         e.preventDefault();
+        const { email, password } = this.state;
+        this.props.login({ email, password });
     }
 
     handleChange = (event) => {
@@ -18,6 +25,15 @@ class LoginForm extends Component {
         this.setState({
             [name]: value
         });
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.errorMessage) {
+            this.setState({
+                email: '',
+                password: ''
+            });
+        }
     }
 
     render() {
@@ -37,6 +53,14 @@ class LoginForm extends Component {
                         <input type="password" name="password" value={this.state.password} onChange={this.handleChange} />
                     </div>
 
+                    {
+                        this.props.errorMessage ? (
+                            <Message color='red'>
+                                Invalid Email or Password
+                            </Message>
+                        ): null
+                    }
+
                     <button type="submit" className="ui green button">Log in</button>
                 </form>
             </div>
@@ -44,4 +68,14 @@ class LoginForm extends Component {
     }
 }
 
-export default LoginForm;
+const mapStateToProps = ({ authentication }) => ({
+    ...authentication
+})
+
+const mapDispatchToProps = (dispatch) => ({
+    login: ({email, password}) => dispatch(login({email, password}))
+})
+
+export default withRouter(
+    connect(mapStateToProps, mapDispatchToProps)(LoginForm)
+);

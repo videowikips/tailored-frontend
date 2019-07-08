@@ -1,5 +1,4 @@
 import React from 'react';
-import './Home.css';
 import OrganizationSignupModal from './OrganizationSignupModal';
 
 export default class Home extends React.Component {
@@ -11,10 +10,11 @@ export default class Home extends React.Component {
 
     render() {
         return (
-            <div>
+            <div className="home">
+
                 <div className="header-wrapper">
                     <h2 className="ui header">
-                        <img src="/img/logo.png" className="logo" />
+                        <img src="/img/logo.png" className="logo" alt="Video Wiki Logo" />
 
                         <div className="pull-right">
                             <OrganizationSignupModal/>
@@ -29,10 +29,10 @@ export default class Home extends React.Component {
                 </div>
 
                 <div className="cover">
-                    <img src="/img/cover.jpg"></img>
+                    <img src="/img/cover.jpg" alt="Video Wiki Cover" ></img>
 
                     <div className="cover-text">
-                        <h1>Help non-profits make knowledge accessible in the last mile</h1>
+                        <h1>Help non-profits make knowledge accessible @ the last mile</h1>
 
                         <div className="center description">
                             <div>

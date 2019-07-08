@@ -1,13 +1,12 @@
 import React from 'react';
 import Avatar from 'react-avatar';
-import './OrganizationSettings.css';
 import InviteModal from './InviteModal';
 import UserTable from './UserTable';
 
 export default class Home extends React.Component {
     render() {
         return (
-            <div>
+            <div className="organization-setting">
                 <h2 className="ui header">
                     Organization Settings
 
