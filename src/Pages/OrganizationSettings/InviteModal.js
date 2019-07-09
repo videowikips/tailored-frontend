@@ -1,6 +1,11 @@
 import React, { Component } from 'react'
 import { Button, Modal, Form, Select, Icon } from 'semantic-ui-react'
 
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
+
+import { inviteUser } from '../../actions/organization';
+
 class ModalExampleSize extends Component {
     state = {
         // modal state
@@ -8,8 +13,8 @@ class ModalExampleSize extends Component {
 
         // invite form values
         email: '',
-        firstName: '',
-        lastName: '',
+        firstname: '',
+        lastname: '',
         role: ''
     }
 
@@ -37,15 +42,20 @@ class ModalExampleSize extends Component {
 
     onFormSubmit = (e) => {
         e.preventDefault();
-        console.log(this.state);
+
+        const { email, firstname, lastname } = this.state;
+
+        this.props.inviteUser({
+            email,
+            firstname,
+            lastname
+        })
     }
 
     handleChange = (event, data) => {
         if (data) {
             const value = data.value;
             const name = data.name;
-
-            console.log(value, name);
 
             this.setState({
                 [name]: value
@@ -91,8 +101,8 @@ class ModalExampleSize extends Component {
                             </Form.Field>
 
                             <Form.Group widths='equal'>
-                                <Form.Input name="firstName" onChange={this.handleChange} value={this.state.firstName} fluid label='First name' />
-                                <Form.Input name="lastName" onChange={this.handleChange} value={this.state.lastName} fluid label='Last name' />
+                                <Form.Input name="firstname" onChange={this.handleChange} value={this.state.firstname} fluid label='First name' />
+                                <Form.Input name="lastname" onChange={this.handleChange} value={this.state.lastname} fluid label='Last name' />
                             </Form.Group>
 
                             <Form.Field>
@@ -118,4 +128,14 @@ class ModalExampleSize extends Component {
     }
 }
 
-export default ModalExampleSize
+const mapStateToProps = ({ organization }) => ({
+    ...organization
+})
+
+const mapDispatchToProps = (dispatch) => ({
+    inviteUser: ({ email, firstname, lastname, role }) => dispatch(inviteUser({ email, firstname, lastname, role }))
+})
+
+export default withRouter(
+    connect(mapStateToProps, mapDispatchToProps)(ModalExampleSize)
+);

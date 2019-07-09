@@ -1,60 +1,77 @@
-import React from 'react'
-import { List } from 'semantic-ui-react'
+import React, { Component } from 'react'
+import { List, Button } from 'semantic-ui-react'
+import ChangeRoleModal from './ChangeRoleModal';
 
-const TableExamplePadded = () => (
-    <List divided relaxed>
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
 
-        <List.Item>
+import { fetchUsers, removeUser } from '../../actions/organization';
 
-            <List.Icon name='user' size='large' verticalAlign='middle' />
+class UserTable extends Component {
+    componentDidMount() {
+        this.props.fetchUsers()
+    }
 
-            <List.Content>
+    removeUser(email) {
+        this.props.removeUser(email);
+    }
 
-                <div>
-                    <span  className="invite-name bold-text">Pratik Shetty</span>  pratik.shetty@tlrindia.com
+    render() {
+        const template = this.props.users.length ? this.props.users.map(user => (
+            <List.Item key={user.email}>
 
-                    <div className="pull-right">
-                        <button className="ui red button">Delete</button>
+                <List.Icon name='user' size='large' verticalAlign='middle' />
+
+                <List.Content>
+
+                    <div>
+                        <span className="invite-name bold-text">{user.firstname} {user.lastname}</span>  {user.email}
+
+                        <div className="pull-right">
+                            <ChangeRoleModal />
+                            <Button basic color="red" onClick={() => { this.removeUser(user.email)}}>Delete</Button>
+                        </div>
+
                     </div>
 
-                </div>
-
-                <div>
-                    <div className="ui blue horizontal label">Organization Owner</div>
-                    <div className="ui blue horizontal label">Admin</div>
-                    <div className="ui green horizontal label">Activated</div>
-                </div>
-
-            </List.Content>
-
-        </List.Item>
-
-        <List.Item>
-
-            <List.Icon name='user' size='large' verticalAlign='middle' />
-
-            <List.Content>
-
-                <div>
-                    <span className="invite-name bold-text">Janith Kasun</span>  janithisipathana@gmail.com
-            
-                    <div className="pull-right">
-                        <button className="ui red button">Delete</button>
+                    <div>
+                        <div className="ui blue horizontal label">Organization Owner</div>
+                        <div className="ui blue horizontal label">Admin</div>
+                        <div className="ui green horizontal label">Activated</div>
                     </div>
 
-                </div>
+                </List.Content>
 
-                <div>
-                    <div className="ui blue horizontal label">Organization Owner</div>
-                    <div className="ui blue horizontal label">Admin</div>
-                    <div className="ui red horizontal label">Not Activated</div>
-                </div>
+            </List.Item>
+        )) : (
+                <List.Item>
 
-            </List.Content>
+                    <List.Icon name='user' size='large' verticalAlign='middle' />
 
-        </List.Item>
+                    <List.Content>
+                        <p> No invited users yet </p>
+                    </List.Content>
 
-    </List >
-)
+                </List.Item>
+            )
 
-export default TableExamplePadded
+        return (
+            <List divided relaxed>
+                {template}
+            </List >
+        );
+    }
+}
+
+const mapStateToProps = ({ organization }) => ({
+    ...organization
+})
+
+const mapDispatchToProps = (dispatch) => ({
+    fetchUsers: () => dispatch(fetchUsers()),
+    removeUser: (email) => dispatch(removeUser(email))
+})
+
+export default withRouter(
+    connect(mapStateToProps, mapDispatchToProps)(UserTable)
+);

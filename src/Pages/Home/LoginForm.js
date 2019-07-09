@@ -8,11 +8,19 @@ import { login } from '../../actions/authentication';
 class LoginForm extends Component {
     state = {
         email: '',
-        password: ''
+        password: '',
+
+        message: ''
     }
 
     onFormSubmit = (e) => {
         e.preventDefault();
+        
+        // resetting the error message
+        this.setState({
+            message: ''
+        });
+
         const { email, password } = this.state;
         this.props.login({ email, password });
     }
@@ -28,10 +36,17 @@ class LoginForm extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
+        console.log(nextProps);
+
+        if (nextProps.isAuthenticated) {
+            this.props.history.push('/organization/settings');
+        }
+
         if (nextProps.errorMessage) {
             this.setState({
                 email: '',
-                password: ''
+                password: '',
+                message: nextProps.errorMessage
             });
         }
     }
@@ -54,7 +69,7 @@ class LoginForm extends Component {
                     </div>
 
                     {
-                        this.props.errorMessage ? (
+                        this.state.message ? (
                             <Message color='red'>
                                 Invalid Email or Password
                             </Message>

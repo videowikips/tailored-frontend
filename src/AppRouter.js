@@ -31,7 +31,7 @@ class AppRouter extends React.Component {
               <LazyRoute exact path="/proofreading" title="Proofreading" loader={Proofreading} />
               <LazyRoute exact path="/demo" title="Demo" loader={Demo} />
               <LazyRoute exact path="/convert/:videoId" title="Demo" loader={Convert} />
-              <LazyRoute exact path="/organization/settings" title="VideoWiki" loader={OrganizationSettings} />
+              <LazyRoute exact path="/organization/settings" title="VideoWiki" isPrivateRoute={true} loader={OrganizationSettings} />
             </Switch>
           </div>
           <Footer />

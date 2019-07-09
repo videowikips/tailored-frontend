@@ -7,5 +7,10 @@ export default {
     },
     authentication: {
         login: `${API_ROOT}/auth/login`
+    },
+    organization: {
+        getUsers: `${API_ROOT}/user/getOrgUsers`,
+        inviteUser: `${API_ROOT}/user/add`,
+        removeUser: `${API_ROOT}/user/remove`,
     }
 }

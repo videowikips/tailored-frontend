@@ -18,7 +18,6 @@ export const login = ({ email, password }) => dispatch => {
         password
     }).then(result => {
         const { success, token } = result.body;
-        console.log(success);
 
         if (success) {
             dispatch(authenticationSuccess(token));
