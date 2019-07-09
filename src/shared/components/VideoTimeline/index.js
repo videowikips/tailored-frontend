@@ -1,4 +1,6 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+
 
 const SCALE = 1;
 const SLIDE_DURATION_THREASHOLD = 500;
@@ -82,17 +84,17 @@ class VideoTimeline extends React.Component {
         left: 0,
         lastLeft: 0,
         barHalfSize: 0,
+        currentTime: 0,
+        subtitles: [],
     }
 
     componentDidMount = () => {
-        const { duration } = this.props;
+        const { duration, subtitles } = this.props;
 
-        drawCanvas(this.canvasRef, 6000, 65, duration, 0, 60000)
+        drawCanvas(this.canvasRef, 6000, 65, duration || 0, 0, 60000)
         const barHalfSize = this.canvasRef.parentElement.offsetWidth / 2;
-        this.setState({ left: barHalfSize, barHalfSize }, () => {
-            const newLeft = this.state.barHalfSize - durationToPixels(this.props.currentTime, SCALE);
-            this.setState({ left: newLeft, lastLeft: newLeft });
-        });
+        const newLeft = this.state.barHalfSize - durationToPixels(this.props.currentTime, SCALE);
+        this.setState({ barHalfSize, subtitles, left: newLeft, lastLeft: newLeft });
         window.onresize = () => {
             setTimeout(() => {
                 this.setState(({ barHalfSize, left }) => {
@@ -109,35 +111,42 @@ class VideoTimeline extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         if (this.props.currentTime !== nextProps.currentTime) {
-            console.log(pixelsToDuration(this.state.barHalfSize))
-            if ((nextProps.currentTime - this.state.deltaMS + pixelsToDuration(this.state.barHalfSize, SCALE)) >= DELTA_THREASHOLD) {
-                // this.setState(({deltaMS}) => ({ deltaMS: deltaMS + DELTA_THREASHOLD }));
-                const startTime = removeMilliseconds(nextProps.currentTime - pixelsToDuration(this.state.barHalfSize, SCALE));
-                const endTime = removeMilliseconds(nextProps.currentTime + DELTA_THREASHOLD);
-                console.log('delta update', nextProps.currentTime, this.state.deltaMS, startTime, endTime);
+            this.handleCurrentTimeChange(nextProps.currentTime, nextProps.duration)
+        }
+        if (nextProps.subtitles !== this.state.subtitles) {
+            console.log('subtitles change')
+            this.setState({ subtitles: nextProps.subtitles });
+        }
+    }
 
-                const deltaMS = startTime;
-                this.setState(({ deltas }) => ({ deltaMS, deltas: [...deltas, { deltaMS, startTime, endTime }] }), () => {
-                    drawCanvas(this.canvasRef, 6000, 65, nextProps.duration, startTime, endTime);
-                })
-            } else if (this.state.deltaMS && (nextProps.currentTime - pixelsToDuration(this.state.barHalfSize, SCALE)) <= this.state.deltaMS) {
-                console.log('update backward');
-                this.setState(({ deltas }) => {
-                    let startTime = 0;
-                    let endTime = 60000;
-                    let deltaMS = 0;
-                    let newDeltas = [...deltas];
-                    if ( deltas.length > 0) {
-                        const lastDelta = newDeltas.pop();
-                        startTime = lastDelta.startTime;
-                        endTime = lastDelta.endTime;
-                        deltaMS = lastDelta.deltaMS;
-                    }
+    handleCurrentTimeChange = (currentTime, duration) => {
+        if ((currentTime - this.state.deltaMS + pixelsToDuration(this.state.barHalfSize, SCALE)) >= DELTA_THREASHOLD) {
+            // this.setState(({deltaMS}) => ({ deltaMS: deltaMS + DELTA_THREASHOLD }));
+            const startTime = removeMilliseconds(currentTime - pixelsToDuration(this.state.barHalfSize, SCALE));
+            const endTime = removeMilliseconds(currentTime + DELTA_THREASHOLD);
 
-                    drawCanvas(this.canvasRef, 6000, 65, nextProps.duration, startTime, endTime);
-                    return { deltas: newDeltas, deltaMS };
-                })
-            }
+            const deltaMS = startTime;
+            this.setState(({ deltas }) => ({ currentTime, deltaMS, deltas: [...deltas, { deltaMS, startTime, endTime }] }), () => {
+                drawCanvas(this.canvasRef, 6000, 65, duration, startTime, endTime);
+            })
+        } else if (this.state.deltaMS && (currentTime - pixelsToDuration(this.state.barHalfSize, SCALE)) <= this.state.deltaMS) {
+            this.setState(({ deltas }) => {
+                let startTime = 0;
+                let endTime = 60000;
+                let deltaMS = 0;
+                let newDeltas = [...deltas];
+                if (deltas.length > 0) {
+                    const lastDelta = newDeltas.pop();
+                    startTime = lastDelta.startTime;
+                    endTime = lastDelta.endTime;
+                    deltaMS = lastDelta.deltaMS;
+                }
+
+                drawCanvas(this.canvasRef, 6000, 65, duration, startTime, endTime);
+                return { deltas: newDeltas, deltaMS, currentTime };
+            })
+        } else {
+            this.setState({ currentTime });
         }
     }
 
@@ -145,27 +154,45 @@ class VideoTimeline extends React.Component {
         window.onresize = null;
     }
 
-    onDragCapture = (e) => {
+    onTimelineDrag = (e) => {
+        e.stopPropagation();
         const currentleft = e.clientX;
         if (currentleft) {
+            let ntime;
             this.setState(({ left, lastLeft, barHalfSize }) => {
                 let newLeft = left;
                 if (currentleft < lastLeft) {
-                    newLeft = left - 40;
+                    newLeft = left - 30;
                 } else if (currentleft > lastLeft) {
-                    newLeft = left + 40;
+                    newLeft = left + 30;
                 } else {
                     newLeft = left;
                 }
                 if (newLeft >= barHalfSize) {
                     newLeft = barHalfSize;
                 }
-                if (this.props.onTimeChange) {
-                    this.props.onTimeChange(pixelsToDuration(barHalfSize - newLeft, SCALE))
+
+                let newTime = pixelsToDuration(barHalfSize - newLeft, SCALE);
+                if (newTime >= this.props.duration) {
+                    newTime = this.props.duration;
                 }
-                return { left: newLeft, lastLeft: currentleft };
+                // if (this.props.onTimeChange) {
+                //     this.props.onTimeChange(newTime)
+                // }
+                ntime = newTime;
+                return { left: newLeft, lastLeft: currentleft, currentTime: newTime };
+            }, () => {
+                this.handleCurrentTimeChange(ntime, this.props.duration);
             })
         }
+    }
+
+    onTimelineDragEnd = () => {
+        setTimeout(() => {
+            if (this.props.onTimeChange) {
+                this.props.onTimeChange(this.state.currentTime);
+            }
+        }, 0);
     }
 
     onDragStart = (e) => {
@@ -178,138 +205,280 @@ class VideoTimeline extends React.Component {
         e.stopPropagation();
         const currentleft = e.clientX;
         if (currentleft) {
-            const { slides } = this.props;
-            const { startTime, endTime } = slides[index];
-            let left = durationToPixels(startTime, SCALE);
-            let { lastLeft } = slides[index];
-            if (!lastLeft) {
-                lastLeft = 0
-            }
-            let newLeft = left;
-            if (currentleft < lastLeft) {
-                newLeft = left - 3;
-            } else if (currentleft > lastLeft) {
-                newLeft = left + 3;
-            }
-            if (newLeft <= 0) {
-                newLeft = 0;
-            }
-            const diff = slides[index].startTime - pixelsToDuration(newLeft, SCALE)
-            slides[index].startTime -= diff
-            slides[index].endTime = endTime - diff;
-            console.log(slides[index]);
-            slides[index].lastLeft = currentleft;
-            this.props.onSlidesChange(slides);
-            // this.setState(({ slides }) => {
-            //     const { left, lastLeft } = slides[index];
-            //     let newLeft = left;
-            //     if (currentleft < lastLeft) {
-            //         newLeft = left - 3;
-            //     } else if (currentleft > lastLeft) {
-            //         newLeft = left + 3;
-            //     }
-            //     if (newLeft <= 0) {
-            //         newLeft = 0;
-            //     }
-            //     slides[index].left = newLeft;
-            //     slides[index].lastLeft = currentleft;
+            this.setState(({ subtitles }) => {
+                const { startTime, endTime } = subtitles[index];
+                let left = durationToPixels(startTime, SCALE);
+                let { lastLeft } = subtitles[index];
+                if (!lastLeft) {
+                    lastLeft = 0
+                }
+                let newLeft = left;
+                if (currentleft < lastLeft) {
+                    newLeft = left - 3;
+                } else if (currentleft > lastLeft) {
+                    newLeft = left + 3;
+                }
+                if (newLeft <= 0) {
+                    newLeft = 0;
+                }
+                const diff = subtitles[index].startTime - pixelsToDuration(newLeft, SCALE)
 
-            //     return { slides };
-            // })
+                subtitles[index].startTime -= diff;
+                subtitles[index].endTime = endTime - diff;
+                const crossedSubtitleBackward = subtitles.filter((s, i) => i !== index).find((s) => subtitles[index].startTime >= s.startTime & subtitles[index].startTime <= s.endTime)
+           
+                const crossedSubtitleForward = subtitles.filter((s, i) => i !== index).find((s) => subtitles[index].endTime >= s.startTime & subtitles[index].endTime <= s.endTime)
+                if (crossedSubtitleForward) {
+                    subtitles[index].startTime += diff;
+                    
+                    subtitles[index].endTime = crossedSubtitleForward.startTime;
+                } else if (crossedSubtitleBackward) {
+                    subtitles[index].startTime = crossedSubtitleBackward.endTime;
+                    subtitles[index].endTime = endTime;
+                } else {
+                    subtitles[index].lastLeft = currentleft;
+                }
+                
+                return { subtitles };
+            })
         }
     }
 
-    onExpandSlide = (e, index) => {
+    onSlideDragEnd = (index) => {
+        setTimeout(() => {
+            this.props.onSubtitleChange(this.state.subtitles[index], index, { startTime: this.state.subtitles[index].startTime / 1000, endTime: this.state.subtitles[index].endTime / 1000 });
+        }, 0);
+    }
+
+    onIncreaseStartTime = (e, index) => {
         e.stopPropagation();
         const currentleft = e.clientX;
         if (currentleft) {
-            const { slides } = this.props;
-            let { lastLeft } = slides[index];
-            if (!lastLeft) {
-                lastLeft = 0;
-            }
-            if (currentleft < lastLeft) {
-                slides[index].endTime -= 20;
-            } else if (currentleft > lastLeft) {
-                slides[index].endTime += 20;
-            }
+            this.setState(({ subtitles }) => {
 
-            if ((slides[index].endTime - slides[index].startTime) < SLIDE_DURATION_THREASHOLD) {
-                slides[index].endTime = slides[index].startTime + SLIDE_DURATION_THREASHOLD;
-            }
+                let { lastLeft } = subtitles[index];
+                if (!lastLeft) {
+                    lastLeft = 0;
+                }
+                if (currentleft < lastLeft) {
+                    subtitles[index].startTime -= 30;
+                } else if (currentleft > lastLeft) {
+                    subtitles[index].startTime += 30;
+                }
+                if ((subtitles[index].endTime - subtitles[index].startTime) < SLIDE_DURATION_THREASHOLD) {
+                    subtitles[index].endTime = subtitles[index].startTime + SLIDE_DURATION_THREASHOLD;
+                }
+                if (subtitles[index].startTime < 0) {
+                    subtitles[index].startTime = 0;
+                }
 
-            slides[index].lastLeft = currentleft;
-            this.props.onSlidesChange(slides);
+                const crossedSubtitle = subtitles.filter((s, i) => i !== index).find((s) => subtitles[index].startTime >= s.startTime & subtitles[index].startTime <= s.endTime)
+                if (crossedSubtitle) {
+                    subtitles[index].startTime = crossedSubtitle.endTime;
+                }
+                subtitles[index].lastLeft = currentleft;
+
+                const startTime = removeMilliseconds(this.state.currentTime - pixelsToDuration(this.state.barHalfSize, SCALE));
+                const endTime = removeMilliseconds(this.state.currentTime + DELTA_THREASHOLD);
+                // drawCanvas(this.canvasRef, 6000, 65, this.props.duration, startTime, endTime);
+                return { subtitles };
+            })
         }
     }
 
-    render() {
-        const left = this.state.barHalfSize - durationToPixels(this.props.currentTime - this.state.deltaMS, SCALE);
-        console.log(formatTime(this.props.currentTime), this.props.currentTime - this.state.deltaMS)
+    onIncreaseStartTimeEnd = (index) => {
+        setTimeout(() => {
+            this.props.onSubtitleChange(this.state.subtitles[index], index, { startTime: this.state.subtitles[index].startTime / 1000 });
+        }, 0);
+    }
+
+    onIncreaseEndTime = (e, index) => {
+        e.stopPropagation();
+        const currentleft = e.clientX;
+        if (currentleft) {
+            this.setState(({ subtitles }) => {
+                let { lastLeft } = subtitles[index];
+                if (!lastLeft) {
+                    lastLeft = 0;
+                }
+                if (currentleft < lastLeft) {
+                    subtitles[index].endTime -= 30;
+                } else if (currentleft > lastLeft) {
+                    subtitles[index].endTime += 30;
+                }
+
+                if ((subtitles[index].endTime - subtitles[index].startTime) < SLIDE_DURATION_THREASHOLD) {
+                    subtitles[index].endTime = subtitles[index].startTime + SLIDE_DURATION_THREASHOLD;
+                }
+                const crossedSubtitle = subtitles.filter((s, i) => i !== index).find((s) => subtitles[index].endTime >= s.startTime & subtitles[index].endTime <= s.endTime)
+                if (crossedSubtitle) {
+                    subtitles[index].endTime = crossedSubtitle.startTime;
+                }
+                subtitles[index].lastLeft = currentleft;
+
+                const startTime = removeMilliseconds(this.state.currentTime - pixelsToDuration(this.state.barHalfSize, SCALE));
+                const endTime = removeMilliseconds(this.state.currentTime + DELTA_THREASHOLD);
+
+                // drawCanvas(this.canvasRef, 6000, 65, this.props.duration, startTime, endTime);
+                return { subtitles };
+            })
+        }
+    }
+
+    onIncreaseEndTimeEnd = (index) => {
+        setTimeout(() => {
+            this.props.onSubtitleChange(this.state.subtitles[index], index, { endTime: this.state.subtitles[index].endTime / 1000 });
+        });
+    }
+
+    renderSubtitles = () => {
+        // const left = this.state.barHalfSize - durationToPixels(this.state.currentTime - this.state.deltaMS, SCALE);
+        // Render only the current viewed subtitles
+        return this.state.subtitles.map((slide, index) =>
+            ((slide.endTime + pixelsToDuration(this.state.barHalfSize, SCALE)) > this.state.currentTime) && slide.startTime - pixelsToDuration(this.state.barHalfSize, SCALE) < this.state.currentTime ? (
+                <React.Fragment key={slide.text + 'fragment'}>
+                    <div
+                        key={slide.text}
+                        style={{
+                            display: 'inline-block',
+                            position: 'absolute',
+                            overflow: 'hidden',
+                            top: 20,
+                            height: 20,
+                            background: slide.backgroundColor || 'white',
+                            color: slide.color || 'black',
+                            paddingLeft: 15,
+                            cursor: 'pointer',
+                            width: durationToPixels(slide.endTime, SCALE) - durationToPixels(slide.startTime, SCALE),
+                            left: durationToPixels(slide.startTime - this.state.deltaMS, SCALE),
+                        }}
+                        draggable
+                        onDragStart={this.onDragStart}
+                        onDragCapture={(e) => this.onSlideDrag(e, index)}
+                        onDragEnd={() => this.onSlideDragEnd(index)}
+                        onClick={() => this.props.onSubtitleSelect(slide, index)}
+                    >
+                        {slide.text}
+                    </div>
+                    <div key={slide.text + 'left-handler'}
+                        style={{
+                            position: 'absolute',
+                            top: 20,
+                            height: 20,
+                            width: 10,
+                            left: durationToPixels(slide.startTime - this.state.deltaMS, SCALE),
+                            zIndex: 5,
+                        }}
+                    >
+                        <span
+                            href="javascript:void(0)"
+                            style={{ background: '#A2A3A4', position: 'absolute', cursor: 'col-resize', height: '100%', width: 10 }}
+                            draggable={true}
+                            onDragStart={this.onDragStart}
+                            onDragCapture={(e) => this.onIncreaseStartTime(e, index)}
+                            onDragEnd={() => this.onIncreaseStartTimeEnd(index)}
+                        >
+                            {'<'}
+                        </span>
+                    </div>
+                    <div key={slide.text + 'right-handler'}
+                        style={{
+                            position: 'absolute',
+                            top: 20,
+                            height: 20,
+                            width: 10,
+                            left: durationToPixels(slide.startTime - this.state.deltaMS, SCALE) + durationToPixels(slide.endTime - slide.startTime, SCALE) - 10,
+                            zIndex: 5,
+                        }}
+                    >
+                        <span
+                            href="javascript:void(0)"
+                            style={{ background: '#A2A3A4', position: 'absolute', cursor: 'col-resize', height: '100%', width: 10 }}
+                            draggable={true}
+                            onDragStart={this.onDragStart}
+                            onDragCapture={(e) => this.onIncreaseEndTime(e, index)}
+                            onDragEnd={() => this.onIncreaseEndTimeEnd(index)}
+                        >
+                            {'>'}
+                        </span>
+                    </div>
+                </React.Fragment>
+            ) : null)
+    }
+
+    onItemDrop = (e) => {
+        const left = this.state.barHalfSize - durationToPixels(this.state.currentTime - this.state.deltaMS, SCALE)
+        console.log('current left', left)
+        console.log('delta', this.state.deltaMS)
+        console.log(e.clientX)
+        console.log(left - e.clientX)
+        const data = e.dataTransfer.getData("text");
+        e.preventDefault();
+    }
+
+    renderSubtitlesSelectors = () => {
         return (
-            <div style={{ position: 'relative', overflow: 'hidden', width: '100%', height: 65, background: '#1a1a1a' }}>
-                <canvas
-                    ref={(ref) => this.canvasRef = ref}
-                    onDrag={this.onDragCapture}
-                    onDragStart={this.onDragStart}
-                    draggable={true}
-                    width={6000}
-                    height={65}
-                    style={{ background: '#1a1a1a', position: 'absolute', left }}
-                />
-                <div style={{ content: '', dispaly: 'block', height: '100%', left: '50%', position: 'absolute', width: 0, zIndex: 2, borderRight: '1px solid #FC0D1B' }}>
-                </div>
+            <div>
+                {/* <span onDragStart={(e) => console.log('ondragstart') && e.dataTransfer.setData("text", e.clientX)} draggable style={{ display: 'inline-block', margin: 10, color: 'blue'}}>Blue</span>
+                <span onDragCapture={(e) => console.log('drag capt', e.clientX)} onDragStart={(e) => e.dataTransfer.setData("text", e.clientX)} draggable style={{ display: 'inline-block', margin: 10, color: 'red'}}>red</span> */}
+            </div>
+        )
+    }
+
+    render() {
+        const left = this.state.barHalfSize - durationToPixels(this.state.currentTime - this.state.deltaMS, SCALE);
+        return (
+            <div>
                 <div
-                    onDrag={this.onDragCapture}
-                    // onDrag={this.onDragStart}
-                    onDragStart={this.onDragStart}
-                    draggable={true}
-                    style={{ position: 'absolute', left, width: 6000, height: 65, color: 'white' }}>
-                    {this.props.slides.map((slide, index) => (
-                        <React.Fragment key={slide.text + 'fragment'}>
-                            <div
-                                key={slide.text}
-                                style={{
-                                    display: 'inline-block',
-                                    position: 'absolute',
-                                    top: 20,
-                                    height: 20,
-                                    background: 'white',
-                                    color: 'black',
-                                    padding: 2,
-                                    paddingLeft: 5,
-                                    width: durationToPixels(slide.endTime, SCALE) - durationToPixels(slide.startTime, SCALE),
-                                    left: durationToPixels( slide.startTime, SCALE),
-                                }}
-                                draggable
-                                onDragStart={this.onDragStart}
-                                onDragCapture={(e) => this.onSlideDrag(e, index)}
-                            >
-                                {slide.text}
-                            </div>
-                            <div key={slide.text + 'handler'}
-                                style={{
-                                    position: 'absolute',
-                                    top: 20,
-                                    height: 20,
-                                    left: durationToPixels(slide.startTime, SCALE) + durationToPixels(slide.endTime - slide.startTime, SCALE) }}
-                                >
-                                <span
-                                    href="javascript:void(0)"
-                                    style={{ background: '#A2A3A4', right: 0, position: 'absolute', cursor: 'col-resize', height: '100%' }}
-                                    draggable={true}
-                                    onDragStart={this.onDragStart}
-                                    onDragCapture={(e) => this.onExpandSlide(e, index)}
-                                >
-                                    >
-                            </span>
-                            </div>
-                        </React.Fragment>
-                    ))}
+                    style={{ position: 'relative', overflow: 'hidden', width: '100%', height: 65, background: '#1a1a1a' }}
+                >
+                    <canvas
+                        ref={(ref) => this.canvasRef = ref}
+                        onDrag={this.onTimelineDrag}
+                        onDragEnd={this.onTimelineDragEnd}
+                        onDragStart={this.onDragStart}
+                        draggable={true}
+                        width={6000}
+                        height={65}
+                        style={{ background: '#1a1a1a', position: 'absolute', left }}
+                    />
+                    <div style={{ content: '', dispaly: 'block', height: '100%', left: '50%', position: 'absolute', width: 0, zIndex: 2, borderRight: '1px solid #FC0D1B' }}>
+                    </div>
+                    <div
+                        onDrag={this.onTimelineDrag}
+                        onDragEnd={this.onTimelineDragEnd}
+                        onDragStart={this.onDragStart}
+                        draggable={true}
+                        style={{ position: 'absolute', left, width: 6000, height: 65, color: 'white' }}
+                    // onDrop={(e, data) => this.onItemDrop(e, data)}
+                    // onDragOver={(e) => e.preventDefault()}
+                    >
+                        {this.renderSubtitles()}
+                    </div>
                 </div>
+                {/* {this.renderSubtitlesSelectors()} */}
             </div>
         )
     }
 }
+
+VideoTimeline.propTypes = {
+    currentTime: PropTypes.number,
+    duration: PropTypes.number,
+    subtitles: PropTypes.array,
+    onTimeChange: PropTypes.func,
+    onSubtitleSelect: PropTypes.func,
+    onSubtitleChange: PropTypes.func,
+}
+
+VideoTimeline.defaultProps = {
+    currentTime: 0,
+    duration: 10000,
+    subtitles: [],
+    onTimeChange: () => { },
+    onSubtitleSelect: () => { },
+    onSubtitleChange: () => { },
+}
+
 
 export default VideoTimeline;
