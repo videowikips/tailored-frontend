@@ -17,6 +17,11 @@ class NotificationService {
     warning(msg, title) {
         NotificationManager.warning(msg, title);
     }
+
+    responseError(err) {
+        const reason = err.response && err.response.text ? err.response.text : 'Something went wrong';
+        this.error(reason);        
+    }
 }
 
 export default new NotificationService();

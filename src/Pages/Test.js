@@ -5,9 +5,11 @@ export default class Test extends React.Component {
     state = {
         currentTime: 0,
         duration: 10 * 60 * 1000,
-        slides: [{ text: 'hello world', startTime: 1000, endTime: 12000 }]
-        // slides: [{ text: 'hello world', startTime: (10 * 60 * 60 * 1000) - 2000, endTime: 10 * 60 * 60 * 1000 }]
+        subtitles: [{ text: 'hello world', startTime: 1000, endTime: 5000, backgroundColor: 'blue', color: 'white' },
+        { text: 'hello there', startTime: 6000, endTime: 9000, backgroundColor: 'blue', color: 'white' }]
+        // subtitles: [{ text: 'hello world', startTime: (10 * 60 * 60 * 1000) - 2000, endTime: 10 * 60 * 60 * 1000 }]
     }
+
     componentDidMount = () => {
         // setInterval(() => {
         //     this.setState(({ currentTime }) => {
@@ -15,22 +17,44 @@ export default class Test extends React.Component {
         //     })
         // }, 50);
     }
+
+    componentWillUnmount = () => {
+        if (this.vidoeRef) {
+            this.vidoeRef.ontimeupdate = null;
+        }
+    }
+
     onTimeChange = (currentTime) => {
-        // console.log(currentTime)
+        this.vidoeRef.currentTime = currentTime / 1000;
         this.setState({ currentTime });
     }
-    onSlidesChange = (slides) => {
-        this.setState({ slides });
+
+    onSubtitlesChange = (subtitles) => {
+        this.setState({ subtitles });
     }
+
+    onVideoLoad = (e) => {
+        if (this.vidoeRef) {
+            this.vidoeRef.ontimeupdate = () => {
+                this.setState({ currentTime: this.vidoeRef.currentTime * 1000 });
+            }
+            this.setState({ duration: this.vidoeRef.duration * 1000 })
+        }
+    }
+
     render() {
         return (
-            <VideoTimeline
-                currentTime={this.state.currentTime}
-                onTimeChange={this.onTimeChange}
-                duration={this.state.duration}
-                slides={this.state.slides}   
-                onSlidesChange={this.onSlidesChange} 
-            />
+            <div>
+                <video src={'public/1.mp4'} controls ref={(ref) => this.vidoeRef = ref} onLoadedData={this.onVideoLoad} />
+                <VideoTimeline
+                    currentTime={this.state.currentTime}
+                    onTimeChange={this.onTimeChange}
+                    duration={this.state.duration}
+                    subtitles={this.state.subtitles}
+                    onSubtitlesChange={this.onSubtitlesChange}
+                    onSubtitleSelect={(subtitle, index) => console.log('on subtitle select', subtitle, index)}
+                />
+            </div>
         )
     }
 }

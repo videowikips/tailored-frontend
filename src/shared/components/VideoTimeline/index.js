@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import NotificationService from '../../utils/NotificationService';
 
 
 const SCALE = 1;
@@ -114,7 +115,6 @@ class VideoTimeline extends React.Component {
             this.handleCurrentTimeChange(nextProps.currentTime, nextProps.duration)
         }
         if (nextProps.subtitles !== this.state.subtitles) {
-            console.log('subtitles change')
             this.setState({ subtitles: nextProps.subtitles });
         }
     }
@@ -226,11 +226,11 @@ class VideoTimeline extends React.Component {
                 subtitles[index].startTime -= diff;
                 subtitles[index].endTime = endTime - diff;
                 const crossedSubtitleBackward = subtitles.filter((s, i) => i !== index).find((s) => subtitles[index].startTime >= s.startTime & subtitles[index].startTime <= s.endTime)
-           
+
                 const crossedSubtitleForward = subtitles.filter((s, i) => i !== index).find((s) => subtitles[index].endTime >= s.startTime & subtitles[index].endTime <= s.endTime)
                 if (crossedSubtitleForward) {
                     subtitles[index].startTime += diff;
-                    
+
                     subtitles[index].endTime = crossedSubtitleForward.startTime;
                 } else if (crossedSubtitleBackward) {
                     subtitles[index].startTime = crossedSubtitleBackward.endTime;
@@ -238,7 +238,6 @@ class VideoTimeline extends React.Component {
                 } else {
                     subtitles[index].lastLeft = currentleft;
                 }
-                
                 return { subtitles };
             })
         }
@@ -278,8 +277,8 @@ class VideoTimeline extends React.Component {
                 }
                 subtitles[index].lastLeft = currentleft;
 
-                const startTime = removeMilliseconds(this.state.currentTime - pixelsToDuration(this.state.barHalfSize, SCALE));
-                const endTime = removeMilliseconds(this.state.currentTime + DELTA_THREASHOLD);
+                // const startTime = removeMilliseconds(this.state.currentTime - pixelsToDuration(this.state.barHalfSize, SCALE));
+                // const endTime = removeMilliseconds(this.state.currentTime + DELTA_THREASHOLD);
                 // drawCanvas(this.canvasRef, 6000, 65, this.props.duration, startTime, endTime);
                 return { subtitles };
             })
@@ -316,8 +315,8 @@ class VideoTimeline extends React.Component {
                 }
                 subtitles[index].lastLeft = currentleft;
 
-                const startTime = removeMilliseconds(this.state.currentTime - pixelsToDuration(this.state.barHalfSize, SCALE));
-                const endTime = removeMilliseconds(this.state.currentTime + DELTA_THREASHOLD);
+                // const startTime = removeMilliseconds(this.state.currentTime - pixelsToDuration(this.state.barHalfSize, SCALE));
+                // const endTime = removeMilliseconds(this.state.currentTime + DELTA_THREASHOLD);
 
                 // drawCanvas(this.canvasRef, 6000, 65, this.props.duration, startTime, endTime);
                 return { subtitles };
@@ -336,9 +335,9 @@ class VideoTimeline extends React.Component {
         // Render only the current viewed subtitles
         return this.state.subtitles.map((slide, index) =>
             ((slide.endTime + pixelsToDuration(this.state.barHalfSize, SCALE)) > this.state.currentTime) && slide.startTime - pixelsToDuration(this.state.barHalfSize, SCALE) < this.state.currentTime ? (
-                <React.Fragment key={slide.text + 'fragment'}>
+                <React.Fragment key={slide._id + 'fragment'}>
                     <div
-                        key={slide.text}
+                        // key={slide.text + }
                         style={{
                             display: 'inline-block',
                             position: 'absolute',
@@ -360,7 +359,8 @@ class VideoTimeline extends React.Component {
                     >
                         {slide.text}
                     </div>
-                    <div key={slide.text + 'left-handler'}
+                    <div 
+                    // key={slide.text + 'left-handler'}
                         style={{
                             position: 'absolute',
                             top: 20,
@@ -381,7 +381,8 @@ class VideoTimeline extends React.Component {
                             {'<'}
                         </span>
                     </div>
-                    <div key={slide.text + 'right-handler'}
+                    <div 
+                    // key={slide.text + 'right-handler'}
                         style={{
                             position: 'absolute',
                             top: 20,
@@ -407,28 +408,52 @@ class VideoTimeline extends React.Component {
     }
 
     onItemDrop = (e) => {
-        const left = this.state.barHalfSize - durationToPixels(this.state.currentTime - this.state.deltaMS, SCALE)
-        console.log('current left', left)
-        console.log('delta', this.state.deltaMS)
-        console.log(e.clientX)
-        console.log(left - e.clientX)
-        const data = e.dataTransfer.getData("text");
         e.preventDefault();
-    }
+        console.log('on item drop')
+        if (e.dataTransfer.getData('text')) {
+            const { subtitles } = this.props
+            const left = this.state.barHalfSize - durationToPixels(this.state.currentTime - this.state.deltaMS, SCALE)
+            const deltaDur = Math.abs(parseInt((Math.round(left - e.clientX) / 100)) * 1000);
+            const startTime = Math.abs(this.state.deltaMS + deltaDur);
+            console.log(startTime)
+            const { speaker } = JSON.parse(e.dataTransfer.getData('text'));
+            const newSubtitle = {
+                startTime: startTime,
+                endTime: startTime + 1000,
+                text: '',
+                speakerProfile: speaker,
+            }
 
-    renderSubtitlesSelectors = () => {
-        return (
-            <div>
-                {/* <span onDragStart={(e) => console.log('ondragstart') && e.dataTransfer.setData("text", e.clientX)} draggable style={{ display: 'inline-block', margin: 10, color: 'blue'}}>Blue</span>
-                <span onDragCapture={(e) => console.log('drag capt', e.clientX)} onDragStart={(e) => e.dataTransfer.setData("text", e.clientX)} draggable style={{ display: 'inline-block', margin: 10, color: 'red'}}>red</span> */}
-            </div>
-        )
+            // Check if the new subtitle has enough length and doesnt overflow with other subtitles
+            // const crossedSubtitleBackward = subtitles.find((s) => newSubtitle.startTime >= s.startTime & newSubtitle.startTime <= s.endTime)
+            // const crossedSubtitleForward = subtitles.find((s) => newSubtitle.endTime >= s.startTime & newSubtitle.endTime <= s.endTime)
+            const crossed = subtitles.find(s => newSubtitle.endTime < s.endTime && newSubtitle.startTime > s.startTime)
+            if (!crossed) {
+                // Find nearest subtitle to add the new one to it's slide
+                const nearestSubtitle = subtitles.reverse().find((s) => s.startTime < newSubtitle.startTime && s.endTime < newSubtitle.endTime)
+                // If the nearest subtitle doesn't exist, then there's no subtitle before that ( it's in the first slide )
+                if (nearestSubtitle) {
+                    newSubtitle.slideIndex = nearestSubtitle.slideIndex;
+                    newSubtitle.subslideIndex = nearestSubtitle.subslideIndex;
+                } else {
+                    newSubtitle.slideIndex = 0;
+                    newSubtitle.subslideIndex = 0;
+                }
+
+                newSubtitle.startTime /= 1000;
+                newSubtitle.endTime /= 1000;
+                this.props.onAddSubtitle(newSubtitle);
+            } else {
+                NotificationService.error('Invalid slide position');
+            }
+        }
     }
 
     render() {
         const left = this.state.barHalfSize - durationToPixels(this.state.currentTime - this.state.deltaMS, SCALE);
         return (
-            <div>
+            <div
+            >
                 <div
                     style={{ position: 'relative', overflow: 'hidden', width: '100%', height: 65, background: '#1a1a1a' }}
                 >
@@ -449,14 +474,13 @@ class VideoTimeline extends React.Component {
                         onDragEnd={this.onTimelineDragEnd}
                         onDragStart={this.onDragStart}
                         draggable={true}
-                        style={{ position: 'absolute', left, width: 6000, height: 65, color: 'white' }}
-                    // onDrop={(e, data) => this.onItemDrop(e, data)}
-                    // onDragOver={(e) => e.preventDefault()}
+                        style={{ position: 'absolute', left, width: 6000, height: 65, color: 'white', zIndex: 2 }}
+                        onDrop={(e, data) => this.onItemDrop(e, data)}
+                        onDragOver={(e) => e.preventDefault()}
                     >
                         {this.renderSubtitles()}
                     </div>
                 </div>
-                {/* {this.renderSubtitlesSelectors()} */}
             </div>
         )
     }
