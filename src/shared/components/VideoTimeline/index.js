@@ -6,6 +6,7 @@ import NotificationService from '../../utils/NotificationService';
 const SCALE = 1;
 const SLIDE_DURATION_THREASHOLD = 500;
 const DELTA_THREASHOLD = 30000;
+const TIMELINE_SPEED = 20;
 
 function formatTime(milliseconds) {
     if (!milliseconds) return '00:00';
@@ -112,7 +113,13 @@ class VideoTimeline extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         if (this.props.currentTime !== nextProps.currentTime) {
-            this.handleCurrentTimeChange(nextProps.currentTime, nextProps.duration)
+
+            this.setState(({ lastLeft }) => {
+                const left = this.state.barHalfSize - durationToPixels(nextProps.currentTime, SCALE);
+                return { left: left, lastLeft: lastLeft - TIMELINE_SPEED };
+            }, () => {
+                this.handleCurrentTimeChange(nextProps.currentTime, nextProps.duration)
+            });
         }
         if (nextProps.subtitles !== this.state.subtitles) {
             this.setState({ subtitles: nextProps.subtitles });
@@ -159,12 +166,12 @@ class VideoTimeline extends React.Component {
         const currentleft = e.clientX;
         if (currentleft) {
             let ntime;
-            this.setState(({ left, lastLeft, barHalfSize }) => {
+            this.setState(({ left, lastLeft, barHalfSize, deltaMS }) => {
                 let newLeft = left;
                 if (currentleft < lastLeft) {
-                    newLeft = left - 30;
+                    newLeft = left - TIMELINE_SPEED;
                 } else if (currentleft > lastLeft) {
-                    newLeft = left + 30;
+                    newLeft = left + TIMELINE_SPEED;
                 } else {
                     newLeft = left;
                 }
@@ -359,8 +366,8 @@ class VideoTimeline extends React.Component {
                     >
                         {slide.text}
                     </div>
-                    <div 
-                    // key={slide.text + 'left-handler'}
+                    <div
+                        // key={slide.text + 'left-handler'}
                         style={{
                             position: 'absolute',
                             top: 20,
@@ -381,8 +388,8 @@ class VideoTimeline extends React.Component {
                             {'<'}
                         </span>
                     </div>
-                    <div 
-                    // key={slide.text + 'right-handler'}
+                    <div
+                        // key={slide.text + 'right-handler'}
                         style={{
                             position: 'absolute',
                             top: 20,
@@ -409,13 +416,11 @@ class VideoTimeline extends React.Component {
 
     onItemDrop = (e) => {
         e.preventDefault();
-        console.log('on item drop')
         if (e.dataTransfer.getData('text')) {
             const { subtitles } = this.props
             const left = this.state.barHalfSize - durationToPixels(this.state.currentTime - this.state.deltaMS, SCALE)
             const deltaDur = Math.abs(parseInt((Math.round(left - e.clientX) / 100)) * 1000);
             const startTime = Math.abs(this.state.deltaMS + deltaDur);
-            console.log(startTime)
             const { speaker } = JSON.parse(e.dataTransfer.getData('text'));
             const newSubtitle = {
                 startTime: startTime,

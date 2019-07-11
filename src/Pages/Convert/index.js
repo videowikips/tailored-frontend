@@ -273,10 +273,10 @@ class Convert extends React.Component {
                                             <Grid>
                                                 {this.props.article.speakersProfile.map((speaker, index) => (
                                                     <Grid.Row style={{ listStyle: 'none', padding: 10 }} key={'speakers' + index}>
-                                                        <Grid.Column width={3}>
+                                                        <Grid.Column width={4}>
                                                             <span>Speaker {speaker.speakerNumber}</span>
                                                         </Grid.Column>
-                                                        <Grid.Column width={3}>
+                                                        <Grid.Column width={4}>
                                                             <Dropdown
                                                                 value={speaker.speakerGender}
                                                                 options={[{ text: 'Male', value: 'male' }, { text: 'Female', value: 'female' }]}
@@ -295,6 +295,7 @@ class Convert extends React.Component {
                                                                     backgroundColor: 'transparent',
                                                                     position: 'relative',
                                                                     color: 'white',
+                                                                    cursor: 'pointer'
                                                                 }}
                                                                 onDragStart={(e) => e.dataTransfer.setData('text', JSON.stringify({ speaker }))}
                                                             >
@@ -305,7 +306,6 @@ class Convert extends React.Component {
                                                                         height: 20,
                                                                         background: SPEAKER_BACKGROUND_COLORS[speaker.speakerNumber] || 'white',
                                                                         paddingLeft: 15,
-                                                                        cursor: 'pointer',
                                                                         width: 80,
                                                                     }}
                                                                 >
@@ -322,7 +322,6 @@ class Convert extends React.Component {
                                                                     }}
                                                                 >
                                                                     <span
-                                                                        href="javascript:void(0)"
                                                                         style={{ background: '#A2A3A4', position: 'absolute', height: '100%', width: 10 }}
                                                                     >
                                                                         {'<'}
@@ -340,7 +339,6 @@ class Convert extends React.Component {
                                                                     }}
                                                                 >
                                                                     <span
-                                                                        href="javascript:void(0)"
                                                                         style={{ background: '#A2A3A4', position: 'absolute', cursor: 'col-resize', height: '100%', width: 10 }}
                                                                     >
                                                                         {'>'}
