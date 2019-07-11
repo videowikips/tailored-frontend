@@ -3,6 +3,7 @@ import Loadable from 'react-loadable';
 import {
   Route,
   Redirect,
+  withRouter
 } from 'react-router-dom';
 import DocumentMeta from 'react-document-meta';
 import LoaderOverlay from './shared/components/LoaderOverlay';
@@ -14,6 +15,12 @@ class LazyRoute extends React.Component {
     return this.props.location.pathname !== nextProps.location.pathname
       || this.props.location.search !== nextProps.location.search
       || (this.props.isAuthenticated !== nextProps.isAuthenticated && !!this.props.isPrivateRoute);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (!nextProps.isAuthenticated) {
+      window.location = '/';
+    }
   }
 
   render() {
@@ -41,9 +48,6 @@ class LazyRoute extends React.Component {
           <Redirect to='/' />
         )
       }
-    }
-
-    if (isPrivateRoute) {
     }
 
     const hasPermission = !isPrivateRoute || this.props.isAuthenticated;
@@ -77,4 +81,4 @@ const mapDispatchToProps = (dispatch) => ({
 //   loader: PropTypes.func.isRequired,
 // }
 
-export default connect(mapStateToProps, mapDispatchToProps)(LazyRoute);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(LazyRoute));
