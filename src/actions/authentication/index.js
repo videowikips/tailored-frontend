@@ -12,6 +12,11 @@ const authenticationFailed = (message) => ({
     payload: message,
 })
 
+const validateToken = (isValid) => ({
+    type: actionTypes.VALIDATE_TOKEN,
+    payload: isValid
+})
+
 export const login = ({ email, password }) => dispatch => {
     requestAgent.post(Api.authentication.login, {
         email,
@@ -29,4 +34,11 @@ export const login = ({ email, password }) => dispatch => {
 
 export const register = ({ orgName, email, password }) => dispatch => {
 
+}
+
+export const isValidToken = () => dispatch => {
+    requestAgent.get(Api.user.isValidToken).then(({body}) => {
+        const { isValid } = body;
+        dispatch(validateToken(isValid))
+    })
 }

@@ -2,28 +2,22 @@ import React from 'react';
 import Loadable from 'react-loadable';
 import {
   Route,
-  Redirect
+  Redirect,
 } from 'react-router-dom';
 import DocumentMeta from 'react-document-meta';
 import LoaderOverlay from './shared/components/LoaderOverlay';
 import { connect } from 'react-redux';
+import { isValidToken } from './actions/authentication';
 
 class LazyRoute extends React.Component {
-
   shouldComponentUpdate(nextProps) {
-    return this.props.location.pathname !== nextProps.location.pathname || this.props.location.search !== nextProps.location.search;
+    return this.props.location.pathname !== nextProps.location.pathname
+      || this.props.location.search !== nextProps.location.search
+      || (this.props.isAuthenticated !== nextProps.isAuthenticated && !!this.props.isPrivateRoute);
   }
 
   render() {
     const { loader, title, isPrivateRoute, ...rest } = this.props;
-
-    if (isPrivateRoute) {
-      if (!this.props.isAuthenticated) {
-        return (
-          <Redirect to='/' />
-        )
-      }
-    }
 
     const LoadableComponent = Loadable({
       loader,
@@ -37,15 +31,37 @@ class LazyRoute extends React.Component {
       },
     });
 
+    if (isPrivateRoute) {
+      if (this.props.token) {
+        if (!this.props.isAuthenticated) {
+          this.props.isValidToken();
+        }
+      } else {
+        return (
+          <Redirect to='/' />
+        )
+      }
+    }
+
+    if (isPrivateRoute) {
+    }
+
+    const hasPermission = !isPrivateRoute || this.props.isAuthenticated;
+
     return (
-      !title ?
+      hasPermission ? (!title ?
         <Route {...rest} component={LoadableComponent} />
         : (
           <DocumentMeta title={title}>
             <Route {...rest} component={LoadableComponent} />
           </DocumentMeta>
+        )) : (
+          <div>
+            <LoaderOverlay loaderImage="/img/edit-loader.gif" />
+          </div>
         )
     )
+
   }
 }
 
@@ -53,9 +69,12 @@ const mapStateToProps = ({ authentication }) => ({
   ...authentication
 });
 
+const mapDispatchToProps = (dispatch) => ({
+  isValidToken: () => dispatch(isValidToken()),
+})
 
 // LazyRoute.propTypes = {
 //   loader: PropTypes.func.isRequired,
 // }
 
-export default connect(mapStateToProps)(LazyRoute);
+export default connect(mapStateToProps, mapDispatchToProps)(LazyRoute);
