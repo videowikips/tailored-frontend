@@ -126,7 +126,9 @@ export const updateSubslide = (slideIndex, subslideIndex, changes) => (dispatch,
             // const article = res.body;
             Object.keys(res.body.changes).forEach(key => {
                 article.slides[slideIndex].content[subslideIndex][key] = res.body.changes[key];
-                selectedSubtitle.subtitle[key] = res.body.changes[key];
+                if (selectedSubtitle && selectedSubtitle.subtitle) {
+                    selectedSubtitle.subtitle[key] = res.body.changes[key];
+                }
             })
             dispatch(setSlidesToSubtitles(article.slides));
             dispatch(updateSubslideSuccess(article));
