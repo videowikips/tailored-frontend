@@ -126,13 +126,15 @@ export const updateSubslide = (slideIndex, subslideIndex, changes) => (dispatch,
             // const article = res.body;
             Object.keys(res.body.changes).forEach(key => {
                 article.slides[slideIndex].content[subslideIndex][key] = res.body.changes[key];
-                if (selectedSubtitle && selectedSubtitle.subtitle) {
+                if (selectedSubtitle && selectedSubtitle.subtitle && selectedSubtitle.subtitle.slideIndex === slideIndex && selectedSubtitle.subtitle.subslideIndex === subslideIndex) {
                     selectedSubtitle.subtitle[key] = res.body.changes[key];
                 }
             })
+            if (selectedSubtitle && selectedSubtitle.subtitle && selectedSubtitle.subtitle.slideIndex === slideIndex && selectedSubtitle.subtitle.subslideIndex === subslideIndex) {
+                dispatch(setSelectedSubtitle({ ...selectedSubtitle.subtitle }, selectedSubtitle.subtitleIndex));
+            }
             dispatch(setSlidesToSubtitles(article.slides));
             dispatch(updateSubslideSuccess(article));
-            dispatch(setSelectedSubtitle({ ...selectedSubtitle.subtitle }, selectedSubtitle.subtitleIndex));
 
         })
         .catch(err => {
