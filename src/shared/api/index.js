@@ -4,8 +4,10 @@ export default {
     video: {
         uploadVideo: `${API_ROOT}/video/upload`,
         getVideoById: (id) => `${API_ROOT}/video/${id}`,
+        convertVideo: (id) => `${API_ROOT}/video/${id}/convert`,
     },
     article: {
+        getById: id => `${API_ROOT}/article/${id}`,
         getbyVideoId: id => `${API_ROOT}/article/by_video_id?videoId=${id}`,
         updateSubslide: (articleId, slideIndex, subslideIndex) => `${API_ROOT}/article/${articleId}/slides/${slideIndex}/content/${subslideIndex}`,
         addSubslide: (articleId, slideIndex, subslideIndex) => `${API_ROOT}/article/${articleId}/slides/${slideIndex}/content/${subslideIndex}`,

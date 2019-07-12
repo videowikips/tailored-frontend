@@ -1,33 +1,17 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import { Progress, Grid, Card, Dropdown, Button } from 'semantic-ui-react';
+import { Progress, Grid, Card, Dropdown, Button, Icon, Modal } from 'semantic-ui-react';
 
 import * as articleActions from '../../actions/article';
 import * as videoActions from '../../actions/video';
 import ProgressBoxes from '../../shared/components/ProgressBoxes';
-import Proofreading from '../../shared/components/Proofreading';
 import VideoTimeline from '../../shared/components/VideoTimeline';
 import SubtitleForm from './SubtitleForm';
 import { SPEAKER_BACKGROUND_COLORS } from '../../shared/constants';
-
-function generateStages() {
-    return [{
-        title: <div>Step 1: Transcribing Video</div>,
-        completed: false,
-        active: false,
-    },
-    {
-        title: <div>Step 2: Proof Reading Script</div>,
-        completed: false,
-        active: false,
-    },
-    {
-        title: <div>Step 3: Converting to a VideoWiki<br />video</div>,
-        completed: false,
-        active: false,
-    }]
-}
+import Lottie from 'react-lottie';
+import successLottie from '../../shared/lottie/success.json';
+import loadingLottie from '../../shared/lottie/loading.json';
 
 class Convert extends React.Component {
 
@@ -39,6 +23,7 @@ class Convert extends React.Component {
         subtitles: [],
         selectedSubtitle: null,
         selectedSubtitleIndex: null,
+        isConfirmConvertModalVisible: false,
     }
 
     componentDidMount = () => {
@@ -82,6 +67,7 @@ class Convert extends React.Component {
 
     componentWillMount() {
         this.startPoller();
+        this.props.fetchArticleByVideoId(this.props.match.params.videoId);
     }
 
     componentWillUnmount() {
@@ -89,31 +75,28 @@ class Convert extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (this.props.fetchVideoState === 'loading' && nextProps.fetchVideoState === 'done') {
-            const { video } = nextProps;
-            const stages = generateStages();
-            switch (video.status) {
-                case 'proofreading':
-                    stages[0].completed = true;
-                    stages[1].active = true;
-                    this.props.fetchArticleByVideoId(video._id);
-                    this.stopPoller();
-                    break;
-                case 'converting':
-                    stages[0].completed = true;
-                    stages[1].completed = true;
-                    stages[2].active = true;
-                    break;
-                case 'failed':
-                    this.onVideoFailed(video); break;
-                case 'done':
-                    this.onVideoDone(video); break;
-                default:
-                    stages[0].active = true;
+        if (this.props.activeStageIndex !== nextProps.activeStageIndex) {
+            const { video, activeStageIndex } = nextProps;
+            // this.onConvertVideo()
+            if (activeStageIndex === 1) {
+
+                this.props.fetchArticleByVideoId(video._id);
+                this.stopPoller();
+            } else if (activeStageIndex === 2) {
+                this.startPoller();
             }
-            this.setState({ stages });
+            if (video) {
+                switch (video.status) {
+                    case 'failed':
+                        this.onVideoFailed(video); break;
+                    case 'done':
+                        this.onVideoDone(video); break;
+                    default:
+                        break;
+                }
+            }
         }
-        if (this.props.fetchArticleState === 'loading' && nextProps.fetchArticleState === 'done') {
+        if (this.props.fetchArticleState === 'loading' && nextProps.fetchArticleState === 'done' && nextProps.article) {
             const { slides } = nextProps.article;
             this.props.setSlidesToSubtitles(slides);
         }
@@ -123,6 +106,9 @@ class Convert extends React.Component {
         const { videoId } = this.props.match.params;
         // const videoId = '5d1d9b007e2a29705e0f2f11'
         this.props.fetchVideoById(videoId);
+        if (this.state.intervalId) {
+            clearInterval(this.state.intervalId);
+        }
         const intervalId = setInterval(() => {
             this.props.fetchVideoById(videoId);
         }, 10000);
@@ -138,7 +124,14 @@ class Convert extends React.Component {
     }
 
     onVideoDone(video) {
+        console.log('done')
         this.stopPoller();
+        setTimeout(() => {
+            console.log('Navigating to article')
+            if (this.props.article) {
+                this.props.history.push(`/article/${this.props.article._id}`)
+            }
+        }, 2500);
     }
 
     onSaveSubtitle = (subtitle, subtitleIndex, changes) => {
@@ -182,15 +175,15 @@ class Convert extends React.Component {
     }
 
     getProgress = () => {
-        return parseInt(this.state.stages.filter(stage => stage.completed).length / this.state.stages.length * 100);
+        return parseInt(this.props.stages.filter(stage => stage.completed).length / this.props.stages.length * 100);
     }
 
     renderProgress = () => {
         return (
             <div>
-                {this.getVideoStatus() !== 'failed' && this.state.stages ? (
+                {this.getVideoStatus() !== 'failed' && this.props.stages ? (
                     <React.Fragment>
-                        <ProgressBoxes stages={this.state.stages} />
+                        <ProgressBoxes stages={this.props.stages} />
                         <div style={{ width: '90%', margin: '2rem auto' }}>
                             <Progress indicating progress percent={this.getProgress()} />
                         </div>
@@ -205,169 +198,241 @@ class Convert extends React.Component {
         );
     }
 
-    render() {
+    onConvertVideo = () => {
+        this.setState({ isConfirmConvertModalVisible: false });
+        this.props.convertVideoToArticle(this.props.video._id)
+    }
+
+    renderConvertConfirmModal = () => {
+        return (
+            <Modal open={this.state.isConfirmConvertModalVisible} onClose={() => this.setState({ isConfirmConvertModalVisible: false })} size="tiny">
+                <Modal.Header>
+                    Convert vidoe
+                </Modal.Header>
+                <Modal.Content>
+                    Are you sure you're done proofreading?
+                </Modal.Content>
+                <Modal.Actions>
+                    <Button onClick={() => this.setState({ isConfirmConvertModalVisible: false })} >Cancel</Button>
+                    <Button color="blue" onClick={() => this.onConvertVideo()} >Yes</Button>
+                </Modal.Actions>
+            </Modal>
+        )
+    }
+
+    renderProofreading = () => {
         return (
             <div>
-                {this.renderProgress()}
-                {this.getVideoStatus() === 'proofreading' && (
-                    <div>
-                        <Grid>
-                            <Grid.Row>
-                                <Grid.Column width={16}>
-                                    <Grid style={{ display: 'flex', justifyContent: 'center', marginBottom: '.2rem' }}>
-                                        <Grid.Row>
-                                            <Grid.Column width={8}>
-                                                <Card style={{ width: '100%', height: '100%', padding: '2rem' }}>
-                                                    <h2>Instructions:</h2>
-                                                </Card>
-                                            </Grid.Column>
-                                            <Grid.Column width={8}>
+                <Grid>
+                    <Grid.Row>
+                        <Grid.Column width={12} >
+                            {this.renderConvertConfirmModal()}
+                        </Grid.Column>
+                        <Grid.Column width={4} style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                            <Button color="green" onClick={() => this.setState({ isConfirmConvertModalVisible: true })} >
+                                Save and Convert <Icon name={"arrow right"} />
+                            </Button>
+                        </Grid.Column>
+                    </Grid.Row>
+                    <Grid.Row>
+                        <Grid.Column width={16}>
+                            <Grid style={{ display: 'flex', justifyContent: 'center', marginBottom: '.2rem' }}>
+                                <Grid.Row>
+                                    <Grid.Column width={8}>
+                                        <Card style={{ width: '100%', height: '100%', padding: '2rem' }}>
+                                            <h2>Instructions:</h2>
+                                        </Card>
+                                    </Grid.Column>
+                                    <Grid.Column width={8}>
 
-                                                <Card style={{ width: '100%', height: '100%' }}>
-                                                    <video src={'/1.mp4'} controls ref={(ref) => this.vidoeRef = ref} onLoadedData={this.onVideoLoad} width={'100%'} />
-                                                    {/* <video src={this.props.video.url} controls ref={(ref) => this.vidoeRef = ref} onLoadedData={this.onVideoLoad} /> */}
-                                                </Card>
+                                        <Card style={{ width: '100%', height: '100%' }}>
+                                            {/* {/* <video src={'/1.mp4'} controls ref={(ref) => this.vidoeRef = ref} onLoadedData={this.onVideoLoad} width={'100%'} /> */} */}
+                                            {this.props.video && (
+                                                < video src={this.props.video.url} controls ref={(ref) => this.vidoeRef = ref} onLoadedData={this.onVideoLoad} />
+                                            )}
+                                        </Card>
+                                    </Grid.Column>
+                                </Grid.Row>
+                            </Grid>
+                            {this.state.duration && (
+                                <VideoTimeline
+                                    currentTime={this.state.currentTime}
+                                    onTimeChange={this.onTimeChange}
+                                    duration={this.state.duration}
+                                    subtitles={this.props.subtitles}
+                                    onSubtitleChange={this.onSaveSubtitle}
+                                    onAddSubtitle={this.onAddSubtitle}
+                                    onSubtitleSelect={(subtitle, index) => this.props.setSelectedSubtitle(subtitle, index)}
+                                />
+                            )}
+                        </Grid.Column>
+                    </Grid.Row>
+                    <Grid.Row>
+                        <Grid.Column width={8}>
+
+                            {this.props.article && this.props.article.speakersProfile && this.props.selectedSubtitle && this.props.selectedSubtitle.subtitle && (
+                                <Card style={{ width: '100%', padding: '2rem' }}>
+                                    <SubtitleForm
+                                        loading={this.props.updateSubslideState === 'loading'}
+                                        subtitle={this.props.selectedSubtitle.subtitle}
+                                        speakers={this.props.article.speakersProfile}
+                                        onSave={(changes) => {
+                                            const { text, speakerNumber } = changes;
+                                            const speakerProfile = this.props.article.speakersProfile.find((speaker) => speaker.speakerNumber === speakerNumber);
+                                            this.onSaveSubtitle(this.props.selectedSubtitle.subtitle, this.props.selectedSubtitle.subtitleIndex, { text, speakerProfile })
+                                        }}
+                                        onDelete={() => this.onSubslideDelete(this.props.selectedSubtitle.subtitle, this.props.selectedSubtitle.subtitleIndex)}
+                                    />
+                                </Card>
+                            )}
+                        </Grid.Column>
+
+                        <Grid.Column width={2}>
+                        </Grid.Column>
+
+                        <Grid.Column width={6}>
+                            {this.props.article && (
+                                <Card style={{ width: '100%', padding: '2rem' }}>
+                                    <h3>Speakers: </h3>
+                                    <Grid>
+                                        {this.props.article.speakersProfile.map((speaker, index) => (
+                                            <Grid.Row style={{ listStyle: 'none', padding: 10 }} key={'speakers' + index}>
+                                                <Grid.Column width={4}>
+                                                    <span>Speaker {speaker.speakerNumber}</span>
+                                                </Grid.Column>
+                                                <Grid.Column width={4}>
+                                                    <Dropdown
+                                                        value={speaker.speakerGender}
+                                                        options={[{ text: 'Male', value: 'male' }, { text: 'Female', value: 'female' }]}
+                                                        onChange={(e, { value }) => this.onSpeakerGenderChange(speaker, value)}
+                                                    />
+                                                </Grid.Column>
+                                                <Grid.Column width={4}>
+                                                    <div
+                                                        draggable={true}
+                                                        style={{
+                                                            backgroundColor: 'transparent',
+                                                            position: 'relative',
+                                                            color: 'white',
+                                                            cursor: 'pointer'
+                                                        }}
+                                                        onDragStart={(e) => e.dataTransfer.setData('text', JSON.stringify({ speaker }))}
+                                                    >
+                                                        <div
+                                                            style={{
+                                                                height: 20,
+                                                                background: SPEAKER_BACKGROUND_COLORS[speaker.speakerNumber] || 'white',
+                                                                paddingLeft: 15,
+                                                                width: 80,
+                                                            }}
+                                                        >
+                                                        </div>
+                                                        <div
+                                                            style={{
+                                                                position: 'absolute',
+                                                                top: 0,
+                                                                height: 20,
+                                                                width: 10,
+                                                                left: 0,
+                                                                zIndex: 5,
+                                                            }}
+                                                        >
+                                                            <span style={{ background: '#A2A3A4', position: 'absolute', height: '100%', width: 10 }} >
+                                                                {'<'}
+                                                            </span>
+                                                        </div>
+                                                        <div
+                                                            style={{
+                                                                position: 'absolute',
+                                                                top: 0,
+                                                                height: 20,
+                                                                width: 10,
+                                                                left: 80,
+                                                                zIndex: 5,
+                                                            }}
+                                                        >
+                                                            <span style={{ background: '#A2A3A4', position: 'absolute', height: '100%', width: 10 }} >
+                                                                {'>'}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </Grid.Column>
+
+                                                <Grid.Column width={2}>
+                                                    {index === this.props.article.speakersProfile.length - 1 && (
+                                                        <Button color="red" onClick={() => this.onDeleteSpeaker(index)} icon="trash" size="tiny" />
+                                                    )}
+                                                </Grid.Column>
+                                            </Grid.Row>
+                                        ))}
+                                        <Grid.Row>
+                                            <Grid.Column style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                                                <Button color="blue" onClick={this.onAddSpeaker} >Add Speaker</Button>
                                             </Grid.Column>
                                         </Grid.Row>
                                     </Grid>
-                                    {this.state.duration && (
-                                        <VideoTimeline
-                                            currentTime={this.state.currentTime}
-                                            onTimeChange={this.onTimeChange}
-                                            duration={this.state.duration}
-                                            subtitles={this.props.subtitles}
-                                            onSubtitleChange={this.onSaveSubtitle}
-                                            onAddSubtitle={this.onAddSubtitle}
-                                            onSubtitleSelect={(subtitle, index) => this.props.setSelectedSubtitle(subtitle, index)}
-                                        />
-                                    )}
-                                </Grid.Column>
-                            </Grid.Row>
-                            <Grid.Row>
-                                <Grid.Column width={8}>
+                                </Card>
+                            )}
+                        </Grid.Column>
+                    </Grid.Row>
+                </Grid>
+                {/* <Proofreading video={this.props.video} article={this.props.article} /> */}
+            </div>
+        )
+    }
 
-                                    {this.props.article && this.props.article.speakersProfile && this.props.selectedSubtitle && this.props.selectedSubtitle.subtitle && (
-                                        <Card style={{ width: '100%', padding: '2rem' }}>
-                                            <SubtitleForm
-                                                loading={this.props.updateSubslideState === 'loading'}
-                                                subtitle={this.props.selectedSubtitle.subtitle}
-                                                speakers={this.props.article.speakersProfile}
-                                                onSave={(changes) => {
-                                                    const { text, speakerNumber } = changes;
-                                                    const speakerProfile = this.props.article.speakersProfile.find((speaker) => speaker.speakerNumber === speakerNumber);
-                                                    this.onSaveSubtitle(this.props.selectedSubtitle.subtitle, this.props.selectedSubtitle.subtitleIndex, { text, speakerProfile })
-                                                }}
-                                                onDelete={() => this.onSubslideDelete(this.props.selectedSubtitle.subtitle, this.props.selectedSubtitle.subtitleIndex)}
-                                            />
-                                        </Card>
-                                    )}
-                                </Grid.Column>
+    renderDone = () => {
+        const defaultOptions = {
+            loop: false,
+            autoplay: true,
+            animationData: successLottie,
+            rendererSettings: {
+                preserveAspectRatio: 'xMidYMid slice'
+            }
+        };
 
-                                <Grid.Column width={2}>
-                                </Grid.Column>
+        return (
+            <div key={'lottie-success'}>
+                <Lottie options={defaultOptions}
+                    height={400}
+                    width={400}
+                />
+            </div>
+        )
+    }
 
-                                <Grid.Column width={6}>
-                                    {this.props.article && (
-                                        <Card style={{ width: '100%', padding: '2rem' }}>
-                                            <h3>Speakers: </h3>
-                                            <Grid>
-                                                {this.props.article.speakersProfile.map((speaker, index) => (
-                                                    <Grid.Row style={{ listStyle: 'none', padding: 10 }} key={'speakers' + index}>
-                                                        <Grid.Column width={4}>
-                                                            <span>Speaker {speaker.speakerNumber}</span>
-                                                        </Grid.Column>
-                                                        <Grid.Column width={4}>
-                                                            <Dropdown
-                                                                value={speaker.speakerGender}
-                                                                options={[{ text: 'Male', value: 'male' }, { text: 'Female', value: 'female' }]}
-                                                                onChange={(e, { value }) => this.onSpeakerGenderChange(speaker, value)}
-                                                            />
-                                                        </Grid.Column>
-                                                        {/* <Grid.Column width={4}>
-                                                            <div style={{ height: 31, width: '100%', backgroundColor: SPEAKER_BACKGROUND_COLORS[speaker.speakerNumber] }} />
-                                                        </Grid.Column> */}
-                                                        <Grid.Column width={4}>
-                                                            <div
-                                                                draggable={true}
-                                                                style={{
-                                                                    // fontWeight: 'bold',
-                                                                    // fontSize: '2rem',
-                                                                    backgroundColor: 'transparent',
-                                                                    position: 'relative',
-                                                                    color: 'white',
-                                                                    cursor: 'pointer'
-                                                                }}
-                                                                onDragStart={(e) => e.dataTransfer.setData('text', JSON.stringify({ speaker }))}
-                                                            >
-                                                                <div
-                                                                    style={{
-                                                                        // display: 'inline-block',
-                                                                        // top: 20,
-                                                                        height: 20,
-                                                                        background: SPEAKER_BACKGROUND_COLORS[speaker.speakerNumber] || 'white',
-                                                                        paddingLeft: 15,
-                                                                        width: 80,
-                                                                    }}
-                                                                >
-                                                                </div>
-                                                                <div
-                                                                    // key={slide.text + 'left-handler'}
-                                                                    style={{
-                                                                        position: 'absolute',
-                                                                        top: 0,
-                                                                        height: 20,
-                                                                        width: 10,
-                                                                        left: 0,
-                                                                        zIndex: 5,
-                                                                    }}
-                                                                >
-                                                                    <span
-                                                                        style={{ background: '#A2A3A4', position: 'absolute', height: '100%', width: 10 }}
-                                                                    >
-                                                                        {'<'}
-                                                                    </span>
-                                                                </div>
-                                                                <div
-                                                                    // key={slide.text + 'right-handler'}
-                                                                    style={{
-                                                                        position: 'absolute',
-                                                                        top: 0,
-                                                                        height: 20,
-                                                                        width: 10,
-                                                                        left: 80,
-                                                                        zIndex: 5,
-                                                                    }}
-                                                                >
-                                                                    <span
-                                                                        style={{ background: '#A2A3A4', position: 'absolute', cursor: 'col-resize', height: '100%', width: 10 }}
-                                                                    >
-                                                                        {'>'}
-                                                                    </span>
-                                                                </div>
-                                                            </div>
-                                                        </Grid.Column>
+    renderLoader = () => {
+        const defaultOptions = {
+            loop: true,
+            autoplay: true,
+            animationData: loadingLottie,
+            rendererSettings: {
+                preserveAspectRatio: 'xMidYMid slice'
+            }
+        };
+        return (
+            <Lottie options={defaultOptions} height={400} width={400} />
+        )
+    }
 
-                                                        <Grid.Column width={2}>
-                                                            {index === this.props.article.speakersProfile.length - 1 && (
-                                                                <Button color="red" onClick={() => this.onDeleteSpeaker(index)} icon="trash" size="tiny" />
-                                                            )}
-                                                        </Grid.Column>
-                                                    </Grid.Row>
-                                                ))}
-                                                <Grid.Row>
-                                                    <Grid.Column style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                                                        <Button color="blue" onClick={this.onAddSpeaker} >Add Speaker</Button>
-                                                    </Grid.Column>
-                                                </Grid.Row>
-                                            </Grid>
-                                        </Card>
-                                    )}
-                                </Grid.Column>
-                            </Grid.Row>
-                        </Grid>
-                        {/* <Proofreading video={this.props.video} article={this.props.article} /> */}
-                    </div>
-                )}
+    render() {
+        let comp = null;
+        switch (this.getVideoStatus()) {
+            case 'transcriping':
+            case 'cutting':
+            case 'converting':
+                comp = this.renderLoader(); break;
+            case 'proofreading':
+                comp = this.renderProofreading(); break;
+            case 'done':
+                comp = this.renderDone(); break;
+            default:
+                break;
+        }
+        return (
+            <div>
+                {this.renderProgress()}
+                {comp}
             </div>
         )
     }
@@ -381,6 +446,8 @@ const mapStateToProps = ({ video, article }) => ({
     updateSubslideState: article.updateSubslideState,
     subtitles: article.subtitles,
     selectedSubtitle: article.selectedSubtitle,
+    stages: video.convertStages.stages,
+    activeStageIndex: video.convertStages.activeStageIndex,
 })
 
 const mapDispatchToProps = (dispatch) => ({
@@ -392,7 +459,8 @@ const mapDispatchToProps = (dispatch) => ({
     setSlidesToSubtitles: slides => dispatch(articleActions.setSlidesToSubtitles(slides)),
     setSubtitles: subtitles => dispatch(articleActions.setSubtitles(subtitles)),
     setSelectedSubtitle: (subtitle, index) => dispatch(articleActions.setSelectedSubtitle(subtitle, index)),
-    onSpeakersChange: speakers => dispatch(articleActions.updateSpeakers(speakers))
+    onSpeakersChange: speakers => dispatch(articleActions.updateSpeakers(speakers)),
+    convertVideoToArticle: videoId => dispatch(videoActions.convertVideoToArticle(videoId)),
 })
 
 export default withRouter(

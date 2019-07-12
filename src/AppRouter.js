@@ -13,6 +13,9 @@ const Home = () => import(/* webpackChunkName: "js/Home"  */'./Pages/Home');
 const Demo = () => import(/* webpackChunkName: "js/Demo" */ './Pages/Demo');
 const Convert = () => import(/* webpackChunkName: "js/Convert/" */ './Pages/Convert');
 const Test = () => import('./Pages/Test')
+const Article = () => import(/* webpackChunkName: "js/Article" */ './Pages/Article');
+
+
 class AppRouter extends React.Component {
 
   render() {
@@ -26,6 +29,8 @@ class AppRouter extends React.Component {
               <LazyRoute exact path="/demo" title="Demo" loader={Demo} />
               <LazyRoute exact path="/convert/:videoId" title="Demo" loader={Convert} />
               <LazyRoute exact path="/test" title="Test" loader={Test} />
+              <LazyRoute exact path="/test" title="Test" loader={Test} />
+              <LazyRoute path="/article/:articleId" title="Article" loader={Article} />
             </Switch>
           </div>
           <Footer />

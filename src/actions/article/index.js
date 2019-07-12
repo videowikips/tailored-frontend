@@ -10,6 +10,7 @@ function formatSubslideToSubtitle(subslide) {
 
 function generateSubtitlesFromSlides(slides) {
     return slides.reduce((acc, slide, slideIndex) => acc.concat(slide.content.map((s, subslideIndex) => ({ ...s, slideIndex, subslideIndex }))), [])
+        .filter((s) => !s.silent)
         .map(formatSubslideToSubtitle);
 }
 
@@ -62,6 +63,22 @@ export const setSelectedSubtitle = (subtitle, subtitleIndex) => ({
 export const setSlidesToSubtitles = (slides) => {
     const subtitles = generateSubtitlesFromSlides(slides);
     return setSubtitles(subtitles);
+}
+
+export const fetchArticleById = id => dispatch => {
+    dispatch(fetchArticleLoading());
+    requestAgent
+        .get(Api.article.getById(id))
+        .then((res) => {
+            const { article } = res.body;
+            dispatch(fetchArticleSuccess(article));
+        })
+        .catch(err => {
+            console.log(err)
+            const reason = err.response && err.response.text ? err.response.text : 'Something went wrong';
+            NotificationService.error(reason)
+            dispatch(fetchArticleFailed(reason));
+        })
 }
 
 export const fetchArticleByVideoId = videoId => dispatch => {
@@ -128,23 +145,23 @@ export const addSubslide = (subslide) => (dispatch, getState) => {
     const { slideIndex, subslideIndex } = subslide;
     console.log('subslide', subslide)
     requestAgent
-    .post(Api.article.addSubslide(article._id, slideIndex, subslideIndex), subslide)
-    .then((res) => {
-        // const article = res.body;
-        const { article } = res.body;
-        const subtitles = generateSubtitlesFromSlides(article.slides)
-        const selectedSubtitleIndex = subtitles.findIndex((s) => s.slideIndex === slideIndex && s.subslideIndex === subslideIndex);
+        .post(Api.article.addSubslide(article._id, slideIndex, subslideIndex), subslide)
+        .then((res) => {
+            // const article = res.body;
+            const { article } = res.body;
+            const subtitles = generateSubtitlesFromSlides(article.slides)
+            const selectedSubtitleIndex = subtitles.findIndex((s) => s.slideIndex === slideIndex && s.subslideIndex === subslideIndex);
 
-        dispatch(setSlidesToSubtitles(article.slides));
-        dispatch(updateSubslideSuccess(article));
-        dispatch(setSelectedSubtitle(subtitles[selectedSubtitleIndex], selectedSubtitleIndex));
+            dispatch(setSlidesToSubtitles(article.slides));
+            dispatch(updateSubslideSuccess(article));
+            dispatch(setSelectedSubtitle(subtitles[selectedSubtitleIndex], selectedSubtitleIndex));
 
-    })
-    .catch(err => {
-        const reason = err.response && err.response.text ? err.response.text : 'Something went wrong';
-        NotificationService.responseError(err);
-        dispatch(updateSubslideFailed(reason));
-    })
+        })
+        .catch(err => {
+            const reason = err.response && err.response.text ? err.response.text : 'Something went wrong';
+            NotificationService.responseError(err);
+            dispatch(updateSubslideFailed(reason));
+        })
 }
 
 export const updateSpeakers = speakersProfile => (dispatch, getState) => {

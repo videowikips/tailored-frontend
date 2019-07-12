@@ -7,3 +7,22 @@ export const getUrlMediaType = function(url) {
   if (GIF_EXTESIONS.indexOf(extension) !== -1) return 'gif';
   return false;
 }
+
+
+export const generateConvertStages = function generateConvertStages() {
+  return [{
+      title: 'Step 1: Transcribing Video',
+      completed: false,
+      active: false,
+  },
+  {
+      title: 'Step 2: Proof Reading Script',
+      completed: false,
+      active: false,
+  },
+  {
+      title: 'Step 3: Converting to a VideoWiki video',
+      completed: false,
+      active: false,
+  }]
+}
