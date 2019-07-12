@@ -134,6 +134,7 @@ export const updateSubslide = (slideIndex, subslideIndex, changes) => (dispatch,
 
         })
         .catch(err => {
+            console.log(err);
             const reason = err.response && err.response.text ? err.response.text : 'Something went wrong';
             NotificationService.responseError(err)
             dispatch(updateSubslideFailed(reason));
