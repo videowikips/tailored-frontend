@@ -9,11 +9,11 @@ import Footer from './shared/components/Footer';
 // import { connect } from 'react-redux'
 import LazyRoute from './LazyRoute';
 
-const Home = () => import(/* webpackChunkName: "js/Home"  */'./Pages/Home');
-const Demo = () => import(/* webpackChunkName: "js/Demo" */ './Pages/Demo');
-const Convert = () => import(/* webpackChunkName: "js/Convert/" */ './Pages/Convert');
+const Home = () => import('./Pages/Home');
+const Demo = () => import('./Pages/Demo');
+const Convert = () => import( './Pages/Convert');
 const Test = () => import('./Pages/Test')
-const Article = () => import(/* webpackChunkName: "js/Article" */ './Pages/Article');
+const Article = () => import('./Pages/Article');
 
 
 class AppRouter extends React.Component {
