@@ -246,9 +246,8 @@ class Convert extends React.Component {
                                     <Grid.Column width={8}>
 
                                         <Card style={{ width: '100%', height: '100%' }}>
-                                            {/* {/* <video src={'/1.mp4'} controls ref={(ref) => this.vidoeRef = ref} onLoadedData={this.onVideoLoad} width={'100%'} /> */} */}
                                             {this.props.video && (
-                                                < video src={this.props.video.url} controls ref={(ref) => this.vidoeRef = ref} onLoadedData={this.onVideoLoad} />
+                                                <video width={'100%'} src={this.props.video.url} controls ref={(ref) => this.vidoeRef = ref} onLoadedData={this.onVideoLoad} />
                                             )}
                                         </Card>
                                     </Grid.Column>
