@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import NotificationService from '../../utils/NotificationService';
+import { formatTime } from '../../utils/helpers';
 
 
 const SCALE = 1;
@@ -8,19 +9,6 @@ const SLIDE_DURATION_THREASHOLD = 500;
 const DELTA_THREASHOLD = 30000;
 const TIMELINE_SPEED = 20;
 
-function formatTime(milliseconds) {
-    if (!milliseconds) return '00:00';
-    let seconds = milliseconds / 1000;
-    let hours = Math.floor(seconds / 3600);
-    let minutes = Math.floor((seconds - (hours * 3600)) / 60);
-    seconds = seconds - (hours * 3600) - (minutes * 60);
-    if (hours < 10) { hours = "0" + hours; }
-    if (minutes < 10) { minutes = "0" + minutes; }
-    if (seconds < 10) { seconds = "0" + seconds; }
-    let time = minutes + ':' + seconds;
-
-    return time.substr(0, 8);
-}
 
 function durationToPixels(duration, scale) {
     return Math.floor(scale * duration / 10)
@@ -364,7 +352,7 @@ class VideoTimeline extends React.Component {
                             top: 20,
                             height: 20,
                             background: slide.backgroundColor || 'white',
-                            color: slide.color || 'black',
+                            color: slide.color || 'white',
                             paddingLeft: 15,
                             cursor: 'pointer',
                             width: durationToPixels(slide.endTime, SCALE) - durationToPixels(slide.startTime, SCALE),
@@ -376,14 +364,17 @@ class VideoTimeline extends React.Component {
                         onDragEnd={() => this.onSlideDragEnd(index)}
                         onClick={() => this.props.onSubtitleSelect(slide, index)}
                     >
-                        {slide.text.split(' ').map((t, i) => (
-                            <span
-                                onDragOver={(e) => e.target.style['border-left'] = '3px solid red'}
-                                onDragLeave={(e) => e.target.style['border-left'] = 'none'}
-                                onDrop={(e) => e.target.style['border-left'] = 'none' && this.onWordDrop(e, slide, i)}
-                                style={{ display: 'inline-block', height: '100%', paddingLeft: 3, paddingRight: 3 }}
-                                key={t + i}>{t}</span>
-                        ))}
+                        {this.props.splitterDragging ?
+                            slide.text.split(' ').map((t, i) => (
+                                <span
+                                    onDragOver={(e) => e.target.style['border-left'] = '3px solid red'}
+                                    onDragLeave={(e) => e.target.style['border-left'] = 'none'}
+                                    onDrop={(e) => e.target.style['border-left'] = 'none' && this.onWordDrop(e, slide, i)}
+                                    style={{ display: 'inline-block', height: '100%', paddingLeft: 2, paddingRight: 2 }}
+                                    key={t + i}>{t}</span>
+                            ))
+                            : slide.text}
+
                     </div>
                     <div
                         // key={slide.text + 'left-handler'}
@@ -472,7 +463,7 @@ class VideoTimeline extends React.Component {
                     NotificationService.error('Invalid slide position');
                 }
             }
-        } catch(e) {
+        } catch (e) {
 
         }
     }
