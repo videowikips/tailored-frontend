@@ -339,9 +339,13 @@ class VideoTimeline extends React.Component {
 
     onWordDrop = (e, subtitle, wordIndex) => {
         e.stopPropagation();
-        const data = e.dataTransfer.getData('text');
-        if (data && JSON.parse(data) && JSON.parse(data).split) {
-            this.props.onSubtitleSplit(subtitle, wordIndex)
+        try {
+            const data = e.dataTransfer.getData('text');
+            if (data && JSON.parse(data) && JSON.parse(data).split) {
+                this.props.onSubtitleSplit(subtitle, wordIndex)
+            }
+        } catch (e) {
+
         }
     }
 
@@ -431,41 +435,45 @@ class VideoTimeline extends React.Component {
 
     onItemDrop = (e) => {
         e.preventDefault();
-        if (e.dataTransfer.getData('text') && JSON.parse(e.dataTransfer.getData('text')).speaker) {
-            const { subtitles } = this.props
-            const left = this.state.barHalfSize - durationToPixels(this.state.currentTime - this.state.deltaMS, SCALE)
-            const deltaDur = Math.abs(parseInt((Math.round(left - e.clientX) / 100)) * 1000);
-            const startTime = Math.abs(this.state.deltaMS + deltaDur);
-            const { speaker } = JSON.parse(e.dataTransfer.getData('text'));
-            const newSubtitle = {
-                startTime: startTime,
-                endTime: startTime + 1000,
-                text: '',
-                speakerProfile: speaker,
-            }
-
-            // Check if the new subtitle has enough length and doesnt overflow with other subtitles
-            // const crossedSubtitleBackward = subtitles.find((s) => newSubtitle.startTime >= s.startTime & newSubtitle.startTime <= s.endTime)
-            // const crossedSubtitleForward = subtitles.find((s) => newSubtitle.endTime >= s.startTime & newSubtitle.endTime <= s.endTime)
-            const crossed = subtitles.find(s => newSubtitle.endTime < s.endTime && newSubtitle.startTime > s.startTime)
-            if (!crossed) {
-                // Find nearest subtitle to add the new one to it's slide
-                const nearestSubtitle = subtitles.reverse().find((s) => s.startTime < newSubtitle.startTime && s.endTime < newSubtitle.endTime)
-                // If the nearest subtitle doesn't exist, then there's no subtitle before that ( it's in the first slide )
-                if (nearestSubtitle) {
-                    newSubtitle.slideIndex = nearestSubtitle.slideIndex;
-                    newSubtitle.subslideIndex = nearestSubtitle.subslideIndex;
-                } else {
-                    newSubtitle.slideIndex = 0;
-                    newSubtitle.subslideIndex = 0;
+        try {
+            if (e.dataTransfer.getData('text') && JSON.parse(e.dataTransfer.getData('text')).speaker) {
+                const { subtitles } = this.props
+                const left = this.state.barHalfSize - durationToPixels(this.state.currentTime - this.state.deltaMS, SCALE)
+                const deltaDur = Math.abs(parseInt((Math.round(left - e.clientX) / 100)) * 1000);
+                const startTime = Math.abs(this.state.deltaMS + deltaDur);
+                const { speaker } = JSON.parse(e.dataTransfer.getData('text'));
+                const newSubtitle = {
+                    startTime: startTime,
+                    endTime: startTime + 1000,
+                    text: '',
+                    speakerProfile: speaker,
                 }
 
-                newSubtitle.startTime /= 1000;
-                newSubtitle.endTime /= 1000;
-                this.props.onAddSubtitle(newSubtitle);
-            } else {
-                NotificationService.error('Invalid slide position');
+                // Check if the new subtitle has enough length and doesnt overflow with other subtitles
+                // const crossedSubtitleBackward = subtitles.find((s) => newSubtitle.startTime >= s.startTime & newSubtitle.startTime <= s.endTime)
+                // const crossedSubtitleForward = subtitles.find((s) => newSubtitle.endTime >= s.startTime & newSubtitle.endTime <= s.endTime)
+                const crossed = subtitles.find(s => newSubtitle.endTime < s.endTime && newSubtitle.startTime > s.startTime)
+                if (!crossed) {
+                    // Find nearest subtitle to add the new one to it's slide
+                    const nearestSubtitle = subtitles.reverse().find((s) => s.startTime < newSubtitle.startTime && s.endTime < newSubtitle.endTime)
+                    // If the nearest subtitle doesn't exist, then there's no subtitle before that ( it's in the first slide )
+                    if (nearestSubtitle) {
+                        newSubtitle.slideIndex = nearestSubtitle.slideIndex;
+                        newSubtitle.subslideIndex = nearestSubtitle.subslideIndex;
+                    } else {
+                        newSubtitle.slideIndex = 0;
+                        newSubtitle.subslideIndex = 0;
+                    }
+
+                    newSubtitle.startTime /= 1000;
+                    newSubtitle.endTime /= 1000;
+                    this.props.onAddSubtitle(newSubtitle);
+                } else {
+                    NotificationService.error('Invalid slide position');
+                }
             }
+        } catch(e) {
+
         }
     }
 
