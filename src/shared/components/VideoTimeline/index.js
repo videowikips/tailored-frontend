@@ -8,6 +8,7 @@ const SCALE = 1;
 const SLIDE_DURATION_THREASHOLD = 500;
 const DELTA_THREASHOLD = 30000;
 const TIMELINE_SPEED = 20;
+const STRETCH_SPEED = 35;
 
 
 function durationToPixels(duration, scale) {
@@ -225,14 +226,12 @@ class VideoTimeline extends React.Component {
                 const crossedSubtitleForward = subtitles.filter((s, i) => i !== index).find((s) => subtitles[index].endTime >= s.startTime & subtitles[index].endTime <= s.endTime)
                 if (crossedSubtitleForward) {
                     subtitles[index].startTime += diff;
-
                     subtitles[index].endTime = crossedSubtitleForward.startTime;
                 } else if (crossedSubtitleBackward) {
                     subtitles[index].startTime = crossedSubtitleBackward.endTime;
                     subtitles[index].endTime = endTime;
-                } else {
-                    subtitles[index].lastLeft = currentleft;
                 }
+                subtitles[index].lastLeft = currentleft;
                 return { subtitles };
             })
         }
@@ -255,9 +254,9 @@ class VideoTimeline extends React.Component {
                     lastLeft = 0;
                 }
                 if (currentleft < lastLeft) {
-                    subtitles[index].startTime -= 30;
+                    subtitles[index].startTime -= STRETCH_SPEED;
                 } else if (currentleft > lastLeft) {
-                    subtitles[index].startTime += 30;
+                    subtitles[index].startTime += STRETCH_SPEED;
                 }
                 if ((subtitles[index].endTime - subtitles[index].startTime) < SLIDE_DURATION_THREASHOLD) {
                     subtitles[index].endTime = subtitles[index].startTime + SLIDE_DURATION_THREASHOLD;
@@ -296,9 +295,9 @@ class VideoTimeline extends React.Component {
                     lastLeft = 0;
                 }
                 if (currentleft < lastLeft) {
-                    subtitles[index].endTime -= 30;
+                    subtitles[index].endTime -= STRETCH_SPEED;
                 } else if (currentleft > lastLeft) {
-                    subtitles[index].endTime += 30;
+                    subtitles[index].endTime += STRETCH_SPEED;
                 }
 
                 if ((subtitles[index].endTime - subtitles[index].startTime) < SLIDE_DURATION_THREASHOLD) {
