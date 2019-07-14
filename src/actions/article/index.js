@@ -145,6 +145,29 @@ export const updateSubslide = (slideIndex, subslideIndex, changes) => (dispatch,
         })
 }
 
+export const splitSubslide = (slideIndex, subslideIndex, wordIndex) => (dispatch, getState) => {
+    dispatch(updateSubslideLoading());
+    const article = { ...getState().article.article };
+
+    requestAgent
+    .post(Api.article.splitSubslide(article._id, slideIndex, subslideIndex), { wordIndex })
+    .then((res) => {
+        const { article } = res.body;
+        dispatch(updateSubslideSuccess(article));
+        dispatch(setArticle(article));
+        dispatch(setSlidesToSubtitles(article.slides));
+        dispatch(setSelectedSubtitle(null, null));
+
+    })
+    .catch(err => {
+
+        const reason = err.response && err.response.text ? err.response.text : 'Something went wrong';
+        NotificationService.responseError(err)
+        dispatch(updateSubslideFailed(reason));
+    })
+
+}
+
 export const addSubslide = (subslide) => (dispatch, getState) => {
     const article = { ...getState().article.article };
     const { slideIndex, subslideIndex } = subslide;

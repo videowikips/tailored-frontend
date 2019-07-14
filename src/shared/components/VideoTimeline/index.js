@@ -337,6 +337,14 @@ class VideoTimeline extends React.Component {
         });
     }
 
+    onWordDrop = (e, subtitle, wordIndex) => {
+        e.stopPropagation();
+        const data = e.dataTransfer.getData('text');
+        if (data && JSON.parse(data) && JSON.parse(data).split) {
+            this.props.onSubtitleSplit(subtitle, wordIndex)
+        }
+    }
+
     renderSubtitles = () => {
         // const left = this.state.barHalfSize - durationToPixels(this.state.currentTime - this.state.deltaMS, SCALE);
         // Render only the current viewed subtitles
@@ -364,7 +372,14 @@ class VideoTimeline extends React.Component {
                         onDragEnd={() => this.onSlideDragEnd(index)}
                         onClick={() => this.props.onSubtitleSelect(slide, index)}
                     >
-                        {slide.text}
+                        {slide.text.split(' ').map((t, i) => (
+                            <span
+                                onDragOver={(e) => e.target.style['border-left'] = '3px solid red'}
+                                onDragLeave={(e) => e.target.style['border-left'] = 'none'}
+                                onDrop={(e) => e.target.style['border-left'] = 'none' && this.onWordDrop(e, slide, i)}
+                                style={{ display: 'inline-block', height: '100%', paddingLeft: 3, paddingRight: 3 }}
+                                key={t + i}>{t}</span>
+                        ))}
                     </div>
                     <div
                         // key={slide.text + 'left-handler'}
@@ -416,7 +431,7 @@ class VideoTimeline extends React.Component {
 
     onItemDrop = (e) => {
         e.preventDefault();
-        if (e.dataTransfer.getData('text')) {
+        if (e.dataTransfer.getData('text') && JSON.parse(e.dataTransfer.getData('text')).speaker) {
             const { subtitles } = this.props
             const left = this.state.barHalfSize - durationToPixels(this.state.currentTime - this.state.deltaMS, SCALE)
             const deltaDur = Math.abs(parseInt((Math.round(left - e.clientX) / 100)) * 1000);

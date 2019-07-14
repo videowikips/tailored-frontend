@@ -149,6 +149,12 @@ class Convert extends React.Component {
         this.props.onDeleteSubslide(slideIndex, subslideIndex);
     }
 
+    onSubtitleSplit = (subtitle, wordIndex) => {
+        const { slideIndex, subslideIndex } = subtitle;
+        console.log(slideIndex, subslideIndex, wordIndex)
+        this.props.onSplitSubslide(slideIndex, subslideIndex, wordIndex)
+    }
+
     onSpeakerGenderChange = (speaker, gender) => {
         const speakers = this.props.article.speakersProfile;
         const speakerIndex = speakers.findIndex((s) => s.speakerNumber === speaker.speakerNumber);
@@ -247,7 +253,7 @@ class Convert extends React.Component {
 
                                         <Card style={{ width: '100%', height: '100%' }}>
                                             {this.props.video && (
-                                                <video width={'100%'} src={this.props.video.url} controls ref={(ref) => this.vidoeRef = ref} onLoadedData={this.onVideoLoad} />
+                                                <video width={'100%'} src={'/1.mp4' || this.props.video.url} controls ref={(ref) => this.vidoeRef = ref} onLoadedData={this.onVideoLoad} />
                                             )}
                                         </Card>
                                     </Grid.Column>
@@ -262,12 +268,13 @@ class Convert extends React.Component {
                                     onSubtitleChange={this.onSaveSubtitle}
                                     onAddSubtitle={this.onAddSubtitle}
                                     onSubtitleSelect={(subtitle, index) => this.props.setSelectedSubtitle(subtitle, index)}
+                                    onSubtitleSplit={this.onSubtitleSplit}
                                 />
                             )}
                         </Grid.Column>
                     </Grid.Row>
                     <Grid.Row>
-                        <Grid.Column width={8}>
+                        <Grid.Column width={16}>
 
                             {this.props.article && this.props.article.speakersProfile && this.props.selectedSubtitle && this.props.selectedSubtitle.subtitle && (
                                 <Card style={{ width: '100%', padding: '2rem' }}>
@@ -285,13 +292,41 @@ class Convert extends React.Component {
                                 </Card>
                             )}
                         </Grid.Column>
+                    </Grid.Row>
 
-                        <Grid.Column width={2}>
-                        </Grid.Column>
 
-                        <Grid.Column width={6}>
+                    <Grid.Row>
+
+                        <Grid.Column width={16}>
                             {this.props.article && (
                                 <Card style={{ width: '100%', padding: '2rem' }}>
+
+                                    <Grid>
+                                        <Grid.Row>
+                                            <Grid.Column width={4}>
+                                                <h3>Splitter:</h3>
+                                            </Grid.Column>
+                                            <Grid.Column width={4}>
+                                                {/* <span
+
+                                                    draggable
+                                                    onDragStart={e => e.dataTransfer.setData('text', JSON.stringify({ split: true }))}
+                                                    style={{ width: 30, cursor: 'pointer', display: 'inline-block' }}>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" x="0px" y="0px" viewBox="0 0 80 100"><g><path d="M47.13,22.24l-7.07,7.07c-0.18,0.19-0.29,0.44-0.29,0.71c0,0.27,0.11,0.52,0.29,0.71l4.24,4.24   c0.2,0.19,0.45,0.29,0.71,0.29s0.51-0.1,0.71-0.29l7.07-7.07c0.18-0.19,0.29-0.44,0.29-0.71c0-0.27-0.11-0.52-0.29-0.71l-4.24-4.24   C48.16,21.85,47.52,21.85,47.13,22.24z" /><path d="M66.47,21.87l-12.23-8.12c-1.98-1.31-4.65-1.04-6.35,0.66l-0.69,0.7l-0.07,0.07L23.09,39.21   c-0.26,0.27-0.36,0.67-0.2401,1.03l0.86,2.59l0.0015,0.0045L12.4834,54.0625c-0.248,0.248-0.3486,0.6084-0.2627,0.9492   l2.8291,11.3105c0.0869,0.3496,0.3555,0.625,0.7031,0.7217c0.0879,0.0244,0.1777,0.0361,0.2666,0.0361   c0.2617,0,0.5166-0.1025,0.707-0.293l15.4687-15.4687L32.2,51.32l2.59,0.86c0.11,0.03,0.21,0.05,0.32,0.05   c0.26,0,0.52-0.1,0.71-0.29l17.51-17.51c0.45-0.46,1.08-0.67,1.71-0.58L57.53,34.2c0.95,0.12,1.8799-0.19,2.55-0.86l2.61-2.61   l4.23-4.23c0.65-0.65,0.96-1.54,0.87-2.45C67.7,23.16,67.22,22.36,66.47,21.87z M16.5615,64.124l-2.2637-9.0479L24.421,44.953   l1.259,3.767c0.1,0.3,0.33,0.53,0.63,0.63l3.7667,1.2589L16.5615,64.124z M58.66,31.92c-0.23,0.23-0.54,0.34-0.86,0.3l-2.48-0.35   c-1.27-0.17-2.51,0.24-3.41,1.14L34.84,50.09l-2.56-0.86l-4.86-1.62l-1.62-4.86l-0.86-2.56l22.9-22.89l12.72,12.72L58.66,31.92z" /></g></svg>
+                                                </span> */}
+                                                {/* <Button
+                                                    draggable
+                                                    onDragStart={e => e.dataTransfer.setData('text', JSON.stringify({ split: true }))}
+                                                    
+                                                    icon="cut" /> */}
+                                                <Icon
+                                                    style={{ padding: 5, cursor: 'pointer', display: 'inline-block' }}
+                                                    draggable
+                                                    onDragStart={e => e.dataTransfer.setData('text', JSON.stringify({ split: true }))}
+                                                    name={'cut'} />
+                                            </Grid.Column>
+                                        </Grid.Row>
+                                    </Grid>
                                     <h3>Speakers: </h3>
                                     <Grid>
                                         {this.props.article.speakersProfile.map((speaker, index) => (
@@ -365,7 +400,7 @@ class Convert extends React.Component {
                                             </Grid.Row>
                                         ))}
                                         <Grid.Row>
-                                            <Grid.Column style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                                            <Grid.Column style={{ display: 'flex', justifyContent: 'flex-start' }}>
                                                 <Button color="blue" onClick={this.onAddSpeaker} >Add Speaker</Button>
                                             </Grid.Column>
                                         </Grid.Row>
@@ -453,6 +488,7 @@ const mapDispatchToProps = (dispatch) => ({
     fetchVideoById: (id) => dispatch(videoActions.fetchVideoById(id)),
     fetchArticleByVideoId: id => dispatch(articleActions.fetchArticleByVideoId(id)),
     updateSubslide: (slideIndex, subslideIndex, changes) => dispatch(articleActions.updateSubslide(slideIndex, subslideIndex, changes)),
+    onSplitSubslide: (slideIndex, subslideIndex, wordIndex) => dispatch(articleActions.splitSubslide(slideIndex, subslideIndex, wordIndex)),
     addSubslide: subslide => dispatch(articleActions.addSubslide(subslide)),
     onDeleteSubslide: (slideIndex, subslideIndex) => dispatch(articleActions.deleteSubslide(slideIndex, subslideIndex)),
     setSlidesToSubtitles: slides => dispatch(articleActions.setSlidesToSubtitles(slides)),
