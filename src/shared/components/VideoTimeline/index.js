@@ -485,7 +485,7 @@ class VideoTimeline extends React.Component {
                         height={65}
                         style={{ background: '#1a1a1a', position: 'absolute', left }}
                     />
-                    <div style={{ content: '', dispaly: 'block', height: '100%', left: '50%', position: 'absolute', width: 0, zIndex: 2, borderRight: '1px solid #FC0D1B' }}>
+                    <div style={{ content: '', dispaly: 'block', height: '100%', left: '50%', position: 'absolute', width: 0, zIndex: 3, borderRight: '1px solid #FC0D1B' }}>
                     </div>
                     <div
                         onDrag={this.onTimelineDrag}
