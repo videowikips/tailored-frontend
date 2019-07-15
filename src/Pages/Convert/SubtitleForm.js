@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { TextArea, Button, Dropdown, Grid, Modal } from 'semantic-ui-react';
+import { debounce } from '../../shared/utils/helpers';
 
 function mapSpeakersToDropdownOptions(speakers) {
     return speakers.map((speaker) => ({ text: `Speaker ${speaker.speakerNumber}`, value: speaker.speakerNumber }));
@@ -18,11 +19,15 @@ export default class SubtitleForm extends React.Component {
             const { text, speakerNumber } = this.props.subtitle;
             this.setState({ text, speakerNumber });
         }
+        this.debouncedSave = debounce(() => {
+            this.props.onSave({ text: this.state.text, speakerNumber: this.state.speakerNumber });
+        }, 500)
     }
 
     componentWillReceiveProps = (nextProps) => {
         if (this.props.subtitle !== nextProps.subtitle) {
-            const { text, speakerNumber } = nextProps.subtitle;
+            const { text } = nextProps.subtitle;
+            const { speakerNumber } = nextProps.subtitle.speakerProfile
             this.setState({ text, speakerNumber });
         }
     }
@@ -36,7 +41,8 @@ export default class SubtitleForm extends React.Component {
     }
 
     onSave = () => {
-        this.props.onSave({ text: this.state.text, speakerNumber: this.state.speakerNumber });
+        console.log('on save')
+        this.debouncedSave();
     }
 
     onDeleteSubtitle = () => {
@@ -44,7 +50,7 @@ export default class SubtitleForm extends React.Component {
     }
 
     render() {
-        const { speakers, subtitle, loading } = this.props;
+        const { speakers, subtitle } = this.props;
         return (
             <Grid>
                 {subtitle && speakers ? (
@@ -55,21 +61,21 @@ export default class SubtitleForm extends React.Component {
                                     item
                                     value={this.state.speakerNumber}
                                     options={mapSpeakersToDropdownOptions(speakers)}
-                                    onChange={(e, { value }) => this.setState({ speakerNumber: value })}
+                                    onChange={(e, { value }) => this.setState({ speakerNumber: value }, this.onSave)}
                                 />
                             </Grid.Column>
                             <Grid.Column width={10}>
                                 <TextArea
                                     style={{ width: '100%', height: '100px', padding: 10 }}
                                     value={this.state.text}
-                                    onChange={(e, { value }) => this.setState({ text: value })}
+                                    onChange={(e, { value }) => this.setState({ text: value }, this.onSave)}
                                 />
                             </Grid.Column>
                             <Grid.Column width={2} style={{ display: 'flex', alignItems: 'center' }}>
                                 <Button icon="trash" onClick={this.onDeleteSubtitle} color="red" />
                             </Grid.Column>
                         </Grid.Row>
-                        <Grid.Row>
+                        {/* <Grid.Row>
                             <Grid.Column width={4}>
                             </Grid.Column>
                             <Grid.Column width={10} style={{ display: 'flex', justifyContent: 'flex-end' }}>
@@ -82,7 +88,7 @@ export default class SubtitleForm extends React.Component {
                                     Save
                                 </Button>
                             </Grid.Column>
-                        </Grid.Row>
+                        </Grid.Row> */}
                     </React.Fragment>
                 ) : null}
                 <Modal open={this.state.isDeleteModalVisible} size="tiny" onClose={() => this.setState({ isDeleteModalVisible: false })}>
