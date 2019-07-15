@@ -1,5 +1,9 @@
 import React, { Component } from 'react';
-import axios from 'axios';
+import { withRouter } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { Message } from 'semantic-ui-react';
+
+import { signUp } from '../../actions/authentication';
 
 export class SignupForm extends Component {
     state = {
@@ -13,16 +17,14 @@ export class SignupForm extends Component {
         this.registerUser();
     }
 
-    async registerUser() {
+    registerUser() {
         const { orgName, email, password } = this.state;
-        
-        const res = await axios.post('http://localhost:4000/api/auth/register', {
+
+        this.props.signUp({
             orgName,
             email,
             password
         });
-
-        console.log(res);
     }
 
     handleChange = (event) => {
@@ -40,7 +42,7 @@ export class SignupForm extends Component {
             <div>
                 <h2>Sign up</h2>
 
-                <form className="ui form"  method="POST" onSubmit={this.onFormSubmit}>
+                <form className="ui form" method="POST" onSubmit={this.onFormSubmit}>
                     <div className="field">
                         <label>Organization Name</label>
                         <input name="orgName" value={this.state.orgName} onChange={this.handleChange} />
@@ -55,6 +57,23 @@ export class SignupForm extends Component {
                         <input name="password" type="password" value={this.state.password} onChange={this.handleChange} />
                     </div>
 
+                    {
+                        this.props.signUpMessage ? (
+                            this.props.signUpSuccess ?
+                                (
+                                    <Message color='green'>
+                                        {this.props.signUpMessage}
+                                    </Message>
+                                ) :
+                                (
+                                    <Message color='red'>
+                                        {this.props.signUpMessage}
+                                    </Message>
+                                )
+
+                        ) : null
+                    }
+
                     <button type="submit" className="ui green button">Sign up</button>
                 </form>
             </div>
@@ -62,4 +81,14 @@ export class SignupForm extends Component {
     }
 }
 
-export default SignupForm;
+const mapStateToProps = ({ authentication }) => ({
+    ...authentication
+})
+
+const mapDispatchToProps = (dispatch) => ({
+    signUp: ({ orgName, email, password }) => dispatch(signUp({ orgName, email, password }))
+})
+
+export default withRouter(
+    connect(mapStateToProps, mapDispatchToProps)(SignupForm)
+);

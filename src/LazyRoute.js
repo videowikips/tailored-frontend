@@ -18,7 +18,7 @@ class LazyRoute extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (!nextProps.isAuthenticated) {
+    if (nextProps.isAuthenticated !== this.props.isAuthenticated && !nextProps.isAuthenticated) {
       window.location = '/';
     }
   }

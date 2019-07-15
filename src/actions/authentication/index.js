@@ -12,6 +12,14 @@ const authenticationFailed = (message) => ({
     payload: message,
 })
 
+const signUpSuccess = ()  =>({
+    type: actionTypes.SIGNUP_SUCCESS
+})
+
+const signUpFaild = () => ({
+    type: actionTypes.SIGNUP_FAILED
+})
+
 const validateToken = (isValid) => ({
     type: actionTypes.VALIDATE_TOKEN,
     payload: isValid
@@ -32,8 +40,21 @@ export const login = ({ email, password }) => dispatch => {
     });
 }
 
-export const register = ({ orgName, email, password }) => dispatch => {
+export const signUp = ({ orgName, email, password }) => dispatch => {
+        
+    requestAgent.post(Api.authentication.register, {
+        orgName,
+        email,
+        password
+    }).then(result => {
+        const { success } = result.body;
 
+        if (success) {
+            dispatch(signUpSuccess());
+        } else {
+            dispatch(signUpFaild());
+        }
+    })
 }
 
 export const isValidToken = () => dispatch => {

@@ -6,7 +6,8 @@ export default {
         getVideoById: (id) => `${API_ROOT}/video/${id}`,
     },
     authentication: {
-        login: `${API_ROOT}/auth/login`
+        login: `${API_ROOT}/auth/login`,
+        register: `${API_ROOT}/auth/register`
     },
     organization: {
         getUsers: `${API_ROOT}/user/getOrgUsers`,

@@ -5,7 +5,9 @@ const storedToken = localStorage.getItem('authToken');
 const INITIAL_STATE = {
     isAuthenticated: false,
     token: storedToken,
-    errorMessage: null
+    errorMessage: null,
+    signUpMessage: null,
+    signUpSuccess: null
 }
 
 export default function (state = INITIAL_STATE, action) {
@@ -36,6 +38,20 @@ export default function (state = INITIAL_STATE, action) {
                 ...state,
                 isAuthenticated: isValid,
                 token: t
+            }
+
+        case actionTypes.SIGNUP_SUCCESS:
+            return {
+                ...state,
+                signUpSuccess: true,
+                signUpMessage: 'You have successfully signed up. Please login to continue'
+            }
+
+        case actionTypes.SIGNUP_FAILED:
+            return {
+                ...state,
+                signUpSuccess: false,
+                signUpMessage: 'Something went error, please try again later'
             }
 
         default:
