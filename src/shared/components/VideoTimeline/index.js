@@ -329,7 +329,10 @@ class VideoTimeline extends React.Component {
         try {
             const data = e.dataTransfer.getData('text');
             if (data && JSON.parse(data) && JSON.parse(data).split) {
-                this.props.onSubtitleSplit(subtitle, wordIndex)
+                console.log(wordIndex)
+                if (wordIndex) {
+                    this.props.onSubtitleSplit(subtitle, wordIndex);
+                }
             }
         } catch (e) {
 
@@ -368,8 +371,8 @@ class VideoTimeline extends React.Component {
                                 <span
                                     onDragOver={(e) => e.target.style['border-left'] = '3px solid red'}
                                     onDragLeave={(e) => e.target.style['border-left'] = 'none'}
-                                    onDrop={(e) => e.target.style['border-left'] = 'none' && this.onWordDrop(e, slide, i)}
-                                    style={{ display: 'inline-block', height: '100%', paddingLeft: 2, paddingRight: 2 }}
+                                    onDropCapture={(e) => e.target.style['border-left'] = 'none' && this.onWordDrop(e, slide, i)}
+                                    style={{ display: 'inline-block', paddingLeft: 2, paddingRight: 2 }}
                                     key={t + i}>{t}</span>
                             ))
                             : slide.text}

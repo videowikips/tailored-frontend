@@ -1,6 +1,7 @@
 html, body {
   height: 100%;
   margin: 0;
+  font-family: serif;
 }
 
 h1, h2 {
@@ -24,6 +25,7 @@ h1, h2 {
   width: 100%;
   height: 100%;
   flex: 1;
+  background-color: #30343f;
 }
 
 .c-app-home__wikilinks {
@@ -76,7 +78,7 @@ h1, h2 {
 
 .c-app__main {
   flex: 1;
-  margin: 3em;
+  // padding: 3em;
 
 }
 .ui.ui.card.c-app-card .custom {

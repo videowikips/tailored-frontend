@@ -126,7 +126,6 @@ class Convert extends React.Component {
     }
 
     onVideoDone(video) {
-        console.log('done')
         this.stopPoller();
         setTimeout(() => {
             console.log('Navigating to article')
@@ -188,7 +187,7 @@ class Convert extends React.Component {
 
     renderProgress = () => {
         return (
-            <div>
+            <div style={{ backgroundColor: '#424650', padding: '2rem', width: '100%' }}>
                 {this.getVideoStatus() !== 'failed' && this.props.stages ? (
                     <React.Fragment>
                         <ProgressBoxes stages={this.props.stages} />
@@ -228,31 +227,45 @@ class Convert extends React.Component {
         )
     }
 
+
+    renderInstructions = () => {
+        return (
+            <div
+                style={{ padding: '2rem', marginLeft: '1rem' }}
+            >
+                <h2>Instructions:</h2>
+                <ol style={{ fontSize: 20 }}>
+                    {['step 1', 'step 2', 'step 3'].map((s) => (
+                        <li style={{ paddingBottom: 10 }} key={'step' + s} >{s}</li>
+                    ))}
+                </ol>
+            </div>
+        );
+    }
+
     renderProofreading = () => {
         return (
-            <div>
-                <Grid>
+            <div className="proofreading">
+                <Grid style={{ marginLeft: 0 }}>
                     <Grid.Row>
-                        <Grid.Column width={4}>
-                            <Card style={{ width: '100%', height: '100%', padding: '2rem' }}>
-                                <h2>Instructions:</h2>
+                        <Grid.Column width={16} style={{ padding: 0, backgroundColor: '#30343f' }}>
+                            <Grid style={{ marginLeft: 0 }}>
+                                <div style={{ width: '90%', margin: '2rem auto', justifyContent: 'flex-end', display: 'flex', }}>
 
-                                {this.renderConvertConfirmModal()}
-                                <Button color="green" onClick={() => this.setState({ isConfirmConvertModalVisible: true })} >
-                                    Save and Convert <Icon name={"arrow right"} />
-                                </Button>
-                            </Card>
-                        </Grid.Column>
-                        <Grid.Column width={12}>
-                            <Grid>
+                                    {this.renderConvertConfirmModal()}
+                                    <Button color="green" onClick={() => this.setState({ isConfirmConvertModalVisible: true })} >
+                                        Save and Convert <Icon name={"arrow right"} />
+                                    </Button>
+                                </div>
                                 <Grid.Row>
                                     <Grid.Column width={16}>
                                         <Grid style={{ display: 'flex', justifyContent: 'center', marginBottom: '.2rem' }}>
                                             <Grid.Row>
                                                 <Grid.Column width={16}>
-                                                    <Card style={{ width: '100%', height: '100%', position: 'relative' }}>
+                                                    <div style={{ width: '100%', height: '100%', position: 'relative', display: 'flex' }}>
                                                         {this.props.video && (
                                                             <video
+                                                                controlsList=""
                                                                 controls
                                                                 width={'100%'}
                                                                 style={{ width: 700, maxWidth: '100%', margin: '0 auto' }}
@@ -266,10 +279,10 @@ class Convert extends React.Component {
                                                         >
                                                             Time: {formatTime(this.state.currentTime)}/{formatTime(this.state.duration)}
                                                         </span>
-                                                    </Card>
+                                                    </div>
                                                 </Grid.Column>
 
-                                                <Grid.Column width={16} style={{ marginTop: 5 }}>
+                                                <Grid.Column width={16} style={{ marginTop: 5, paddingLeft: 0 }}>
                                                     {this.state.duration && (
                                                         <VideoTimeline
                                                             splitterDragging={this.state.splitterDragging}
@@ -292,7 +305,7 @@ class Convert extends React.Component {
                                     <Grid.Row>
                                         <Grid.Column width={16}>
 
-                                            <Card style={{ width: '100%', padding: '2rem' }}>
+                                            <div style={{ width: '100%', padding: '2rem' }}>
                                                 <SubtitleForm
                                                     loading={this.props.updateSubslideState === 'loading'}
                                                     subtitle={this.props.selectedSubtitle.subtitle}
@@ -304,7 +317,7 @@ class Convert extends React.Component {
                                                     }}
                                                     onDelete={() => this.onSubslideDelete(this.props.selectedSubtitle.subtitle, this.props.selectedSubtitle.subtitleIndex)}
                                                 />
-                                            </Card>
+                                            </div>
                                         </Grid.Column>
                                     </Grid.Row>
                                 )}
@@ -312,26 +325,54 @@ class Convert extends React.Component {
                                 <Grid.Row>
                                     <Grid.Column width={16}>
                                         {this.props.article && (
-                                            <Card style={{ width: '100%', padding: '2rem' }}>
+                                            <div style={{ width: '100%', padding: '2rem', color: 'white' }}>
                                                 <Grid>
                                                     <Grid.Row>
                                                         <Grid.Column width={4}>
                                                             <h3>Splitter:</h3>
                                                         </Grid.Column>
                                                         <Grid.Column width={4}>
-                                                            {/* <span
-
-                                                    draggable
-                                                    onDragStart={e => e.dataTransfer.setData('text', JSON.stringify({ split: true }))}
-                                                    style={{ width: 30, cursor: 'pointer', display: 'inline-block' }}>
-                                                    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" x="0px" y="0px" viewBox="0 0 80 100"><g><path d="M47.13,22.24l-7.07,7.07c-0.18,0.19-0.29,0.44-0.29,0.71c0,0.27,0.11,0.52,0.29,0.71l4.24,4.24   c0.2,0.19,0.45,0.29,0.71,0.29s0.51-0.1,0.71-0.29l7.07-7.07c0.18-0.19,0.29-0.44,0.29-0.71c0-0.27-0.11-0.52-0.29-0.71l-4.24-4.24   C48.16,21.85,47.52,21.85,47.13,22.24z" /><path d="M66.47,21.87l-12.23-8.12c-1.98-1.31-4.65-1.04-6.35,0.66l-0.69,0.7l-0.07,0.07L23.09,39.21   c-0.26,0.27-0.36,0.67-0.2401,1.03l0.86,2.59l0.0015,0.0045L12.4834,54.0625c-0.248,0.248-0.3486,0.6084-0.2627,0.9492   l2.8291,11.3105c0.0869,0.3496,0.3555,0.625,0.7031,0.7217c0.0879,0.0244,0.1777,0.0361,0.2666,0.0361   c0.2617,0,0.5166-0.1025,0.707-0.293l15.4687-15.4687L32.2,51.32l2.59,0.86c0.11,0.03,0.21,0.05,0.32,0.05   c0.26,0,0.52-0.1,0.71-0.29l17.51-17.51c0.45-0.46,1.08-0.67,1.71-0.58L57.53,34.2c0.95,0.12,1.8799-0.19,2.55-0.86l2.61-2.61   l4.23-4.23c0.65-0.65,0.96-1.54,0.87-2.45C67.7,23.16,67.22,22.36,66.47,21.87z M16.5615,64.124l-2.2637-9.0479L24.421,44.953   l1.259,3.767c0.1,0.3,0.33,0.53,0.63,0.63l3.7667,1.2589L16.5615,64.124z M58.66,31.92c-0.23,0.23-0.54,0.34-0.86,0.3l-2.48-0.35   c-1.27-0.17-2.51,0.24-3.41,1.14L34.84,50.09l-2.56-0.86l-4.86-1.62l-1.62-4.86l-0.86-2.56l22.9-22.89l12.72,12.72L58.66,31.92z" /></g></svg>
-                                                </span> */}
-                                                            {/* <Button
-                                                    draggable
-                                                    onDragStart={e => e.dataTransfer.setData('text', JSON.stringify({ split: true }))}
-                                                    
-                                                    icon="cut" /> */}
-                                                            <Icon
+                                                            <span
+                                                                draggable
+                                                                onDragEnd={() => this.setState({ splitterDragging: false })}
+                                                                onDragStart={e => {
+                                                                    e.dataTransfer.setData('text', JSON.stringify({ split: true }));
+                                                                    this.setState({ splitterDragging: true })
+                                                                }}
+                                                                style={{ width: 30, height: 30, cursor: 'pointer', display: 'inline-block' }}
+                                                            >
+                                                                <svg xmlns="http://www.w3.org/2000/svg" version="1.1" id="Layer_1" x="0px" y="0px" viewBox="0 0 512 512" width="30px"><g><g>
+                                                                    <g>
+                                                                        <path d="M451.241,23.448C436.12,8.328,416.014,0,394.63,0c-21.385,0-41.49,8.328-56.61,23.448L103.857,257.612l4.163,18.048    L0.229,383.451L53.701,512L199.03,366.67l18.049,4.162L451.241,136.67C482.456,105.454,482.456,54.664,451.241,23.448z     M64.327,458.369l-28.205-67.807l79.959-79.958l8.413,36.473l0.586,2.539l39.004,8.995L64.327,458.369z M207.492,337.415    l-17.594-4.058l-39.461-9.099l-0.566-2.452l-12.595-54.608l197.16-197.161l24.357,24.357L190.646,262.541l21.502,21.502    l168.148-168.147l24.357,24.358L207.492,337.415z M429.739,115.167l-3.584,3.584l-70.216-70.217l3.583-3.583    c9.378-9.378,21.846-14.543,35.108-14.543c13.262,0,25.731,5.164,35.109,14.542C449.097,64.31,449.097,95.808,429.739,115.167z" data-original="#000000" class="active-path" data-old_color="#000000" fill="#FFFFFF" />
+                                                                    </g>
+                                                                </g><g>
+                                                                        <g>
+                                                                            <rect x="467.69" y="481.453" width="44.081" height="30.409" data-original="#000000" class="active-path" data-old_color="#000000" fill="#FFFFFF" />
+                                                                        </g>
+                                                                    </g><g>
+                                                                        <g>
+                                                                            <rect x="397.446" y="481.453" width="44.082" height="30.409" data-original="#000000" class="active-path" data-old_color="#000000" fill="#FFFFFF" />
+                                                                        </g>
+                                                                    </g><g>
+                                                                        <g>
+                                                                            <rect x="327.201" y="481.453" width="44.082" height="30.409" data-original="#000000" class="active-path" data-old_color="#000000" fill="#FFFFFF" />
+                                                                        </g>
+                                                                    </g><g>
+                                                                        <g>
+                                                                            <rect x="256.957" y="481.453" width="44.081" height="30.409" data-original="#000000" class="active-path" data-old_color="#000000" fill="#FFFFFF" />
+                                                                        </g>
+                                                                    </g><g>
+                                                                        <g>
+                                                                            <rect x="186.712" y="481.453" width="44.081" height="30.409" data-original="#000000" class="active-path" data-old_color="#000000" fill="#FFFFFF" />
+                                                                        </g>
+                                                                    </g><g>
+                                                                        <g>
+                                                                            <rect x="116.468" y="481.453" width="44.081" height="30.409" data-original="#000000" class="active-path" data-old_color="#000000" fill="#FFFFFF" />
+                                                                        </g>
+                                                                    </g></g>
+                                                                </svg>
+                                                            </span>
+                                                            {/* <Icon
                                                                 style={{ padding: 5, cursor: 'pointer', display: 'inline-block' }}
                                                                 draggable
                                                                 onDragEnd={() => this.setState({ splitterDragging: false })}
@@ -340,7 +381,7 @@ class Convert extends React.Component {
                                                                     this.setState({ splitterDragging: true })
                                                                     console.log('drag start')
                                                                 }}
-                                                                name={'cut'} />
+                                                                name={'cut'} /> */}
                                                         </Grid.Column>
                                                     </Grid.Row>
                                                 </Grid>
@@ -424,7 +465,7 @@ class Convert extends React.Component {
                                                         </Grid.Column>
                                                     </Grid.Row>
                                                 </Grid>
-                                            </Card>
+                                            </div>
                                         )}
                                     </Grid.Column>
                                 </Grid.Row>
@@ -485,10 +526,33 @@ class Convert extends React.Component {
             default:
                 break;
         }
+        console.log(this.getVideoStatus())
         return (
-            <div>
-                {this.renderProgress()}
-                {comp}
+            <div style={{ width: '100%', height: '100%'}}>
+                {/* {this.getVideoStatus() !== 'proofreading' && this.renderProgress()} */}
+                <Grid>
+                    <Grid.Row>
+                        <Grid.Column width={4} style={{ padding: 0 }}>
+                            <Grid style={{ width: '100%', height: '100%', backgroundColor: '#424650', color: 'white', borderRadius: 0, borderRight: '1px solid black' }}>
+                                {this.renderInstructions()}
+                            </Grid>
+                        </Grid.Column>
+                        <Grid.Column width={12} style={{ padding: 0, backgroundColor: '#30343f' }}>
+                            <Grid>
+                                <Grid.Row style={{ marginTop: 0, paddingTop: 0 }}>
+                                    <Grid.Column width={16} style={{ padding: 0 }}>
+                                        {this.renderProgress()}
+                                    </Grid.Column>
+                                </Grid.Row>
+                                <Grid.Row>
+                                    {comp}
+
+                                    {/* {this.renderProofreading()} */}
+                                </Grid.Row>
+                            </Grid>
+                        </Grid.Column>
+                    </Grid.Row>
+                </Grid>
             </div>
         )
     }
