@@ -13,11 +13,16 @@ import Lottie from 'react-lottie';
 import successLottie from '../../shared/lottie/success.json';
 import loadingLottie from '../../shared/lottie/loading.json';
 import { formatTime } from '../../shared/utils/helpers';
+import ProofreadingVideoPlayer from './ProofreadingVideoPlayer';
+import SplitterIcon from '../../shared/components/SplitterIcon';
+import SpeakerDragItem from './SpeakerDragItem';
 
 class Convert extends React.Component {
 
     state = {
         stages: [],
+        videoPlaying: false,
+        controlsVisible: false,
         duration: 0,
         intervalId: null,
         currentTime: 0,
@@ -37,13 +42,14 @@ class Convert extends React.Component {
     }
 
     componentWillUnmount = () => {
-        if (this.vidoeRef) {
-            this.vidoeRef.ontimeupdate = null
+        if (this.videoRef) {
+            this.videoRef.ontimeupdate = null;
+            this.videoRef.onended = null;
         }
     }
 
     onTimeChange = (currentTime) => {
-        this.vidoeRef.currentTime = currentTime / 1000;
+        this.videoRef.currentTime = currentTime / 1000;
         this.setState({ currentTime });
     }
 
@@ -56,13 +62,14 @@ class Convert extends React.Component {
     }
 
     onVideoLoad = (e) => {
-        if (this.vidoeRef) {
-            this.vidoeRef.ontimeupdate = () => {
-                console.log('on playing')
-                this.setState({ currentTime: this.vidoeRef.currentTime * 1000 });
+        if (this.videoRef) {
+            this.videoRef.ontimeupdate = () => {
+                this.setState({ currentTime: this.videoRef.currentTime * 1000 });
             }
-            console.log('on load', this.vidoeRef.duration, this.vidoeRef.currentTime);
-            this.setState({ duration: this.vidoeRef.duration * 1000 })
+            this.videoRef.onended = () => {
+                this.setState({ videoPlaying: false });
+            }
+            this.setState({ duration: this.videoRef.duration * 1000 })
         }
     }
 
@@ -176,6 +183,19 @@ class Convert extends React.Component {
         this.props.onSpeakersChange(speakersProfile);
     }
 
+    onPlayToggle = () => {
+        this.setState(({ videoPlaying }) => {
+            const newPlaying = !videoPlaying;
+            if (newPlaying) {
+                this.videoRef.play();
+            } else {
+                this.videoRef.pause();
+            }
+
+            return { videoPlaying: newPlaying };
+        })
+    }
+
     getVideoStatus = () => {
         if (this.props.video && this.props.video.status) return this.props.video.status;
         return null;
@@ -262,23 +282,19 @@ class Convert extends React.Component {
                                         <Grid style={{ display: 'flex', justifyContent: 'center', marginBottom: '.2rem' }}>
                                             <Grid.Row>
                                                 <Grid.Column width={16}>
-                                                    <div style={{ width: '100%', height: '100%', position: 'relative', display: 'flex' }}>
+                                                    <div style={{ width: '100%', height: '100%' }}>
                                                         {this.props.video && (
-                                                            <video
-                                                                controlsList=""
-                                                                controls
-                                                                width={'100%'}
-                                                                style={{ width: 700, maxWidth: '100%', margin: '0 auto' }}
-                                                                src={'/1.mp4' || this.props.video.url}
-                                                                ref={(ref) => this.vidoeRef = ref}
-                                                                onLoadedData={this.onVideoLoad}
+                                                            <ProofreadingVideoPlayer
+                                                                duration={this.state.duration}
+                                                                currentTime={this.state.currentTime}
+                                                                onVideoLoad={this.onVideoLoad}
+                                                                playing={this.state.videoPlaying}
+                                                                onTimeChange={this.onTimeChange}
+                                                                videoRef={(ref) => this.videoRef = ref}
+                                                                url={'/1.mp4' || this.props.video.url}
+                                                                onPlayToggle={this.onPlayToggle}
                                                             />
                                                         )}
-                                                        <span
-                                                            style={{ position: 'absolute', left: '45%', bottom: '10%', color: 'white' }}
-                                                        >
-                                                            Time: {formatTime(this.state.currentTime)}/{formatTime(this.state.duration)}
-                                                        </span>
                                                     </div>
                                                 </Grid.Column>
 
@@ -341,47 +357,8 @@ class Convert extends React.Component {
                                                                 }}
                                                                 style={{ width: 30, height: 30, cursor: 'pointer', display: 'inline-block' }}
                                                             >
-                                                                <svg xmlns="http://www.w3.org/2000/svg" version="1.1" id="Layer_1" x="0px" y="0px" viewBox="0 0 512 512" width="30px"><g><g>
-                                                                    <g>
-                                                                        <path d="M451.241,23.448C436.12,8.328,416.014,0,394.63,0c-21.385,0-41.49,8.328-56.61,23.448L103.857,257.612l4.163,18.048    L0.229,383.451L53.701,512L199.03,366.67l18.049,4.162L451.241,136.67C482.456,105.454,482.456,54.664,451.241,23.448z     M64.327,458.369l-28.205-67.807l79.959-79.958l8.413,36.473l0.586,2.539l39.004,8.995L64.327,458.369z M207.492,337.415    l-17.594-4.058l-39.461-9.099l-0.566-2.452l-12.595-54.608l197.16-197.161l24.357,24.357L190.646,262.541l21.502,21.502    l168.148-168.147l24.357,24.358L207.492,337.415z M429.739,115.167l-3.584,3.584l-70.216-70.217l3.583-3.583    c9.378-9.378,21.846-14.543,35.108-14.543c13.262,0,25.731,5.164,35.109,14.542C449.097,64.31,449.097,95.808,429.739,115.167z" data-original="#000000" class="active-path" data-old_color="#000000" fill="#FFFFFF" />
-                                                                    </g>
-                                                                </g><g>
-                                                                        <g>
-                                                                            <rect x="467.69" y="481.453" width="44.081" height="30.409" data-original="#000000" class="active-path" data-old_color="#000000" fill="#FFFFFF" />
-                                                                        </g>
-                                                                    </g><g>
-                                                                        <g>
-                                                                            <rect x="397.446" y="481.453" width="44.082" height="30.409" data-original="#000000" class="active-path" data-old_color="#000000" fill="#FFFFFF" />
-                                                                        </g>
-                                                                    </g><g>
-                                                                        <g>
-                                                                            <rect x="327.201" y="481.453" width="44.082" height="30.409" data-original="#000000" class="active-path" data-old_color="#000000" fill="#FFFFFF" />
-                                                                        </g>
-                                                                    </g><g>
-                                                                        <g>
-                                                                            <rect x="256.957" y="481.453" width="44.081" height="30.409" data-original="#000000" class="active-path" data-old_color="#000000" fill="#FFFFFF" />
-                                                                        </g>
-                                                                    </g><g>
-                                                                        <g>
-                                                                            <rect x="186.712" y="481.453" width="44.081" height="30.409" data-original="#000000" class="active-path" data-old_color="#000000" fill="#FFFFFF" />
-                                                                        </g>
-                                                                    </g><g>
-                                                                        <g>
-                                                                            <rect x="116.468" y="481.453" width="44.081" height="30.409" data-original="#000000" class="active-path" data-old_color="#000000" fill="#FFFFFF" />
-                                                                        </g>
-                                                                    </g></g>
-                                                                </svg>
+                                                                <SplitterIcon />
                                                             </span>
-                                                            {/* <Icon
-                                                                style={{ padding: 5, cursor: 'pointer', display: 'inline-block' }}
-                                                                draggable
-                                                                onDragEnd={() => this.setState({ splitterDragging: false })}
-                                                                onDragStart={e => {
-                                                                    e.dataTransfer.setData('text', JSON.stringify({ split: true }));
-                                                                    this.setState({ splitterDragging: true })
-                                                                    console.log('drag start')
-                                                                }}
-                                                                name={'cut'} /> */}
                                                         </Grid.Column>
                                                     </Grid.Row>
                                                 </Grid>
@@ -412,43 +389,7 @@ class Convert extends React.Component {
                                                                     }}
                                                                     onDragStart={(e) => e.dataTransfer.setData('text', JSON.stringify({ speaker }))}
                                                                 >
-                                                                    <div
-                                                                        style={{
-                                                                            height: 20,
-                                                                            background: SPEAKER_BACKGROUND_COLORS[speaker.speakerNumber] || 'white',
-                                                                            paddingLeft: 15,
-                                                                            width: 80,
-                                                                        }}
-                                                                    >
-                                                                    </div>
-                                                                    <div
-                                                                        style={{
-                                                                            position: 'absolute',
-                                                                            top: 0,
-                                                                            height: 20,
-                                                                            width: 10,
-                                                                            left: 0,
-                                                                            zIndex: 5,
-                                                                        }}
-                                                                    >
-                                                                        <span style={{ background: '#A2A3A4', position: 'absolute', height: '100%', width: 10 }} >
-                                                                            {'<'}
-                                                                        </span>
-                                                                    </div>
-                                                                    <div
-                                                                        style={{
-                                                                            position: 'absolute',
-                                                                            top: 0,
-                                                                            height: 20,
-                                                                            width: 10,
-                                                                            left: 80,
-                                                                            zIndex: 5,
-                                                                        }}
-                                                                    >
-                                                                        <span style={{ background: '#A2A3A4', position: 'absolute', height: '100%', width: 10 }} >
-                                                                            {'>'}
-                                                                        </span>
-                                                                    </div>
+                                                                    <SpeakerDragItem speaker={speaker} />
                                                                 </div>
                                                             </Grid.Column>
 
@@ -526,34 +467,30 @@ class Convert extends React.Component {
             default:
                 break;
         }
-        console.log(this.getVideoStatus())
-        return (
-            <div style={{ width: '100%', height: '100%'}}>
-                {/* {this.getVideoStatus() !== 'proofreading' && this.renderProgress()} */}
-                <Grid>
-                    <Grid.Row>
-                        <Grid.Column width={4} style={{ padding: 0 }}>
-                            <Grid style={{ width: '100%', height: '100%', backgroundColor: '#424650', color: 'white', borderRadius: 0, borderRight: '1px solid black' }}>
-                                {this.renderInstructions()}
-                            </Grid>
-                        </Grid.Column>
-                        <Grid.Column width={12} style={{ padding: 0, backgroundColor: '#30343f' }}>
-                            <Grid>
-                                <Grid.Row style={{ marginTop: 0, paddingTop: 0 }}>
-                                    <Grid.Column width={16} style={{ padding: 0 }}>
-                                        {this.renderProgress()}
-                                    </Grid.Column>
-                                </Grid.Row>
-                                <Grid.Row>
-                                    {comp}
 
-                                    {/* {this.renderProofreading()} */}
-                                </Grid.Row>
-                            </Grid>
-                        </Grid.Column>
-                    </Grid.Row>
-                </Grid>
-            </div>
+        return (
+            <Grid style={{ height: '100%', width: '100%' }}>
+                <Grid.Row style={{ marginBottom: 0, paddingBottom: 0 }}>
+                    <Grid.Column width={4} style={{ padding: 0 }}>
+                        <Grid style={{ width: '100%', height: '100%', backgroundColor: '#424650', color: 'white', borderRadius: 0, borderRight: '1px solid black' }}>
+                            {this.renderInstructions()}
+                        </Grid>
+                    </Grid.Column>
+                    <Grid.Column width={12} style={{ padding: 0, backgroundColor: '#30343f' }}>
+                        <Grid>
+                            <Grid.Row style={{ marginTop: 0, paddingTop: 0 }}>
+                                <Grid.Column width={16} style={{ padding: 0 }}>
+                                    {this.renderProgress()}
+                                </Grid.Column>
+                            </Grid.Row>
+                            <Grid.Row>
+                                {comp}
+                                {/* {this.renderProofreading()} */}
+                            </Grid.Row>
+                        </Grid>
+                    </Grid.Column>
+                </Grid.Row>
+            </Grid>
         )
     }
 }

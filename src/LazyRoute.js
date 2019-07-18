@@ -25,15 +25,21 @@ class LazyRoute extends React.Component {
         )
       },
     });
-
+    const LayoutComp = this.props.layout;
     return (
-      !title ? 
+      !title ?
         <Route {...rest} component={LoadableComponent} />
-      : (
-        <DocumentMeta title={title}>
-          <Route {...rest} component={LoadableComponent} />
-        </DocumentMeta>
-      )
+        : (
+          <DocumentMeta title={title}>
+            {LayoutComp ? (
+              <LayoutComp>
+                <Route {...rest} component={LoadableComponent} />
+              </LayoutComp>
+            ) : (
+                <Route {...rest} component={LoadableComponent} />
+              )}
+          </DocumentMeta>
+        )
     )
   }
 }
