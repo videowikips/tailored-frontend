@@ -265,7 +265,7 @@ class Convert extends React.Component {
 
     renderProofreading = () => {
         return (
-            <div className="proofreading">
+            <div className="proofreading" style={{ width: '100%' }}>
                 <Grid style={{ marginLeft: 0 }}>
                     <Grid.Row>
                         <Grid.Column width={16} style={{ padding: 0, backgroundColor: '#30343f' }}>
@@ -291,7 +291,7 @@ class Convert extends React.Component {
                                                                 playing={this.state.videoPlaying}
                                                                 onTimeChange={this.onTimeChange}
                                                                 videoRef={(ref) => this.videoRef = ref}
-                                                                url={'/1.mp4' || this.props.video.url}
+                                                                url={this.props.video.url}
                                                                 onPlayToggle={this.onPlayToggle}
                                                             />
                                                         )}
@@ -472,7 +472,7 @@ class Convert extends React.Component {
             <Grid style={{ height: '100%', width: '100%' }}>
                 <Grid.Row style={{ marginBottom: 0, paddingBottom: 0 }}>
                     <Grid.Column width={4} style={{ padding: 0 }}>
-                        <Grid style={{ width: '100%', height: '100%', backgroundColor: '#424650', color: 'white', borderRadius: 0, borderRight: '1px solid black' }}>
+                        <Grid style={{ width: '100%', height: '100%', backgroundColor: '#424650', color: 'white', borderRadius: 0, borderRight: '1px solid black', marginTop: 0 }}>
                             {this.renderInstructions()}
                         </Grid>
                     </Grid.Column>

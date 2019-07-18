@@ -59,6 +59,7 @@ export default class SubtitleForm extends React.Component {
                             <Grid.Column width={4}>
                                 <Dropdown
                                     item
+                                    style={{ color: 'white' }}
                                     value={this.state.speakerNumber}
                                     options={mapSpeakersToDropdownOptions(speakers)}
                                     onChange={(e, { value }) => this.setState({ speakerNumber: value }, this.onSave)}
