@@ -431,7 +431,7 @@ class VideoTimeline extends React.Component {
         try {
             if (e.dataTransfer.getData('text') && JSON.parse(e.dataTransfer.getData('text')).speaker) {
                 const { subtitles } = this.props
-                const left = this.state.barHalfSize - durationToPixels(this.state.currentTime - this.state.deltaMS, SCALE)
+                const left = this.state.barHalfSize - durationToPixels(this.state.currentTime - this.state.deltaMS, SCALE) + this.containerRef.getBoundingClientRect().x;
                 const deltaDur = Math.abs(parseInt((Math.round(left - e.clientX) / 100)) * 1000);
                 const startTime = Math.abs(this.state.deltaMS + deltaDur);
                 const { speaker } = JSON.parse(e.dataTransfer.getData('text'));
@@ -474,6 +474,7 @@ class VideoTimeline extends React.Component {
         const left = this.state.barHalfSize - durationToPixels(this.state.currentTime - this.state.deltaMS, SCALE);
         return (
             <div
+            ref={(ref) => this.containerRef = ref}
             >
                 <div
                     style={{ position: 'relative', overflow: 'hidden', width: '100%', height: 65, background: '#1a1a1a' }}
