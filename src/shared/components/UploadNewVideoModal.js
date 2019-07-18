@@ -2,10 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Modal, Button, Input, Grid, Dropdown, Progress } from 'semantic-ui-react';
 import Dropzone from 'react-dropzone';
-import { supportedLangs } from '../constants/langs';
+import { supportedLangs, isoLangsArray } from '../constants/langs';
 const speakersOptions = Array.apply(null, { length: 10 }).map(Number.call, Number).map((a, index) => ({ value: index + 1, text: index + 1 }));
-const langsOptions = supportedLangs.map((lang) => ({ value: lang.code, text: `${lang.name} ( ${lang.code} )` }));
-console.log(langsOptions)
+let langsToUse = supportedLangs.map((l) => ({ ...l, supported: true }));
+langsToUse = langsToUse.concat(isoLangsArray.filter((l) =>  supportedLangs.every((l2) => l2.code.indexOf(l.code) === -1)));
+const langsOptions = langsToUse.map((lang) => ({ key: lang.code, value: lang.code, text: `${lang.name} ( ${lang.code} ) ${lang.supported ? ' < Automated >' : ''}` }));
+
 const styles = {
     ModalCloseButton: {
         position: 'absolute',
