@@ -137,7 +137,7 @@ class Convert extends React.Component {
         setTimeout(() => {
             console.log('Navigating to article')
             if (this.props.article) {
-                this.props.history.push(`/article/${this.props.article._id}`)
+                this.props.history.push(`/dashboard/article/${this.props.article._id}`)
             }
         }, 2500);
     }
