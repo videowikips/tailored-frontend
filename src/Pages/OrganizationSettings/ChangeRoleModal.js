@@ -1,9 +1,16 @@
 import React, { Component } from 'react';
-import { Button, Modal, Form, Select, Icon } from 'semantic-ui-react'
+import { Button, Modal, Form, Select, Icon, Message } from 'semantic-ui-react'
+
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
+
+import { editPermissions } from '../../actions/organization';
 
 class ChangeRoleModal extends Component {
     state = {
-        open: false
+        open: false,
+        role: null,
+        permissionUpdateMessage: null
     }
 
     close = () => this.setState({ open: false });
@@ -12,19 +19,64 @@ class ChangeRoleModal extends Component {
 
     roles = [
         {
-            key: 'admin',
-            value: 'admin',
-            text: 'Admin'
+            key: 'edit',
+            value: 'edit',
+            text: 'Edit'
         }, {
-            key: 'user',
-            value: 'user',
-            text: 'User'
+            key: 'update',
+            value: 'update',
+            text: 'Update'
         }, {
-            key: 'guest',
-            value: 'guest',
-            text: 'Guest'
+            key: 'translate',
+            value: 'translate',
+            text: 'Translate'
         }
     ]
+
+    handleChange = (event, data) => {
+        if (data) {
+            const value = data.value;
+            const name = data.name;
+
+            this.setState({
+                [name]: value
+            });
+        } else {
+            const target = event.target;
+            const value = target.type === 'checkbox' ? target.checked : target.value;
+            const name = target.name;
+
+            this.setState({
+                [name]: value
+            });
+        }
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (this.props.permissionUpdateMessage !== nextProps.permissionUpdateMessage) {
+            this.setState({
+                permissionUpdateMessage: nextProps.permissionUpdateMessage
+            });
+        }
+    }
+
+    onFormSubmit = () => {
+        const { role } = this.state;
+        let permissions;
+
+        if (role === 'edit') {
+            permissions = ['edit'];
+        } else if (role === 'update') {
+            permissions = ['edit', 'update'];
+        } else if (role === 'translate') {
+            permissions = ['edit', 'update', 'translate'];
+        }
+
+        this.props.editPermissions({
+            email: this.props.email,
+            permissions
+        });
+    }
 
     render() {
         const { open } = this.state;
@@ -58,10 +110,19 @@ class ChangeRoleModal extends Component {
                         </Form.Field>
                     </Form>
 
+                    {
+                        this.state.permissionUpdateMessage && 
+                        
+                        <Message color='green'>
+                            {this.state.permissionUpdateMessage}
+                        </Message>
+                    }
+                    
+
                 </Modal.Content>
 
                 <Modal.Actions>
-                    <Button positive type="submit" onClick={this.onFormSubmit}>Invite User</Button>
+                    <Button positive type="submit" onClick={this.onFormSubmit}>Change</Button>
                     <Button onClick={this.close}> Cancel </Button>
                 </Modal.Actions>
 
@@ -70,4 +131,14 @@ class ChangeRoleModal extends Component {
     }
 }
 
-export default ChangeRoleModal;
+const mapStateToProps = ({ organization }) => ({
+    ...organization
+})
+
+const mapDispatchToProps = (dispatch) => ({
+    editPermissions: ({ email, permissions }) => dispatch(editPermissions({ email, permissions }))
+})
+
+export default withRouter(
+    connect(mapStateToProps, mapDispatchToProps)(ChangeRoleModal)
+);

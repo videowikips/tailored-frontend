@@ -11,7 +11,6 @@ export default class Home extends React.Component {
     render() {
         return (
             <div className="home">
-
                 <div className="header-wrapper">
                     <h2 className="ui header">
                         <img src="/img/logo.png" className="logo" alt="Video Wiki Logo" />
@@ -23,7 +22,6 @@ export default class Home extends React.Component {
                                 Volunteer <br></br>
                                 Log in / Sign up
                             </button>
-
                         </div>
                     </h2>
                 </div>

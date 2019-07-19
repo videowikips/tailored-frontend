@@ -26,30 +26,46 @@ class ModalExampleSize extends Component {
 
     roles = [
         {
-            key: 'admin',
-            value: 'admin',
-            text: 'Admin'
+            key: 'edit',
+            value: 'edit',
+            text: 'Edit'
         }, {
-            key: 'user',
-            value: 'user',
-            text: 'User'
+            key: 'update',
+            value: 'update',
+            text: 'Update'
         }, {
-            key: 'guest',
-            value: 'guest',
-            text: 'Guest'
+            key: 'translate',
+            value: 'translate',
+            text: 'Translate'
         }
     ]
 
     onFormSubmit = (e) => {
         e.preventDefault();
 
-        const { email, firstname, lastname } = this.state;
+        const { email, firstname, lastname, role } = this.state;
+        let permissions;
+
+        if (role === 'edit') {
+            permissions = ['edit'];
+        } else if (role === 'update') {
+            permissions = ['edit', 'update'];
+        } else if (role === 'translate') {
+            permissions = ['edit', 'update', 'translate'];
+        }
 
         this.props.inviteUser({
             email,
             firstname,
-            lastname
-        })
+            lastname,
+            permissions
+        });            
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.inviteUserSuccess) {
+            this.close();
+        }
     }
 
     handleChange = (event, data) => {
@@ -133,7 +149,7 @@ const mapStateToProps = ({ organization }) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-    inviteUser: ({ email, firstname, lastname, role }) => dispatch(inviteUser({ email, firstname, lastname, role }))
+    inviteUser: ({ email, firstname, lastname, permissions }) => dispatch(inviteUser({ email, firstname, lastname, permissions }))
 })
 
 export default withRouter(

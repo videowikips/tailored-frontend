@@ -13,6 +13,7 @@ export default {
         getUsers: `${API_ROOT}/user/getOrgUsers`,
         inviteUser: `${API_ROOT}/user/add`,
         removeUser: `${API_ROOT}/user/remove`,
+        editPermissions: `${API_ROOT}/user/editPermissions`,
     },
     user: {
         isValidToken: `${API_ROOT}/user/isValidToken`,

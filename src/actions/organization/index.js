@@ -7,7 +7,6 @@ const fetchUserSuccess = (users) => ({
     payload: users
 });
 
-
 const inviteUserSuccess = (user) => ({
     type: actionTypes.INVITE_USER_SUCCESS,
     payload: user
@@ -18,6 +17,11 @@ const removeUserSuccess = (email) => ({
     payload: email
 });
 
+const editPermissionSuccess = (payload) => ({
+    type: actionTypes.CHANGE_PERMISSION_SUCCESS,
+    payload
+});
+
 export const fetchUsers = () => dispatch => {
     requestAgent.get(Api.organization.getUsers)
         .then(({ body }) => {
@@ -25,20 +29,25 @@ export const fetchUsers = () => dispatch => {
         });
 }
 
-export const inviteUser = ({ email, firstname, lastname, role }) => dispatch => {
-    requestAgent.post(Api.organization.inviteUser, { email, firstname, lastname })
+export const inviteUser = ({ email, firstname, lastname, permissions }) => dispatch => {
+    requestAgent.post(Api.organization.inviteUser, { email, firstname, lastname, permissions })
         .then(({ body }) => {
-            dispatch(inviteUserSuccess({
-                email,
-                firstname,
-                lastname,
-                role
-            }))
+            const { success, user } = body;
+
+            if (success) {
+                dispatch(inviteUserSuccess(user))
+            }
         });
 }
 
-export const changePermission = ({ email, role }) => dispatch => {
-
+export const editPermissions = ({ email, permissions }) => dispatch => {
+    requestAgent.post(Api.organization.editPermissions, { email, permissions })
+        .then(({ body }) => {
+            dispatch(editPermissionSuccess({
+                email,
+                permissions
+            }));
+        });
 }
 
 export const removeUser = (email) => dispatch => {
