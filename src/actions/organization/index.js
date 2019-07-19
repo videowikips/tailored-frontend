@@ -12,6 +12,11 @@ const inviteUserSuccess = (user) => ({
     payload: user
 });
 
+const inviteUserError = (message) => ({
+    type: actionTypes.INVITE_USER_ERROR,
+    payload: message
+});
+
 const removeUserSuccess = (email) => ({
     type: actionTypes.REMOVE_USER_SUCCESS,
     payload: email
@@ -32,10 +37,12 @@ export const fetchUsers = () => dispatch => {
 export const inviteUser = ({ email, firstname, lastname, permissions }) => dispatch => {
     requestAgent.post(Api.organization.inviteUser, { email, firstname, lastname, permissions })
         .then(({ body }) => {
-            const { success, user } = body;
+            const { success, user, message } = body;
 
             if (success) {
-                dispatch(inviteUserSuccess(user))
+                dispatch(inviteUserSuccess(user));
+            } else {
+                dispatch(inviteUserError(message));
             }
         });
 }

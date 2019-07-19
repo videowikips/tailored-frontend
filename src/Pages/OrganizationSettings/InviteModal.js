@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Button, Modal, Form, Select, Icon } from 'semantic-ui-react'
+import { Button, Modal, Form, Select, Icon, Message } from 'semantic-ui-react'
 
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
@@ -15,7 +15,9 @@ class ModalExampleSize extends Component {
         email: '',
         firstname: '',
         lastname: '',
-        role: ''
+        role: '',
+
+        errorMessage: null
     }
 
     form = null;
@@ -26,17 +28,17 @@ class ModalExampleSize extends Component {
 
     roles = [
         {
-            key: 'edit',
-            value: 'edit',
-            text: 'Edit'
-        }, {
-            key: 'update',
-            value: 'update',
-            text: 'Update'
-        }, {
-            key: 'translate',
-            value: 'translate',
+            key: 'l1',
+            value: 'l1',
             text: 'Translate'
+        }, {
+            key: 'l2',
+            value: 'l2',
+            text: 'Edit and Update'
+        }, {
+            key: 'l3',
+            value: 'l3',
+            text: 'Edit, Update and Translate'
         }
     ]
 
@@ -46,11 +48,11 @@ class ModalExampleSize extends Component {
         const { email, firstname, lastname, role } = this.state;
         let permissions;
 
-        if (role === 'edit') {
-            permissions = ['edit'];
-        } else if (role === 'update') {
+        if (role === 'l1') {
+            permissions = ['translate'];
+        } else if (role === 'l2') {
             permissions = ['edit', 'update'];
-        } else if (role === 'translate') {
+        } else if (role === 'l3') {
             permissions = ['edit', 'update', 'translate'];
         }
 
@@ -59,12 +61,18 @@ class ModalExampleSize extends Component {
             firstname,
             lastname,
             permissions
-        });            
+        });
     }
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.inviteUserSuccess) {
             this.close();
+        } else {
+            if (nextProps.inviteUserMessage) {
+                this.setState({
+                    errorMessage: nextProps.inviteUserMessage
+                });
+            }
         }
     }
 
@@ -130,6 +138,14 @@ class ModalExampleSize extends Component {
                                     options={this.roles} />
                             </Form.Field>
                         </Form>
+
+                        {
+                            this.state.errorMessage &&
+
+                            <Message color='red'>
+                                {this.state.errorMessage}
+                            </Message>
+                        }
 
                     </Modal.Content>
 

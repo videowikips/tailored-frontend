@@ -16,8 +16,9 @@ const signUpSuccess = ()  =>({
     type: actionTypes.SIGNUP_SUCCESS
 })
 
-const signUpFaild = () => ({
-    type: actionTypes.SIGNUP_FAILED
+const signUpFaild = (message) => ({
+    type: actionTypes.SIGNUP_FAILED,
+    payload: message
 })
 
 const validateToken = (isValid) => ({
@@ -47,12 +48,12 @@ export const signUp = ({ orgName, email, password }) => dispatch => {
         email,
         password
     }).then(result => {
-        const { success } = result.body;
+        const { success, message } = result.body;
 
         if (success) {
             dispatch(signUpSuccess());
         } else {
-            dispatch(signUpFaild());
+            dispatch(signUpFaild(message));
         }
     })
 }

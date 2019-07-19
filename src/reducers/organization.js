@@ -4,6 +4,7 @@ const INITIAL_STATE = {
     users: [],
     permissionUpdateMessage: null,
     inviteUserSuccess: null,
+    inviteUserMessage: null,
     removeUserSuccess: null
 }
 
@@ -20,6 +21,15 @@ export default function (state = INITIAL_STATE, action) {
                 ...state,
                 inviteUserSuccess: true,
                 users: [...state.users, action.payload]
+            }
+
+        case actionTypes.INVITE_USER_ERROR:
+            console.log('INVITE_USER_ERROR');
+
+            return {
+                ...state,
+                inviteUserSuccess: false,
+                inviteUserMessage: action.payload
             }
 
         case actionTypes.CHANGE_PERMISSION_SUCCESS:

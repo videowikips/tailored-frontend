@@ -22,7 +22,6 @@ class DeleteUserModal extends Component {
     }
 
     removeUser = () => {
-        console.log('REMOVE USER');
         this.props.removeUser(this.props.email);
     }
 
@@ -42,7 +41,7 @@ class DeleteUserModal extends Component {
                 onClose={this.close}
             >
 
-                <Header icon='archive' content='Archive Old Messages' />
+                <Header icon='trash' content='Are you Sure' />
                 
                 <Modal.Content>
                     <p>

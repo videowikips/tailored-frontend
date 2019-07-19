@@ -51,7 +51,7 @@ export default function (state = INITIAL_STATE, action) {
             return {
                 ...state,
                 signUpSuccess: false,
-                signUpMessage: 'Something went error, please try again later'
+                signUpMessage: action.payload || 'Something went error, please try again later'
             }
 
         default:
