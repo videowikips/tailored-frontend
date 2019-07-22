@@ -2,6 +2,10 @@ import * as actionTypes from '../actions/video/types';
 
 const INITIAL_STATE = {
     video: null,
+    organizationVideos: {
+        status: 'done',
+        videosList: [],
+    },
     fetchVideoState: 'done',
     fetchVideoError: '',
 
@@ -32,6 +36,14 @@ export default function (state = INITIAL_STATE, action) {
             return { ...state, fetchVideoState: 'failed', fetchVideoError: action.payload };
         case actionTypes.SET_STAGES:
             return { ...state, convertStages: action.payload };
+        case actionTypes.FETCH_ORGANIZATION_VIDEOS_LOADING:
+                return { ...state, organizationVideos: { ...state.organizationVideos, status: 'loading '}};
+
+        case actionTypes.FETCH_ORGANIZATION_VIDEOS_FAILED:
+                return { ...state, organizationVideos: { ...state.organizationVideos, status: 'failed '}};
+
+        case actionTypes.FETCH_ORGANIZATION_VIDEOS_SUCCESS:
+                return { ...state, organizationVideos: { ...state.organizationVideos, status: 'done', videosList: action.payload }};
         default:
             return state;
     }

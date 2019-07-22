@@ -42,13 +42,14 @@ const setStages = (stages, activeStageIndex) => ({
     payload: { stages, activeStageIndex },
 })
 
-export const uploadVideo = ({ title, numberOfSpeakers, video, langCode }) => (dispatch) => {
+export const uploadVideo = ({ title, numberOfSpeakers, video, langCode, organization }) => (dispatch) => {
     dispatch(uploadVideoLoading());
     requestAgent
         .post(Api.video.uploadVideo)
         .field('title', title)
         .field('numberOfSpeakers', numberOfSpeakers)
         .field('langCode', langCode)
+        .field('organization', organization)
         .attach('video', video)
         .on('progress', function (e) {
             dispatch(uploadVideoProgress(e.percent))
@@ -121,4 +122,18 @@ export const convertVideoToArticle = (videoId) => (dispatch, getState) => {
             const reason = err.response ? err.response.text : 'Something went wrong';
             NotificationService.error(reason);
         })
+}
+
+export const fetchOrganizationVideos = organizationId => dispatch => {
+    dispatch({ type: actionTypes.FETCH_ORGANIZATION_VIDEOS_LOADING });
+    requestAgent
+    .get(Api.video.getOrganizationVideos(organizationId))
+    .then((res) => {
+        const { videos } = res.body;
+        dispatch({ type: actionTypes.FETCH_ORGANIZATION_VIDEOS_SUCCESS, payload: videos });
+    })
+    .catch((err) => {
+        NotificationService.responseError(err);
+        dispatch({ type: actionTypes.FETCH_ORGANIZATION_VIDEOS_FAILED });
+    })
 }

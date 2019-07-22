@@ -52,19 +52,31 @@ class LazyRoute extends React.Component {
 
     const hasPermission = !isPrivateRoute || this.props.isAuthenticated;
 
-    return (
-      hasPermission ? (!title ?
-        <Route {...rest} component={LoadableComponent} />
-        : (
-          <DocumentMeta title={title}>
+    if (!hasPermission) {
+      return (
+        <div>
+          <LoaderOverlay loaderImage="/img/edit-loader.gif" />
+        </div>
+      );
+    }
+
+    const LayoutComp = this.props.layout;
+    if (!LayoutComp) {
+
+      return (
+        <DocumentMeta title={title || 'Videowiki'}>
+          <Route {...rest} component={LoadableComponent} />
+        </DocumentMeta>
+      )
+    } else {
+      return (
+        <DocumentMeta title={title || 'Videowiki'}>
+          <LayoutComp>
             <Route {...rest} component={LoadableComponent} />
-          </DocumentMeta>
-        )) : (
-          <div>
-            <LoaderOverlay loaderImage="/img/edit-loader.gif" />
-          </div>
-        )
-    )
+          </LayoutComp>
+        </DocumentMeta>
+      )
+    }
 
   }
 }

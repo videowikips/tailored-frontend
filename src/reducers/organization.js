@@ -2,6 +2,7 @@ import * as actionTypes from '../actions/organization/types';
 
 const INITIAL_STATE = {
     users: [],
+    organization: null,
     permissionUpdateMessage: null,
     inviteUserSuccess: null,
     inviteUserMessage: null,
@@ -10,6 +11,8 @@ const INITIAL_STATE = {
 
 export default function (state = INITIAL_STATE, action) {
     switch (action.type) {
+        case actionTypes.SET_ORGANIZATION:
+            return { ...state, organization: action.payload };
         case actionTypes.FETCH_USER_SUCCESS:
             return {
                 ...state,

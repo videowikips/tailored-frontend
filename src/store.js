@@ -9,8 +9,7 @@ import createRootReducer from './reducers'
 const persistConfig = {
   key: 'root',
   storage,
-//   whitelist: ['ui', 'auth'],
-  whitelist: ['auth']
+  whitelist: ['authentication', 'organization']
 }
 
 const middlewares = process.env.NODE_ENV === 'development'

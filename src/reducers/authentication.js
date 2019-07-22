@@ -4,6 +4,7 @@ const storedToken = localStorage.getItem('authToken');
 
 const INITIAL_STATE = {
     isAuthenticated: false,
+    user: null,
     token: storedToken,
     errorMessage: null,
     signUpMessage: null,
@@ -12,15 +13,20 @@ const INITIAL_STATE = {
 
 export default function (state = INITIAL_STATE, action) {
     switch (action.type) {
+        case actionTypes.LOGOUT:
+            localStorage.removeItem('authToken');
+            return { ...INITIAL_STATE };
+
         case actionTypes.AUTHENTICATION_SUCCESS:
-            const token = action.payload;
+            const { token, user } = action.payload;
             localStorage.setItem('authToken', token);
 
             return {
                 ...state,
                 isAuthenticated: true,
                 errorMessage: null,
-                token
+                token,
+                user
             }
 
         case actionTypes.AUTHENTICATION_FAILED:

@@ -1,16 +1,52 @@
 import React, { Component } from 'react'
-import { List } from 'semantic-ui-react'
+import { List, Select } from 'semantic-ui-react'
 import ChangeRoleModal from './ChangeRoleModal';
 import DeleteUserModal from './DeleteUserModal';
 
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 
-import { fetchUsers, removeUser } from '../../actions/organization';
+import { fetchUsers, removeUser, editPermissions } from '../../actions/organization';
+
+function getUserRoleValue(permissions) {
+    return `l${permissions.length}`
+}
 
 class UserTable extends Component {
+    roles = [
+        {
+            key: 'l1',
+            value: 'l1',
+            text: 'Translate'
+        }, {
+            key: 'l2',
+            value: 'l2',
+            text: 'Edit and Update'
+        }, {
+            key: 'l3',
+            value: 'l3',
+            text: 'Edit, Update and Translate'
+        }
+    ]
+
     componentDidMount() {
         this.props.fetchUsers()
+    }
+
+    onRoleChange = (role, email) => {
+        let permissions;
+
+        if (role === 'l1') {
+            permissions = ['translate'];
+        } else if (role === 'l2') {
+            permissions = ['edit', 'update'];
+        } else if (role === 'l3') {
+            permissions = ['edit', 'update', 'translate'];
+        }
+        this.props.editPermissions({
+            email,
+            permissions
+        });
     }
 
     render() {
@@ -27,10 +63,18 @@ class UserTable extends Component {
                         <div>
                             <span className="invite-name bold-text">{user.firstname} {user.lastname}</span>  {user.email}
 
-                            <div className="pull-right">
-                                {isOrganizationOwner || <ChangeRoleModal email={user.email}/>}
-                                {isOrganizationOwner || <DeleteUserModal email={user.email}/>}
-                            </div>
+                            {!isOrganizationOwner && (
+                                <div className="pull-right">
+                                    <Select
+                                        style={{ marginRight: 10 }}
+                                        name="role"
+                                        onChange={(e, { value }) => this.onRoleChange(value, user.email)}
+                                        value={getUserRoleValue(user.organizationRoles[0].permissions)}
+                                        options={this.roles}
+                                    />
+                                    <DeleteUserModal email={user.email} />
+                                </div>
+                            )}
 
                         </div>
 
@@ -77,7 +121,8 @@ const mapStateToProps = ({ organization }) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-    fetchUsers: () => dispatch(fetchUsers())
+    fetchUsers: () => dispatch(fetchUsers()),
+    editPermissions: ({ email, permissions }) => dispatch(editPermissions({ email, permissions }))
 })
 
 export default withRouter(

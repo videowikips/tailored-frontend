@@ -39,7 +39,7 @@ class LoginForm extends Component {
         console.log(nextProps);
 
         if (nextProps.isAuthenticated) {
-            this.props.history.push('/organization/settings');
+            this.props.history.push('/organization/users');
         }
 
         if (nextProps.errorMessage) {

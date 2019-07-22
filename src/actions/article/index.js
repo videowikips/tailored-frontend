@@ -70,6 +70,7 @@ export const fetchArticleById = id => dispatch => {
     requestAgent
         .get(Api.article.getById(id))
         .then((res) => {
+            console.log('res', res.body)
             const { article } = res.body;
             dispatch(fetchArticleSuccess(article));
         })

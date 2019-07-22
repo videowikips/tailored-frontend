@@ -1,10 +1,12 @@
 import * as actionTypes from './types';
+import * as orgActionTypes from '../organization/types';
+
 import Api from '../../shared/api';
 import requestAgent from '../../shared/utils/requestAgent';
 
-const authenticationSuccess = (token) => ({
+const authenticationSuccess = (userData) => ({
     type: actionTypes.AUTHENTICATION_SUCCESS,
-    payload: token,
+    payload: userData,
 })
 
 const authenticationFailed = (message) => ({
@@ -12,7 +14,7 @@ const authenticationFailed = (message) => ({
     payload: message,
 })
 
-const signUpSuccess = ()  =>({
+const signUpSuccess = () => ({
     type: actionTypes.SIGNUP_SUCCESS
 })
 
@@ -26,15 +28,23 @@ const validateToken = (isValid) => ({
     payload: isValid
 })
 
+export const logout = () => ({
+    type: actionTypes.LOGOUT,
+})
+
 export const login = ({ email, password }) => dispatch => {
     requestAgent.post(Api.authentication.login, {
         email,
         password
     }).then(result => {
-        const { success, token } = result.body;
+        const { success, token, user } = result.body;
 
         if (success) {
-            dispatch(authenticationSuccess(token));
+            dispatch(authenticationSuccess({ token, user }));
+            dispatch({
+                type: orgActionTypes.SET_ORGANIZATION,
+                payload: user.organizationRoles[0].organization
+            })
         } else {
             dispatch(authenticationFailed('Email or Password in invalid'));
         }
@@ -42,7 +52,7 @@ export const login = ({ email, password }) => dispatch => {
 }
 
 export const signUp = ({ orgName, email, password }) => dispatch => {
-        
+
     requestAgent.post(Api.authentication.register, {
         orgName,
         email,
@@ -58,9 +68,17 @@ export const signUp = ({ orgName, email, password }) => dispatch => {
     })
 }
 
-export const isValidToken = () => dispatch => {
-    requestAgent.get(Api.user.isValidToken).then(({body}) => {
+export const isValidToken = () => (dispatch, getState) => {
+    requestAgent.get(Api.user.isValidToken).then(({ body }) => {
         const { isValid } = body;
+        const { user } = getState().authentication;
         dispatch(validateToken(isValid))
+        console.log('isvalid token')
+        if (user && user.organizationRoles) {
+            dispatch({
+                type: orgActionTypes.SET_ORGANIZATION,
+                payload: user.organizationRoles[0].organization
+            })
+        }
     })
 }

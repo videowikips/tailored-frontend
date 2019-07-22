@@ -47,13 +47,16 @@ export const inviteUser = ({ email, firstname, lastname, permissions }) => dispa
         });
 }
 
-export const editPermissions = ({ email, permissions }) => dispatch => {
+export const editPermissions = ({ email, permissions }) => (dispatch, getState) => {
     requestAgent.post(Api.organization.editPermissions, { email, permissions })
         .then(({ body }) => {
+            const users = getState().organization.users
+            users.find((u) => u.email === email).organizationRoles[0].permissions = permissions;
             dispatch(editPermissionSuccess({
                 email,
                 permissions
             }));
+            dispatch(fetchUserSuccess([...users]));
         });
 }
 

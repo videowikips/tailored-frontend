@@ -137,7 +137,7 @@ class Convert extends React.Component {
         setTimeout(() => {
             console.log('Navigating to article')
             if (this.props.article) {
-                this.props.history.push(`/dashboard/article/${this.props.article._id}`)
+                this.props.history.push(`/organization/article/${this.props.article._id}`)
             }
         }, 2500);
     }
@@ -470,14 +470,14 @@ class Convert extends React.Component {
         }
 
         return (
-            <Grid style={{ height: '100%', width: '100%' }}>
-                <Grid.Row style={{ marginBottom: 0, paddingBottom: 0 }}>
-                    <Grid.Column width={4} style={{ padding: 0 }}>
-                        <Grid style={{ width: '100%', height: '100%', backgroundColor: '#424650', color: 'white', borderRadius: 0, borderRight: '1px solid black', marginTop: 0 }}>
+            <Grid style={{ height: '100%', width: '100%', margin: 0 }}>
+                <Grid.Row style={{ marginBottom: 0, padding: 0 }}>
+                    <Grid.Column width={3} style={{ padding: 0 }}>
+                        <Grid style={{ width: '100%', height: '100%', backgroundColor: '#424650', color: 'white', borderRadius: 0, borderRight: '1px solid black', margin: 0, position: 'relative', zIndex: 2 }}>
                             {this.renderInstructions()}
                         </Grid>
                     </Grid.Column>
-                    <Grid.Column width={12} style={{ padding: 0, backgroundColor: '#30343f' }}>
+                    <Grid.Column width={13} style={{ padding: 0, backgroundColor: '#30343f' }}>
                         <Grid>
                             <Grid.Row style={{ marginTop: 0, paddingTop: 0 }}>
                                 <Grid.Column width={16} style={{ padding: 0 }}>

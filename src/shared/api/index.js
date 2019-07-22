@@ -5,6 +5,7 @@ export default {
         uploadVideo: `${API_ROOT}/video/upload`,
         getVideoById: (id) => `${API_ROOT}/video/${id}`,
         convertVideo: (id) => `${API_ROOT}/video/${id}/convert`,
+        getOrganizationVideos: id => `${API_ROOT}/video?organization=${id}`
     },
     article: {
         getById: id => `${API_ROOT}/article/${id}`,
