@@ -2,9 +2,13 @@
     .header-wrapper {
         padding: 1em;
        
+        .header {
+            height: 60px;
+        }
         .logo {
+            padding-top: 10px;
             width: 130px !important;
-            height: 50px !important;
+            // height: 50px !important;
         }
     }
     

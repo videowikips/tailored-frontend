@@ -10,11 +10,11 @@ import NotificationService from '../../shared/utils/NotificationService';
 class Demo extends React.Component {
 
     state = {
-        uploadFormOpen: false,
+        uploadFormOpen: true,
         videoForm: {
             title: '',
             numberOfSpeakers: 1,
-            langCode: 'en',
+            langCode: 'en-US',
             video: null,
             fileContent: null,
         }
@@ -65,7 +65,7 @@ class Demo extends React.Component {
                 </Grid.Row>
                 <UploadNewVideoModal
                     open={this.state.uploadFormOpen}
-                    onClose={() => this.setState({ uploadFormOpen: false })}
+                    onClose={() => this.props.history.push('/')}
                     onChange={this.onUploadFormChange}
                     onSubmit={this.onSubmit}
                     value={this.state.videoForm}

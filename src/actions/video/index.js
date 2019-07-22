@@ -1,6 +1,8 @@
 import * as actionTypes from './types';
 import Api from '../../shared/api';
 import requestAgent from '../../shared/utils/requestAgent';
+import { generateConvertStages } from '../../shared/utils/helpers';
+import NotificationService from '../../shared/utils/NotificationService';
 
 const uploadVideoLoading = () => ({
     type: actionTypes.UPLOAD_VIDEO_LOADING
@@ -35,6 +37,11 @@ const fetchVideoFailed = (err) => ({
     payload: err,
 })
 
+const setStages = (stages, activeStageIndex) => ({
+    type: actionTypes.SET_STAGES,
+    payload: { stages, activeStageIndex },
+})
+
 export const uploadVideo = ({ title, numberOfSpeakers, video, langCode }) => (dispatch) => {
     dispatch(uploadVideoLoading());
     requestAgent
@@ -43,9 +50,9 @@ export const uploadVideo = ({ title, numberOfSpeakers, video, langCode }) => (di
         .field('numberOfSpeakers', numberOfSpeakers)
         .field('langCode', langCode)
         .attach('video', video)
-        .on('progress', function(e){
+        .on('progress', function (e) {
             dispatch(uploadVideoProgress(e.percent))
-         })
+        })
         .then(res => {
             dispatch(uploadVideoDone(res.body));
         })
@@ -58,12 +65,60 @@ export const uploadVideo = ({ title, numberOfSpeakers, video, langCode }) => (di
 export const fetchVideoById = videoId => dispatch => {
     dispatch(fetchVideoLoading());
     requestAgent
-    .get(Api.video.getVideoById(videoId))
-    .then(res => {
-        dispatch(fetchVideoSuccess(res.body));
-    })
-    .catch(err => {
-        const reason = err.response ? err.response.text : 'Something went wrong';
-        dispatch(fetchVideoFailed(reason));
-    })
+        .get(Api.video.getVideoById(videoId))
+        .then(res => {
+            const video = res.body;
+            const stages = generateConvertStages();
+            let activeStageIndex = 0;
+            switch (video.status) {
+                case 'proofreading':
+                    stages[0].completed = true;
+                    stages[1].active = true;
+                    activeStageIndex = 1;
+                    break;
+                case 'converting':
+                    stages[0].completed = true;
+                    stages[1].completed = true;
+                    stages[2].active = true;
+                    activeStageIndex = 2;
+                    break;
+                case 'done':
+                    stages[0].completed = true;
+                    stages[1].completed = true;
+                    stages[2].completed = true;
+                    stages[0].active = true;
+                    stages[1].active = true;
+                    stages[2].active = true;
+                    activeStageIndex = 3;
+                    break;
+                default:
+                    stages[0].active = true;
+            }
+            dispatch(fetchVideoSuccess(video));
+            dispatch(setStages(stages, activeStageIndex));
+        })
+        .catch(err => {
+            console.log(err);
+            const reason = err.response ? err.response.text : 'Something went wrong';
+            dispatch(fetchVideoFailed(reason));
+        })
+}
+
+export const convertVideoToArticle = (videoId) => (dispatch, getState) => {
+    requestAgent
+        .post(Api.video.convertVideo(videoId))
+        .then(res => {
+            console.log(res);
+            const { stages } = getState().video.convertStages;
+            stages[0].completed = true;
+            stages[1].completed = true;
+            stages[2].active = true;
+
+            dispatch(setStages(stages, 2));
+        })
+        .catch((err) => {
+            console.log(err);
+            const reason = err.response ? err.response.text : 'Something went wrong';
+            NotificationService.error(reason);
+        })
 }

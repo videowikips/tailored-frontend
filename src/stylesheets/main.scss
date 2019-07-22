@@ -21,6 +21,8 @@
 ////////////////
 // Components //
 ////////////////
+@import 'components/c-app.scss';
+@import 'layouts/dashboard.scss';
 // @import 'components/c-app.scss';
 @import 'components/c-editor.scss';
 @import 'components/c-add-human-voice-modal.scss';
@@ -33,4 +35,9 @@
 
 .notification {
   opacity: 1;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
 }

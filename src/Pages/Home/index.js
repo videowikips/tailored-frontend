@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import OrganizationSignupModal from './OrganizationSignupModal';
 
 export default class Home extends React.Component {
@@ -15,13 +16,12 @@ export default class Home extends React.Component {
                     <h2 className="ui header">
                         <img src="/img/logo.png" className="logo" alt="Video Wiki Logo" />
 
-                        <div className="pull-right">
+                        <div className="pull-right" style={{ display: 'flex', justifyContent: 'center', alignItems: 'stretch'}}>
                             <OrganizationSignupModal/>
 
-                            <button className="large ui blue button">
-                                Volunteer <br></br>
-                                Log in / Sign up
-                            </button>
+                            <Link to="/demo" className="large ui blue button" style={{ paddingTop: 20 }}>
+                                Demo
+                            </Link>
                         </div>
                     </h2>
                 </div>
