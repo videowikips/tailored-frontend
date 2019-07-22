@@ -430,7 +430,7 @@ class Convert extends React.Component {
         };
 
         return (
-            <div key={'lottie-success'}>
+            <div key={'lottie-success'} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
                 <Lottie options={defaultOptions}
                     height={400}
                     width={400}
@@ -456,6 +456,7 @@ class Convert extends React.Component {
     render() {
         let comp = null;
         switch (this.getVideoStatus()) {
+            case 'uploaded':
             case 'transcriping':
             case 'cutting':
             case 'converting':
