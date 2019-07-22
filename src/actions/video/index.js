@@ -49,7 +49,7 @@ export const uploadVideo = ({ title, numberOfSpeakers, video, langCode, organiza
         .field('title', title)
         .field('numberOfSpeakers', numberOfSpeakers)
         .field('langCode', langCode)
-        .field('organization', organization)
+        .field('organization', organization || '')
         .attach('video', video)
         .on('progress', function (e) {
             dispatch(uploadVideoProgress(e.percent))

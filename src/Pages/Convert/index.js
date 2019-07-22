@@ -251,12 +251,12 @@ class Convert extends React.Component {
     renderInstructions = () => {
         return (
             <div
-                style={{ padding: '2rem', marginLeft: '1rem' }}
+                style={{ padding: '2rem' }}
             >
                 <h2>Instructions:</h2>
                 <ol style={{ fontSize: 20 }}>
-                    {['step 1', 'step 2', 'step 3'].map((s) => (
-                        <li style={{ paddingBottom: 10 }} key={'step' + s} >{s}</li>
+                    {['Upload Video', 'Proofread the transcribed text', 'Set the speakers profiles (m/f)', 'Press on "Save and Convert"'].map((s) => (
+                        <li style={{ paddingBottom: 40 }} key={'step' + s} >{s}</li>
                     ))}
                 </ol>
             </div>
