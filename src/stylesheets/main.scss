@@ -23,12 +23,15 @@
 ////////////////
 @import 'components/c-app.scss';
 @import 'layouts/dashboard.scss';
+// @import 'components/c-app.scss';
 @import 'components/c-editor.scss';
 @import 'components/c-add-human-voice-modal.scss';
 @import 'components/Slideshow.scss';
 @import 'components/react-soundplayer.scss';
 @import 'components/rc-slider.scss';
 @import 'components/dropbox.scss';
+@import 'components/home.scss';
+@import 'components/orgnanization-settings.scss';
 
 .notification {
   opacity: 1;

@@ -1,0 +1,103 @@
+.home {
+    .header-wrapper {
+        padding: 1em;
+       
+        .header {
+            height: 60px;
+        }
+        .logo {
+            padding-top: 10px;
+            width: 130px !important;
+            // height: 50px !important;
+        }
+    }
+    
+}
+
+.cover {
+    width: 100%;
+    height: 90vh;
+    position: relative;
+}
+
+.cover > img {
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.cover > .cover-text {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    z-index: 2;
+
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+}
+
+.cover-text > h1 {
+    text-align: center;
+    color: white;
+    padding-top: 30%;
+    font-size: 3em;
+}
+
+.center {
+    margin: auto;
+    width: 50%;
+    padding: 10px;
+}
+
+.description {
+    display: grid;
+    grid-template-columns: 50% 50%;
+}
+
+.description > div {
+    text-align: center;
+    padding: 10px;
+    background: white;
+    box-shadow: 0 2px 5px 0 rgba(#000, 0.16), 0 2px 10px 0 rgba(#000, 0.12);
+    margin: 10px;
+    font-size: 1.5em;
+    line-height: 1.5em;
+}
+
+/* section - how can you make an impact */
+
+.how-to {
+    padding: 3%;
+}
+
+.how-to > h2 {
+    padding-top: 3%;
+    text-align: center;
+}
+
+.how-to > .steps {
+    padding-top: 5%;
+}
+
+.step-header {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin: 15px;
+}
+
+.step-description {
+    font-size: 1.2em;
+    margin: 15px;
+}
+
+.row-3 {
+    display: grid;
+    grid-template-columns: 33.3% 33.3% 33.3%;
+}
+
+.row-3 > div {
+    text-align: center;
+}
