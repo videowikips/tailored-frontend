@@ -35,7 +35,7 @@ class AppRouter extends React.Component {
               <LazyRoute exact path="/organization/users" title="VideoWiki" isPrivateRoute={true} loader={OrganizationUsers} layout={DashboardLayout} />
               {/* <LazyRoute path="/organization/upload" isPrivateRoute={true} title="Upload Video" loader={UploadVideo} layout={DashboardLayout} /> */}
               <LazyRoute path="/organization/videos" isPrivateRoute={true} title="Videos" loader={VideosList} layout={DashboardLayout} />
-              <LazyRoute path="/organization/article/:articleId" isPrivateRoute={true} title="Article" loader={Article} layout={DashboardLayout} />
+              <LazyRoute path="/organization/article/:articleId" title="Article" loader={Article} layout={DashboardLayout} />
               <LazyRoute path="/logout" loader={Logout} />
             </Switch>
           </div>
