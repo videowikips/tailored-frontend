@@ -478,7 +478,7 @@ class Convert extends React.Component {
                         </Grid>
                     </Grid.Column>
                     <Grid.Column width={13} style={{ padding: 0, backgroundColor: '#30343f' }}>
-                        <Grid>
+                        <Grid style={{ marginLeft: 0 }}>
                             <Grid.Row style={{ marginTop: 0, paddingTop: 0 }}>
                                 <Grid.Column width={16} style={{ padding: 0 }}>
                                     {this.renderProgress()}
