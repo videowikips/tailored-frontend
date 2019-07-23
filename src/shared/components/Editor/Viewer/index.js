@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group'
-import SlideShow from '../../../shared/components/SlideShow';
+import SlideShow from '../../../components/SlideShow';
 import One from './One';
 import Two from './Two'
 import Three from './Three'

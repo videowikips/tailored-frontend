@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import request from '../../shared/utils/requestAgent';
+import request from '../../utils/requestAgent';
 import React, { Component } from 'react'
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom'
@@ -13,7 +13,7 @@ import EditorFooter from './EditorFooter'
 import EditorSlide from './EditorSlide'
 import EditorHeader from './EditorHeader'
 
-import LoaderOverlay from '../../shared/components/LoaderOverlay'
+import LoaderOverlay from '../../components/LoaderOverlay'
 
 import Viewer from './Viewer'
 import EditorTimeline from './EditorTimeline';

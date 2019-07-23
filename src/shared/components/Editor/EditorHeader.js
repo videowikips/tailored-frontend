@@ -15,7 +15,7 @@ import {
   RedditIcon,
 } from 'react-share'
 import { NotificationManager } from 'react-notifications';
-import Blinker from '../../shared/components/Blinker';
+import Blinker from '../../components/Blinker';
 import UpdateArticleModal from './modals/UpdateArticleModal';
 import ExportArticleVideo from './ExportArticleVideo';
 import AddHumanVoiceModal from './modals/AddHumanVoiceModal';

@@ -4,9 +4,9 @@ import { Grid, Popup, Icon } from 'semantic-ui-react'
 import { debounce } from 'lodash'
 import Range from 'rc-slider/lib/Range';
 import 'rc-slider/assets/index.css';
-import ProgressSoundPlayer from '../../shared/components/ProgressSoundPlayer';
-import { getUrlMediaType } from '../../shared/utils/helpers';
-import { VIDEO_PLAYER_THUMBNAIL_IMAGE } from '../../shared/constants';
+import ProgressSoundPlayer from '../ProgressSoundPlayer';
+import { getUrlMediaType } from '../../utils/helpers';
+import { VIDEO_PLAYER_THUMBNAIL_IMAGE } from '../../constants';
 
 function filterLastItem(arr) {
   const newArr = arr.slice();

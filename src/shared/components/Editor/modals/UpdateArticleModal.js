@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Button, Icon, Popup, Modal, Progress } from 'semantic-ui-react';
 import { NotificationManager } from 'react-notifications';
-import request from '../../../shared/utils/requestAgent';
+import request from '../../../utils/requestAgent';
 
 class UpdateArticleModal extends React.Component {
   constructor(props) {

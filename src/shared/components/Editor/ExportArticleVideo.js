@@ -8,7 +8,7 @@ import { Icon, Popup, Dropdown, Modal, Button, Checkbox, Input } from 'semantic-
 import { NotificationManager } from 'react-notifications';
 import queryString from 'query-string';
 // import AuthModal from '../common/AuthModal';
-import fileUtils from '../../shared/utils/fileUtils';
+import fileUtils from '../../utils/fileUtils';
 
 // import videosActions from '../../actions/VideoActionCreators';
 // import wikiActions from '../../actions/WikiActionCreators';

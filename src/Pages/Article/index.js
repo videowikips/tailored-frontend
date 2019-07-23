@@ -2,7 +2,7 @@ import React from 'react';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import * as articleActions from '../../actions/article';
-import Editor from '../../components/Editor';
+import Editor from '../../shared/components/Editor';
 
 class Article extends React.Component {
 

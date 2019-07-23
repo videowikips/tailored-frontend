@@ -5,12 +5,12 @@ import { Message, Progress, } from 'semantic-ui-react'
 import classnames from 'classnames'
 import AudioPlayer from './AudioPlayer'
 import { NotificationManager } from 'react-notifications'
-import request from '../../shared/utils/requestAgent';
+import request from '../../utils/requestAgent';
 
 // import UploadFileInfoModal from '../common/UploadFileInfoModal'
 // import AuthModal from '../common/AuthModal';
 // import uiActions from '../../actions/UIActionCreators';
-import { getWikiFileExtension } from '../../shared/utils/wikiUtils';
+import { getWikiFileExtension } from '../../utils/wikiUtils';
 
 const ALLOWED_VIDEO_FORMATS = ['webm', 'ogv']
 

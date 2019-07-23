@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Modal, ModalContent, ModalActions, Button, Dropdown, Input } from 'semantic-ui-react';
 import { filter, startsWith, lowerCase } from 'lodash';
-import { isoLangsArray, isoLangs } from '../../../shared/utils/langs'
+import { isoLangsArray, isoLangs } from '../../../utils/langs'
 const languagesOptions = isoLangsArray.map((lang) => ({ key: lang.code, value: lang.code, text: `${lang.name}` }));
 
 function filterDisabledLangs(langs, disabledLangs) {
