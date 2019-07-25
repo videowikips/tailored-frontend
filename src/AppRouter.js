@@ -20,6 +20,7 @@ const OrganizationUsers = () => import('./Pages/OrganizationUsers');
 // const UploadVideo = () => import('./Pages/UploadVideo');
 const Logout = () => import('./Pages/Logout');
 const VideosList = () => import('./Pages/VideosList');
+const Comment = () => import('./Pages/Comment');
 class AppRouter extends React.Component {
 
   render() {
@@ -37,6 +38,7 @@ class AppRouter extends React.Component {
               <LazyRoute path="/organization/videos" isPrivateRoute={true} title="Videos" loader={VideosList} layout={DashboardLayout} />
               <LazyRoute path="/organization/article/:articleId" title="Article" loader={Article} layout={DashboardLayout} />
               <LazyRoute path="/logout" loader={Logout} />
+              <LazyRoute path="/comment" loader={Comment} />
             </Switch>
           </div>
           <Footer />

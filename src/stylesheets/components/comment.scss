@@ -1,0 +1,48 @@
+.sample-post {
+  background: grey;
+  height: 20vw;
+  width: 40vw;
+}
+
+.comment-wrapper {
+  margin: 40px;
+  width: 40vw;
+  display: inline-block;
+}
+
+.comment-section {
+    padding: 20px 5px;
+
+
+  .avatar {
+    border-radius: 50%;
+    width: 40px !important;
+    height: 40px !important;
+    float: left;
+  }
+}
+
+.left {
+  width: auto;
+  overflow: hidden;
+  height: auto;
+  padding: 0 10px;
+}
+.right {
+  float: left;
+  height: auto;
+  width: 40px;
+}
+
+.comment-text {
+    margin-top: 10px;
+    background: #ccc;
+    padding: 10px;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
+
+.comment {
+    margin-top: 5px;
+}
