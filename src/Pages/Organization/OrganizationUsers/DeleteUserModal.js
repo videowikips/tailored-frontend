@@ -4,7 +4,7 @@ import { Button, Header, Icon, Modal } from 'semantic-ui-react'
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 
-import { removeUser } from '../../actions/organization';
+import { removeUser } from '../../../actions/organization';
 
 class DeleteUserModal extends Component {
     state = {

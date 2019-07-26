@@ -1,5 +1,4 @@
 import React from 'react';
-import Avatar from 'react-avatar';
 import InviteModal from './InviteModal';
 import UserTable from './UserTable';
 

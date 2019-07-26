@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import * as videoActions from '../../actions/video';
+import * as videoActions from '../../../actions/video';
 import { Card, Grid } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 class VideosList extends React.Component {

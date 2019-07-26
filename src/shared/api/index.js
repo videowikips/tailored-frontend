@@ -16,6 +16,10 @@ export default {
         deleteSubslide: (articleId, slideIndex, subslideIndex) => `${API_ROOT}/article/${articleId}/slides/${slideIndex}/content/${subslideIndex}`,
         updateSpeakers: (articleId) => `${API_ROOT}/article/${articleId}/speakersProfile`,
     },
+    translate: {
+        getTranslatableArticle: (originalArticleId) => `${API_ROOT}/translate/${originalArticleId}`,
+        saveTranslatedText: (translateableArticleId) => `${API_ROOT}/translate/${translateableArticleId}/text`
+    },
     authentication: {
         login: `${API_ROOT}/auth/login`,
         register: `${API_ROOT}/auth/register`

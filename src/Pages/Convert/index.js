@@ -1,18 +1,16 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import { Progress, Grid, Card, Dropdown, Button, Icon, Modal } from 'semantic-ui-react';
+import { Progress, Grid,  Dropdown, Button, Icon, Modal } from 'semantic-ui-react';
 
 import * as articleActions from '../../actions/article';
 import * as videoActions from '../../actions/video';
 import ProgressBoxes from '../../shared/components/ProgressBoxes';
 import VideoTimeline from '../../shared/components/VideoTimeline';
 import SubtitleForm from './SubtitleForm';
-import { SPEAKER_BACKGROUND_COLORS } from '../../shared/constants';
 import Lottie from 'react-lottie';
 import successLottie from '../../shared/lottie/success.json';
 import loadingLottie from '../../shared/lottie/loading.json';
-import { formatTime } from '../../shared/utils/helpers';
 import ProofreadingVideoPlayer from './ProofreadingVideoPlayer';
 import SplitterIcon from '../../shared/components/SplitterIcon';
 import SpeakerDragItem from './SpeakerDragItem';

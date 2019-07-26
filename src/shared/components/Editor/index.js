@@ -78,8 +78,8 @@ class Editor extends Component {
         this.setState({ isPlaying: nextProps.isPlaying });
       }
     }
-    if (this.props.controlled && nextProps.currentSlideIndex !== this.state.currentSlideIndex) {
-      this._handleNavigateToSlide(nextProps.currentSlideIndex);
+    if (this.props.controlled && (nextProps.currentSlideIndex !== this.state.currentSlideIndex || nextProps.currentSubslideIndex !== this.state.currentSubslideIndex)) {
+      this._handleNavigateToSlide(nextProps.currentSlideIndex, nextProps.currentSubslideIndex);
     }
     // check for viewerMode update
     if (this.props.viewerMode !== nextProps.viewerMode) {
@@ -117,7 +117,7 @@ class Editor extends Component {
     })
   }
 
-  _handleNavigateToSlide(slideIndex) {
+  _handleNavigateToSlide(slideIndex, subslideIndex = 0) {
     const { article } = this.props
     const { slides } = article
 
@@ -129,10 +129,10 @@ class Editor extends Component {
       currentSlideIndex: index,
       audioLoaded: false,
       defaultSlideStartTime: 0,
-      currentSubslideIndex: 0,
       currentSubmediaIndex: 0,
+      currentSubslideIndex: subslideIndex,
     }, () => {
-      this.props.onSlideChange(index);
+      this.props.onSlideChange(index, subslideIndex);
     })
   }
 
@@ -150,12 +150,14 @@ class Editor extends Component {
         currentSlideIndex: currentSlideIndex - 1,
         ...update,
       }, () => {
-        this.props.onSlideChange(currentSlideIndex - 1);
+        this.props.onSlideChange(this.state.currentSlideIndex, this.state.currentSubslideIndex);
       });
     } else if (currentSubslideIndex > 0) {
       this.setState({
         ...update,
         currentSubslideIndex: currentSubslideIndex - 1,
+      }, () => {
+        this.props.onSlideChange(this.state.currentSlideIndex, this.state.currentSubslideIndex);
       })
     }
   }
@@ -173,12 +175,14 @@ class Editor extends Component {
     }
     if ((currentSubslideIndex + 1) <= (currentSlide.content.length - 1)) {
       update.currentSubslideIndex  = currentSubslideIndex + 1;
-      this.setState(update);
+      this.setState(update, () => {
+        this.props.onSlideChange(this.state.currentSlideIndex, this.state.currentSubslideIndex);
+      });
     } else if (currentSlideIndex < slides.length - 1) {
       update.currentSlideIndex = currentSlideIndex  + 1;
       update.currentSubslideIndex = 0;
       this.setState(update, () => {
-        this.props.onSlideChange(currentSlideIndex + 1);
+        this.props.onSlideChange(this.state.currentSlideIndex, this.state.currentSubslideIndex);
       })
     } else {
       update.isPlaying = false;
@@ -452,6 +456,7 @@ class Editor extends Component {
             onPausePlay={() => this.setState({ isPlaying: false })}
             viewerMode={this.props.viewerMode}
             onViewerModeChange={(e, { value }) => this.props.onViewerModeChange(value)}
+            onAddHumanVoice={this.props.onAddHumanVoice}
           // onBack={() => this.props.history.push(`/${this.props.language}/videowiki/${this.props.article.title}?wikiSource=${this.props.article.wikiSource}`)}
           />
 
@@ -470,7 +475,7 @@ class Editor extends Component {
                 {this._renderSlide()}
               </Sidebar.Pusher>
             </Sidebar.Pushable>
-            <Progress color="blue" value={currentSlideIndex + 1} total={slides.length} attached="bottom" />
+            <Progress color="blue" value={currentSlideIndex + 1} total={slides.length} attached="bottom" style={{ zIndex: 2 }} />
           </div>
 
           {/* Footer */}
@@ -543,6 +548,7 @@ Editor.defaultProps = {
   onPublish: () => { },
   onPlayComplete: () => { },
   onPlay: () => { },
+  onAddHumanVoice: () => {},
   onViewerModeChange: () => { },
   showPublish: false,
   customPublish: false,

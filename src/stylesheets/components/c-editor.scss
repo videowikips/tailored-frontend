@@ -86,11 +86,12 @@
 .c-editor__footer {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
   align-self: center;
   width: 100%;
   background: white;
+  position: relative;
 }
 
 .c-main-content {
@@ -307,6 +308,8 @@ span.c-editor__footer-controls {
   align-self: center;
   display: flex;
   justify-content: center;
+  position: absolute;
+  left: 42%;
 }
 
 span.c-editor__last-updated {

@@ -81,16 +81,18 @@ export default class EditorFooter extends Component {
             <Icon name="step forward" />
           </Button>
         </span>
-        <span className="c-editor__last-updated">
-          {`Last Updated: ${date.format('DD MMMM YYYY')}, at ${date.format('hh:mm')}`}
-        </span>
+        {updatedAt && (
+          <span className="c-editor__last-updated">
+            {`Last Updated: ${date.format('DD MMMM YYYY')}, at ${date.format('hh:mm')}`}
+          </span>
+        )}
       </div >
     )
   }
 }
 
 EditorFooter.defaultProps = {
-  onCCToggle: () => {},
+  onCCToggle: () => { },
 }
 
 EditorFooter.propTypes = {
@@ -103,7 +105,7 @@ EditorFooter.propTypes = {
   toggleSidebar: PropTypes.func.isRequired,
   hideSidebarToggle: PropTypes.bool.isRequired,
   onSpeedChange: PropTypes.func.isRequired,
-  updatedAt: PropTypes.string.isRequired,
+  updatedAt: PropTypes.string,
   uploadState: PropTypes.string,
   onCCToggle: PropTypes.func,
 }

@@ -1,12 +1,11 @@
 import React, { Component } from 'react'
 import { List, Select } from 'semantic-ui-react'
-import ChangeRoleModal from './ChangeRoleModal';
 import DeleteUserModal from './DeleteUserModal';
 
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 
-import { fetchUsers, removeUser, editPermissions } from '../../actions/organization';
+import { fetchUsers, editPermissions } from '../../../actions/organization';
 
 function getUserRoleValue(permissions) {
     return `l${permissions.length}`

@@ -52,21 +52,12 @@ class EditorHeader extends Component {
   }
 
   onAddHumanVoice(lang) {
-    const { article, language } = this.props;
-    this.props.history.push(`/${language}/export/humanvoice/${article.title}?wikiSource=${article.wikiSource}&lang=${lang}`);
+    this.props.onAddHumanVoice(lang)
+    return this.setState({ addHumanVoiceModalVisible: false });
   }
 
   onTranslateButtonClick() {
-    const { article, authenticated } = this.props;
-    if (!authenticated) {
-      return this.setState({ isLoginModalVisible: true });
-    }
-
-    if (article.ns !== 0 || article.slides.length < 50) {
-      return this.setState({ addHumanVoiceModalVisible: true });
-    }
-
-    return NotificationManager.info('Only custom articles and articles with less than 50 slides can be exported.');
+    return this.setState({ addHumanVoiceModalVisible: true });
   }
 
   _renderUpdateButton() {
@@ -96,16 +87,6 @@ class EditorHeader extends Component {
       )
     )
   }
-
-  // _renderLoginModal() {
-  //   return (
-  //     <AuthModal
-  //       open={this.state.isLoginModalVisible}
-  //       heading="Only logged in users can export videos to Commons"
-  //       onClose={() => this.setState({ isLoginModalVisible: false })}
-  //     />
-  //   )
-  // }
 
   _renderShareButton() {
     return (
@@ -292,37 +273,6 @@ class EditorHeader extends Component {
       )
     }
     return null;
-    // return this.props.mode === 'viewer' ? (
-    //   <Blinker
-    //     secondary="#1678c2"
-    //     interval={1500}
-    //     repeat={3}
-    //     blink={this.state.blink}
-    //     onStop={() => this.setState({ blink: false })}
-    //   >
-    //     <Button
-    //       basic
-    //       icon
-    //       className="c-editor__toolbar-publish"
-    //       style={{ height: '100%' }}
-    //       title="Verify/Edit text and media"
-    //       onClick={() => this._navigateToArticle()}
-    //     >
-    //       <Icon name="pencil" inverted color="grey" />
-    //     </Button>
-    //   </Blinker>
-    // ) : (
-    //   <Button
-    //     size="huge"
-    //     basic
-    //     icon
-    //     className="c-editor__toolbar-publish"
-    //     title="Publish"
-    //     onClick={() => this._publishArticle()}
-    //   >
-    //     <Icon name="save" inverted color="grey" />
-    //   </Button>
-    //   )
   }
 
   _renderBackButton() {
@@ -365,6 +315,7 @@ class EditorHeader extends Component {
         onClick={this.onTranslateButtonClick.bind(this)}
       >
         <Popup
+          position="bottom right"
           trigger={
             <Icon name="translate" inverted color="grey" />
           }
@@ -396,23 +347,9 @@ class EditorHeader extends Component {
         {this._renderTranslateButton()}
         {this._renderExportArticle()}
         {this._renderUpdateButton()}
-        {/* <a
-          className="c-editor__footer-wiki c-editor__footer-sidebar c-editor__toolbar-publish c-app-footer__link "
-          href={`${wikiSource}/wiki/${article.title}`}
-          target="_blank"
-        >
-          <Popup
-            trigger={
-              <Icon name="wikipedia w" inverted color="grey" />
-            }
-          >
-            Verfiy/Edit Text
-          </Popup>
-        </a> */}
         {this._renderShareIcon()}
         {this._renderPublishOrEditIcon()}
         {this._renderAddHumanVoiceModal()}
-        {/* {this._renderLoginModal()} */}
       </div>
     )
   }
@@ -453,6 +390,7 @@ EditorHeader.defaultProps = {
   onTranslate: () => {},
   onPausePlay: () => {},
   onViewerModeChange: () => {},
+  onAddHumanVoice: () => {},
   showViewerModeDropdown: false,
   showTranslate: false,
   options: {},

@@ -4,7 +4,7 @@ import { Button, Modal, Form, Select, Icon, Message } from 'semantic-ui-react'
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 
-import { editPermissions } from '../../actions/organization';
+import { editPermissions } from '../../../actions/organization';
 
 class ChangeRoleModal extends Component {
     state = {

@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { withRouter } from 'react-router-dom';
-import { Button, Header, Icon, Image, Menu, Segment, Sidebar, Grid, Card, Dropdown, Accordion } from 'semantic-ui-react'
+import { Button, Icon, Menu, Grid, Card, Dropdown } from 'semantic-ui-react'
 import Avatar from 'react-avatar';
 
 import UploadNewVideoModal from '../../shared/components/UploadNewVideoModal';
@@ -122,7 +122,7 @@ class Dashboard extends React.Component {
                         <Grid>
                             <Grid.Row>
                                 <Grid.Column width={16}>
-                                    <div style={{ marginTop: 20 }}>
+                                    <div style={{ marginTop: 20, height: 40 }}>
                                         
                                         <div className="pull-right">
                                             <Button

@@ -3,6 +3,7 @@ import video from './video';
 import article from './article';
 import authentication from './authentication';
 import organization from './organization';
+import translation from './translation';
 
 export default function createRootReducer (additionalReducers = {}) {
   const reducers = {
@@ -10,7 +11,8 @@ export default function createRootReducer (additionalReducers = {}) {
     video,
     article,
     authentication,
-    organization
+    organization,
+    translation,
   }
 
   return combineReducers(Object.assign({}, additionalReducers, reducers))

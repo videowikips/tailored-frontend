@@ -73,7 +73,7 @@ class AddHumanVoiceModal extends React.Component {
           ) : (
             <Button onClick={this.props.onClose}>Cancel</Button>
           )}
-          <Button onClick={() => this.props.onSubmit(this.state.language)} >Yes</Button>
+          <Button color="blue" onClick={() => this.props.onSubmit(this.state.language)} >Go</Button>
         </ModalActions>
       </Modal>
     )
