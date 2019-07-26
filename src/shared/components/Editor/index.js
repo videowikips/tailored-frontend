@@ -113,6 +113,8 @@ class Editor extends Component {
     }, () => {
       if (this.state.isPlaying) {
         this.props.onPlay();
+      } else {
+        this.props.onPause();
       }
     })
   }
@@ -548,6 +550,7 @@ Editor.defaultProps = {
   onPublish: () => { },
   onPlayComplete: () => { },
   onPlay: () => { },
+  onPause: () => {},
   onAddHumanVoice: () => {},
   onViewerModeChange: () => { },
   showPublish: false,
@@ -590,6 +593,7 @@ Editor.propTypes = {
   currentSlideIndex: PropTypes.number,
   onPlayComplete: PropTypes.func,
   onPlay: PropTypes.func,
+  onPause: PropTypes.func,
   controlled: PropTypes.bool,
   onViewerModeChange: PropTypes.func,
   viewerMode: PropTypes.string,

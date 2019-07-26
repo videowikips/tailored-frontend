@@ -6,6 +6,9 @@ const INITIAL_STATE = {
     currentSlideIndex: 0,
     currentSubslideIndex: 0,
     recording: false,
+    recordUploadLoading: false,
+    editorPlaying: false,
+    editorMuted: false,
 }
 
 export default function (state = INITIAL_STATE, action) {
@@ -20,6 +23,14 @@ export default function (state = INITIAL_STATE, action) {
             return { ...state, currentSubslideIndex: action.payload };
         case actionTypes.SET_CURRENT_EDITOR_INDEXES:
             return { ...state, currentSlideIndex: action.payload.currentSlideIndex, currentSubslideIndex: action.payload.currentSubslideIndex }
+        case actionTypes.SET_TRANSLATION_RECORDING:
+            return { ...state, recording: action.payload };
+        case actionTypes.SET_RECORD_UPLOAD_LOADING:
+            return { ...state, recordUploadLoading: action.payload };
+        case actionTypes.SET_EDITOR_MUTED:
+            return { ...state, editorMuted: action.payload };
+        case actionTypes.SET_EDITOR_PLAYING:
+            return { ...state, editorPlaying: action.payload };
         default:
             return state;
     }

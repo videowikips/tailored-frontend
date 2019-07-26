@@ -18,7 +18,9 @@ export default {
     },
     translate: {
         getTranslatableArticle: (originalArticleId) => `${API_ROOT}/translate/${originalArticleId}`,
-        saveTranslatedText: (translateableArticleId) => `${API_ROOT}/translate/${translateableArticleId}/text`
+        addTranslatedText: (translateableArticleId) => `${API_ROOT}/translate/${translateableArticleId}/text`,
+        addRecordedTranslation: (translateableArticleId) => `${API_ROOT}/translate/${translateableArticleId}/audio`,
+        deleteRecordedTranslation: (translateableArticleId) => `${API_ROOT}/translate/${translateableArticleId}/audio`,
     },
     authentication: {
         login: `${API_ROOT}/auth/login`,

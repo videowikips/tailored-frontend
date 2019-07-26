@@ -20,12 +20,32 @@ class TranslateArticle extends React.Component {
         this.props.setCurrentEditorIndexes({ currentSlideIndex, currentSubslideIndex });
     }
 
-    onSaveTranslatedText = value => {
+    getCurrentSlideAndSubslide = () => {
+
         const { translatableArticle, currentSlideIndex, currentSubslideIndex } = this.props;
         const slide = translatableArticle.slides[currentSlideIndex];
         const subslide = slide.content[currentSubslideIndex];
         console.log(slide, subslide)
+        return { slide, subslide };
+    }
+
+    onSaveTranslatedText = value => {
+        const { slide, subslide } = this.getCurrentSlideAndSubslide();
+
         this.props.saveTranslatedText(slide.position, subslide.position, value);
+    }
+
+
+
+    onRecordingStop = (recordedBlob) => {
+        this.props.setRecording(false);
+        const { slide, subslide } = this.getCurrentSlideAndSubslide();
+        this.props.saveRecordedTranslation(slide.position, subslide.position, recordedBlob);
+    }
+
+
+    toggleRecording = () => {
+        this.props.setRecording(!this.props.recording);
     }
 
     _renderUploadAudio() {
@@ -44,8 +64,17 @@ class TranslateArticle extends React.Component {
     }
 
     render() {
-        const { originalArticle, translatableArticle, currentSlideIndex, currentSubslideIndex, recording } = this.props;
-        translatableArticle && console.log(translatableArticle.slides[currentSlideIndex].content[currentSubslideIndex].text)
+        const {
+            originalArticle,
+            translatableArticle,
+            currentSlideIndex,
+            currentSubslideIndex,
+            recording,
+            editorMuted,
+            editorPlaying,
+            recordUploadLoading
+        } = this.props;
+
         return (
             <Grid style={{ width: '100%' }}>
                 <Grid.Row>
@@ -53,6 +82,10 @@ class TranslateArticle extends React.Component {
                         {originalArticle && (
                             <Editor
                                 controlled
+                                muted={editorMuted}
+                                isPlaying={editorPlaying}
+                                onPlay={() => this.props.setEditorPlaying(true)}
+                                onPause={() => this.props.setEditorPlaying(false)}
                                 currentSlideIndex={currentSlideIndex}
                                 currentSubslideIndex={currentSubslideIndex}
                                 article={originalArticle}
@@ -81,9 +114,9 @@ class TranslateArticle extends React.Component {
                                         icon
                                         primary
                                         size="large"
-                                        iconPosition="left"
-                                        loading={false}
-                                        //   disabled={!this.canRecord()}
+                                        // ="left"
+                                        loading={recordUploadLoading}
+                                        disabled={recordUploadLoading}
                                         onClick={this.toggleRecording}
                                     >
                                         {!recording ? (
@@ -99,25 +132,43 @@ class TranslateArticle extends React.Component {
                                         </div>
                                     )}
                                     {!recording && this._renderUploadAudio()}
-                                    {translatableArticle && translatableArticle.slides[currentSlideIndex] && translatableArticle.slides[currentSlideIndex].audio && !recording && (
+                                    {translatableArticle && translatableArticle.slides[currentSlideIndex] && translatableArticle.slides[currentSlideIndex].content[currentSubslideIndex].audio && !recording && (
                                         <div className="c-export-human-voice__audio_container" >
                                             <audio
+                                                key={`audio-player-${translatableArticle.slides[currentSlideIndex].content[currentSubslideIndex].audio}`}
                                                 controls
-                                                onPlay={() => this.setState({ isPlaying: true, editorMuted: true })}
-                                                onPause={() => this.setState({ isPlaying: false, editorMuted: false })}
-                                                onEnded={() => this.setState({ isPlaying: false, editorMuted: false })}
+                                                onPlay={() => {
+                                                    this.props.setEditorPlaying(true)
+                                                    this.props.setEditorMuted(true);
+                                                }}
+                                                onPause={() => {
+                                                    this.props.setEditorPlaying(false)
+                                                    this.props.setEditorMuted(false);
+                                                }}
+                                                onEnded={() => {
+                                                    this.props.setEditorPlaying(false)
+                                                    this.props.setEditorMuted(false);
+                                                }}
                                             >
-                                                <source src={translatableArticle.slides[currentSlideIndex].audio} />
+                                                <source src={translatableArticle.slides[currentSlideIndex].content[currentSubslideIndex].audio} />
                                                 Your browser does not support the audio element.
                                             </audio>
-                                            <Icon name="close" className="c-export-human-voice__clear-record" onClick={() => this.onDeleteAudio(currentSlideIndex)} />
+                                            <Icon
+                                                name="close"
+                                                className="c-export-human-voice__clear-record"
+                                                onClick={() => {
+                                                    const { slide, subslide } = this.getCurrentSlideAndSubslide();
+                                                    this.props.deleteRecordedTranslation(slide.position, subslide.position);
+                                                }}
+                                            />
                                         </div>
                                     )}
                                     <div className="c-export-human-voice__recorder-mic-container" style={{ 'visibility': recording ? 'visible' : 'hidden' }} >
                                         <AudioRecorder
                                             record={recording}
+                                            loading={this.props.recordUploadLoading}
                                             className="c-export-human-voice__recorder-mic"
-                                            onStop={this.onStop}
+                                            onStop={this.onRecordingStop}
                                             backgroundColor="#2185d0"
                                             strokeColor="#000000"
                                         />
@@ -143,11 +194,15 @@ class TranslateArticle extends React.Component {
 }
 
 const mapStateToProps = ({ translation }) => ({
+    recording: translation.recording,
     originalArticle: translation.originalArticle,
     translatableArticle: translation.translatableArticle,
-    recording: translation.recording,
     currentSlideIndex: translation.currentSlideIndex,
     currentSubslideIndex: translation.currentSubslideIndex,
+    recordUploadLoading: translation.recordUploadLoading,
+    editorPlaying: translation.editorPlaying,
+    editorMuted: translation.editorMuted,
+    recordUploadLoading: translation.recordUploadLoading,
 })
 const mapDispatchToProps = dispatch => ({
     fetchTranslatableArticle: (originalArticleId, lang) => dispatch(translationActions.fetchTranslatableArticle(originalArticleId, lang)),
@@ -155,6 +210,11 @@ const mapDispatchToProps = dispatch => ({
     setCurrentSubslideIndex: index => dispatch(translationActions.setCurrentSubslideIndex(index)),
     setCurrentEditorIndexes: indexes => dispatch(translationActions.setCurrentEditorIndexes(indexes)),
     saveTranslatedText: (slidePositon, subslidePosition, text) => dispatch(translationActions.saveTranslatedText(slidePositon, subslidePosition, text)),
+    setRecording: recording => dispatch(translationActions.setRecording(recording)),
+    saveRecordedTranslation: (slidePositon, subslidePosition, blob) => dispatch(translationActions.saveRecordedTranslation(slidePositon, subslidePosition, blob)),
+    deleteRecordedTranslation: (slidePositon, subslidePosition) => dispatch(translationActions.deleteRecordedTranslation(slidePositon, subslidePosition)),
+    setEditorPlaying: playing => dispatch(translationActions.setEditorPlaying(playing)),
+    setEditorMuted: muted => dispatch(translationActions.setEditorMuted(muted)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(TranslateArticle);
