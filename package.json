@@ -27,6 +27,8 @@
     "react-scripts": "3.0.1",
     "react-share": "^3.0.0",
     "react-soundplayer": "^1.0.4",
+    "react-wave-stream": "^1.0.0",
+    "recorder-js": "^1.0.7",
     "redux": "^4.0.1",
     "redux-logger": "^3.0.6",
     "redux-persist": "^5.10.0",

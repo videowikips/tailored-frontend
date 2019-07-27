@@ -29,8 +29,8 @@ class Editor extends Component {
       playbackSpeed: 1,
       isPlaying: props.autoPlay,
       showTextTransition: true,
-      sidebarVisible: props.mode === 'editor' || (props.mode === 'viewer' && props.viewerMode === 'editor'),
-      showDescription: props.mode === 'editor' || (props.mode === 'viewer' && props.viewerMode === 'editor'),
+      sidebarVisible: props.mode === 'editor' || (props.mode === 'viewer' && props.viewerMode === 'editor') || props.showSidebar,
+      showDescription: props.mode === 'editor' || (props.mode === 'viewer' && props.viewerMode === 'editor') || props.showDescription,
       audioLoaded: false,
       modalOpen: false,
     }

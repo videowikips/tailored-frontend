@@ -81,6 +81,9 @@ class TranslateArticle extends React.Component {
                     <Grid.Column width={12}>
                         {originalArticle && (
                             <Editor
+                                showSidebar
+                                showDescription
+                                article={originalArticle}
                                 controlled
                                 muted={editorMuted}
                                 isPlaying={editorPlaying}
@@ -88,7 +91,6 @@ class TranslateArticle extends React.Component {
                                 onPause={() => this.props.setEditorPlaying(false)}
                                 currentSlideIndex={currentSlideIndex}
                                 currentSubslideIndex={currentSubslideIndex}
-                                article={originalArticle}
                                 onSlideChange={this.onSlideChange}
                                 layout={1}
                             />
