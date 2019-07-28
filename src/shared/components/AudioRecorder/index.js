@@ -73,6 +73,7 @@ class AudioRecorder extends React.Component {
           this.rec.start();
         });
       }).catch((err) => {
+        console.log(err);
         alert('Something went wrong, Please make sure you\'re using the latest version of your browser');
         this.props.onStop();
       });
