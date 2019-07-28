@@ -131,17 +131,17 @@ class TranslateArticle extends React.Component {
                         </Grid.Column>
                     </Grid.Row>
                 )}
-                {originalArticle && translatableArticle &&  translatableArticle.translationProgress === 100 && (
+                {originalArticle && translatableArticle && translatableArticle.translationProgress === 100 && (
                     <React.Fragment>
                         <Grid.Row>
-                            <Grid.Column width={4}>
+                            {/* <Grid.Column width={4}>
                                 <SlidesList
                                     currentSlideIndex={currentSlideIndex}
                                     currentSubslideIndex={currentSubslideIndex}
                                     slides={translatableArticle.slides}
                                     onSubslideClick={this.onSlideChange}
                                 />
-                            </Grid.Column>
+                            </Grid.Column> */}
                             <Grid.Column width={12}>
                                 <Grid>
                                     <Grid.Row>
@@ -247,6 +247,15 @@ class TranslateArticle extends React.Component {
                                         </Grid.Column>
                                     </Grid.Row>
                                 </Grid>
+                            </Grid.Column>
+
+                            <Grid.Column width={4}>
+                                <SlidesList
+                                    currentSlideIndex={currentSlideIndex}
+                                    currentSubslideIndex={currentSubslideIndex}
+                                    slides={translatableArticle.slides}
+                                    onSubslideClick={this.onSlideChange}
+                                />
                             </Grid.Column>
                         </Grid.Row>
 
