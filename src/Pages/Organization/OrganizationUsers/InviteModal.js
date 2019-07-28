@@ -30,15 +30,15 @@ class ModalExampleSize extends Component {
         {
             key: 'l1',
             value: 'l1',
-            text: 'Translate'
+            text: 'Review'
         }, {
             key: 'l2',
             value: 'l2',
-            text: 'Edit and Update'
+            text: 'Translate'
         }, {
             key: 'l3',
             value: 'l3',
-            text: 'Edit, Update and Translate'
+            text: 'Review and Translate'
         }
     ]
 
@@ -49,11 +49,11 @@ class ModalExampleSize extends Component {
         let permissions;
 
         if (role === 'l1') {
-            permissions = ['translate'];
+            permissions = ['review'];
         } else if (role === 'l2') {
-            permissions = ['edit', 'update'];
+            permissions = ['translate'];
         } else if (role === 'l3') {
-            permissions = ['edit', 'update', 'translate'];
+            permissions = ['review', 'translate'];
         }
 
         this.props.inviteUser({
