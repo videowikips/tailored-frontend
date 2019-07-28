@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { TextArea, Button } from 'semantic-ui-react';
+import { debounce } from '../../../shared/utils/helpers';
 
 class TranslateBox extends React.Component {
   constructor(props) {
@@ -8,6 +9,9 @@ class TranslateBox extends React.Component {
     this.state = {
       value: '',
     }
+    this.saveValue = debounce((value, currentSlideIndex, currentSubslideIndex) => {
+      this.props.onSave(value, currentSlideIndex, currentSubslideIndex)
+    }, 1000)
   }
 
   componentDidMount() {
@@ -18,8 +22,16 @@ class TranslateBox extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     if (this.props.value !== nextProps.value) {
+      if ((this.props.currentSlideIndex !== nextProps.currentSlideIndex || this.props.currentSubslideIndex !== nextProps.currentSubslideIndex) && this.props.value !== this.state.value) {
+        this.props.onSave(this.state.value, this.props.currentSlideIndex, this.props.currentSubslideIndex);
+      }
       this.setState({ value: nextProps.value });
     }
+  }
+
+  onValueChange = (value, currentSlideIndex, currentSubslideIndex) => {
+    this.setState({ value })
+    this.saveValue(value, currentSlideIndex, currentSubslideIndex);
   }
 
   render() {
@@ -33,15 +45,15 @@ class TranslateBox extends React.Component {
           rows={5}
           placeholder="Translate slide text"
           value={value}
-          onChange={(e, { value }) => this.setState({ value })}
+          onChange={(e, { value }) => {this.onValueChange(value, this.props.currentSlideIndex, this.props.currentSubslideIndex)}}
         />
-        <Button
+        {/* <Button
           primary
           title="Click here after translating the text and recording the audio to the slide"
           loading={loading}
           disabled={loading || value.trim() === this.props.value.trim() || !value.trim()}
           onClick={() => this.props.onSave(value)}
-        >Save</Button>
+        >Save</Button> */}
       </div>
     )
   }

@@ -1,4 +1,5 @@
 import { combineReducers } from 'redux'
+import poller from './poller';
 import video from './video';
 import article from './article';
 import authentication from './authentication';
@@ -13,6 +14,7 @@ export default function createRootReducer (additionalReducers = {}) {
     authentication,
     organization,
     translation,
+    poller,
   }
 
   return combineReducers(Object.assign({}, additionalReducers, reducers))

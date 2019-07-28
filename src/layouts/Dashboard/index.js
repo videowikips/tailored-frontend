@@ -85,7 +85,7 @@ class Dashboard extends React.Component {
             <Grid style={{ height: '100%', margin: 0, }}>
                 <Grid.Row style={{ padding: 0 }}>
                     <Grid.Column width={3} style={{ height: '100%', backgroundColor: '#1b1c1d', paddingRight: 0 }}>
-                        <div style={{ display: 'flex', justifyContent: 'center' }}>
+                        <div style={{ display: 'flex', justifyContent: 'center', marginLeft: '-1rem' }}>
                             <Card style={{ marginTop: 30 }}>
                                 <Card.Content>
                                     <img src="/img/logo.png" alt="Video Wiki Logo" />
