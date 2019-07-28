@@ -27,7 +27,7 @@ class TranslateArticle extends React.Component {
     componentWillReceiveProps(nextProps) {
         if (nextProps.translatableArticle) {
             if (nextProps.translatableArticle.translationProgress !== 100 && !this.state.pollerStarted) {
-                this.props.startJob({ jobName: FETCH_ARTICLE_JOBNAME, interval: 5600 }, () => {
+                this.props.startJob({ jobName: FETCH_ARTICLE_JOBNAME, interval: 3000 }, () => {
                     const { articleId } = this.props.match.params;
                     const { lang } = querystring.parse(window.location.search);
                     this.props.fetchTranslatableArticle(articleId, lang);
@@ -131,7 +131,7 @@ class TranslateArticle extends React.Component {
                         </Grid.Column>
                     </Grid.Row>
                 )}
-                {originalArticle && translatableArticle && (
+                {originalArticle && translatableArticle &&  translatableArticle.translationProgress === 100 && (
                     <React.Fragment>
                         <Grid.Row>
                             <Grid.Column width={4}>
@@ -188,7 +188,7 @@ class TranslateArticle extends React.Component {
                                                         {!recording && (
                                                             <div style={{ margin: 5 }}>
                                                                 Or
-                                            </div>
+                                                            </div>
                                                         )}
                                                         {!recording && this._renderUploadAudio()}
                                                         {translatableArticle.slides[currentSlideIndex] && translatableArticle.slides[currentSlideIndex].content[currentSubslideIndex].audio && !recording && (
