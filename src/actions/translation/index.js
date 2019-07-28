@@ -58,25 +58,30 @@ export const setEditorMuted = muted => ({
     payload: muted,
 })
 
-export const setSelectedSpeakerNumber = speakerNumber => (dispatch, getState) => {
+
+const setSelectedSpeakerNumber = speakerNumber => ({
+    type: actionTypes.SET_SELECTED_SPEAKER_NUMBER,
+    payload: speakerNumber,
+})
+
+export const changeSelectedSpeakerNumber = speakerNumber => (dispatch, getState) => {
     
     const { originalTranslatableArticle } = getState().translation;
     const translatableArticle = { ...originalTranslatableArticle };
 
-    const action = ({
-        type: actionTypes.SET_SELECTED_SPEAKER_NUMBER,
-        payload: speakerNumber,
-    })
     if (speakerNumber !== -1) {
         translatableArticle.slides.forEach((slide) => {
             slide.content = slide.content.filter((subslide) => subslide.speakerProfile.speakerNumber === speakerNumber);
         })
         translatableArticle.slides = translatableArticle.slides.filter((s) => s.content.length !== 0);
     }
-    dispatch(action);
+    dispatch(setCurrentSlideIndex(0));
+    dispatch(setCurrentSubslideIndex(0));
+    dispatch(setSelectedSpeakerNumber(speakerNumber));
     dispatch(setTranslatableArticle(translatableArticle));
 
 }
+
 
 export const fetchTranslatableArticle = (originalArticleId, lang) => dispatch => {
     dispatch(setOriginalArticle(null));
@@ -88,7 +93,7 @@ export const fetchTranslatableArticle = (originalArticleId, lang) => dispatch =>
         dispatch(setOriginalArticle(originalArticle));
         dispatch(setTranslatableArticle({ ...article }));
         dispatch(setOriginalTranslatableArticle({ ...article }));
-        dispatch(setSelectedSpeakerNumber(-1))
+        dispatch(changeSelectedSpeakerNumber(-1))
     })
     .catch((err) => {
         console.log(err);

@@ -14,6 +14,12 @@ import * as pollerActions from '../../../actions/poller';
 import aroundTheWorldLottie from '../../../shared/lottie/around-the-world.json';
 
 const FETCH_ARTICLE_JOBNAME = 'FETCH_TRANSLATE_ARTICLE';
+
+const calculateCompletedArticlePercentage  = article => {
+    const slides = article.slides.reduce((acc, slide) => acc.concat(slide.content), []).filter((slide) => slide);
+    const completedCount = slides.reduce((acc, slide) => slide.text && slide.audio ? ++ acc : acc, 0);
+    return Math.floor(completedCount / slides.length * 100 )
+}
 class TranslateArticle extends React.Component {
     state = {
         pollerStarted: false,
@@ -172,8 +178,13 @@ class TranslateArticle extends React.Component {
                                             <Select
                                                 value={this.props.selectedSpeakerNumber}
                                                 options={[{ text: 'All', value: -1 }].concat(originalArticle.speakersProfile.map((sp) => ({ text: `Speaker ${sp.speakerNumber} (${sp.speakerGender})`, value: sp.speakerNumber})))}
-                                                onChange={(e, { value }) => this.props.setSelectedSpeakerNumber(value)}
+                                                onChange={(e, { value }) => this.props.changeSelectedSpeakerNumber(value)}
                                             />
+                                        </Grid.Column>
+                                    </Grid.Row>
+                                    <Grid.Row>
+                                        <Grid.Column width={16}>
+                                            <Progress progress indicating percent={calculateCompletedArticlePercentage(translatableArticle)} />
                                         </Grid.Column>
                                     </Grid.Row>
                                     <Grid.Row>
@@ -298,7 +309,7 @@ const mapDispatchToProps = dispatch => ({
     startJob: (options, callFunc) => dispatch(pollerActions.startJob(options, callFunc)),
     stopJob: (jobName) => dispatch(pollerActions.stopJob(jobName)),
     setPreview: preview => dispatch(translationActions.setPreview(preview)),
-    setSelectedSpeakerNumber: num => dispatch(translationActions.setSelectedSpeakerNumber(num)),
+    changeSelectedSpeakerNumber: num => dispatch(translationActions.changeSelectedSpeakerNumber(num)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(TranslateArticle);
