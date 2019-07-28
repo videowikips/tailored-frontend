@@ -8,7 +8,17 @@ import { withRouter } from 'react-router-dom';
 import { fetchUsers, editPermissions } from '../../../actions/organization';
 
 function getUserRoleValue(permissions) {
-    return `l${permissions.length}`
+    let role = 'l1';
+    if (permissions.length === 1) {
+        if (permissions[0] === 'review') {
+            role = 'l1';
+        } else if (permissions[0] === 'translate') {
+            role = 'l2'
+        }
+    } else {
+        role = 'l3';
+    }
+    return role;
 }
 
 class UserTable extends Component {
@@ -16,15 +26,15 @@ class UserTable extends Component {
         {
             key: 'l1',
             value: 'l1',
-            text: 'Translate'
+            text: 'Review'
         }, {
             key: 'l2',
             value: 'l2',
-            text: 'Edit and Update'
+            text: 'Translate'
         }, {
             key: 'l3',
             value: 'l3',
-            text: 'Edit, Update and Translate'
+            text: 'Review and Translate'
         }
     ]
 
@@ -36,11 +46,11 @@ class UserTable extends Component {
         let permissions;
 
         if (role === 'l1') {
-            permissions = ['translate'];
+            permissions = ['review'];
         } else if (role === 'l2') {
-            permissions = ['edit', 'update'];
+            permissions = ['translate'];
         } else if (role === 'l3') {
-            permissions = ['edit', 'update', 'translate'];
+            permissions = ['review', 'translate'];
         }
         this.props.editPermissions({
             email,
