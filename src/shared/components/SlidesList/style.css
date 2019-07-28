@@ -1,0 +1,8 @@
+.row-container {
+    cursor: pointer;
+    margin: 0;
+}
+.row-container.active, .row-container:hover {
+    background-color: #eee;
+    box-shadow: 0px 0px 10px black;
+}

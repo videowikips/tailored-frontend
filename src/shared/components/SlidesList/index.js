@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types'
+import classnames from 'classnames';
 import { Grid, Icon } from 'semantic-ui-react';
+import './style.css';
 
 function reduceSlidesSubslides(slides) {
   return slides.reduce((acc, slide, slideIndex) => !slide.content || slide.content.length === 0 ? acc : acc.concat(slide.content.map(((subslide, subslideIndex) => ({ ...subslide, slidePosition: slide.position, slideIndex, subslideIndex })))), [])
@@ -8,9 +10,7 @@ function reduceSlidesSubslides(slides) {
 
 class SlidesList extends React.Component {
   getsubSlideBorderColor(subslide) {
-    if (subslide.slideIndex === this.props.currentSlideIndex && subslide.subslideIndex === this.props.currentSubslideIndex) {
-      return '#2185d0';
-    } else if (subslide.text && subslide.audio) {
+    if (subslide.text && subslide.audio) {
       return 'green';
     } else {
       return 'gray';
@@ -35,7 +35,7 @@ class SlidesList extends React.Component {
     return (
       <Grid.Row 
         key={`subslide-list-${subslide.subslideIndex}-${subslide.slideIndex}`} 
-        style={{ cursor: 'pointer', margin: 0 }}
+        className={classnames({"row-container": true, active: subslide.slideIndex === this.props.currentSlideIndex && subslide.subslideIndex === this.props.currentSubslideIndex })}
         onClick={() => this.props.onSubslideClick(subslide.slideIndex, subslide.subslideIndex)} 
       >
 
@@ -58,7 +58,7 @@ class SlidesList extends React.Component {
   }
   render() {
     return (
-      <Grid style={{ maxHeight: '850px', overflowY: 'scroll', border: '3px solid #eee', margin: 0 }} >
+      <Grid style={{ maxHeight: '850px', overflowY: 'scroll', border: '3px solid #eee', margin: 0, paddingTop: 5 }} >
         {reduceSlidesSubslides(this.props.slides).map((slide, index) => this.renderSubslide(slide, index))}
       </Grid>
     )
