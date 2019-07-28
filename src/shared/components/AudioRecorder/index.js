@@ -66,7 +66,7 @@ class AudioRecorder extends React.Component {
             }
           },
         })
-        
+
         // start the recording process
         this.rec.init(stream);
         this.setState({ recording: true }, () => {
@@ -83,14 +83,18 @@ class AudioRecorder extends React.Component {
 
   stopRecording() {
     // tell the recorder to stop the recording
-    this.rec.stop()
-    .then(({ blob }) => {
-      this.props.onStop(blob);
-      this.setState({ waveData: null, recording: false });
-    })
+    if (this.rec) {
 
-    // stop microphone access
-    this.gumStream.getAudioTracks().forEach((track) => track.stop());
+      this.rec.stop()
+        .then(({ blob }) => {
+          this.props.onStop(blob);
+          this.setState({ waveData: null, recording: false });
+        })
+
+      // stop microphone access
+      this.gumStream.getAudioTracks().forEach((track) => track.stop());
+    }
+
   }
 
   render() {
@@ -115,7 +119,7 @@ AudioRecorder.propTypes = {
 
 AudioRecorder.defaultProps = {
   record: false,
-  onStop: () => {},
+  onStop: () => { },
 }
 
 export default AudioRecorder;
