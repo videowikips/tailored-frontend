@@ -46,9 +46,11 @@ export default class EditorFooter extends Component {
         >
           <Icon name="cc" />
         </Button>
-        <VoiceSpeedController
-          onSpeedChange={(value) => this.props.onSpeedChange(value)}
-        />
+        {this.props.options.showVoiceSpeed && (
+          <VoiceSpeedController
+            onSpeedChange={(value) => this.props.onSpeedChange(value)}
+          />
+        )}
         <span className="c-editor__footer-controls">
           <Button
             basic
@@ -93,6 +95,7 @@ export default class EditorFooter extends Component {
 
 EditorFooter.defaultProps = {
   onCCToggle: () => { },
+  options: {},
 }
 
 EditorFooter.propTypes = {
@@ -108,4 +111,5 @@ EditorFooter.propTypes = {
   updatedAt: PropTypes.string,
   uploadState: PropTypes.string,
   onCCToggle: PropTypes.func,
+  options: PropTypes.object,
 }

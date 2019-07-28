@@ -495,6 +495,7 @@ class Editor extends Component {
             hideSidebarToggle={hideSidebarToggle}
             onSpeedChange={(value) => this.onSpeedChange(value)}
             updatedAt={updatedAt}
+            options={this.props.footerOptions}
           />
         </div>
         {this.props.viewerMode === 'editor' && currentSlide && currentSlide.media && currentSlide.media.length > 0 && (
@@ -562,6 +563,7 @@ Editor.defaultProps = {
   viewerMode: 'player',
   layout: 'random',
   headerOptions: {},
+  footerOptions: {},
 }
 
 Editor.propTypes = {
@@ -599,4 +601,5 @@ Editor.propTypes = {
   viewerMode: PropTypes.string,
   layout: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   headerOptions: PropTypes.object,
+  footerOptions: PropTypes.object,
 }

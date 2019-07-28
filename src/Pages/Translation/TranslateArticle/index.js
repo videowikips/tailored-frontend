@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import querystring from 'query-string';
 import Lottie from 'react-lottie';
-import { Grid, Card, Button, Icon, Input, Progress } from 'semantic-ui-react';
+import { Grid, Card, Button, Icon, Input, Progress, Select } from 'semantic-ui-react';
 
 import SlidesList from '../../../shared/components/SlidesList';
 import AudioRecorder from '../../../shared/components/AudioRecorder';
@@ -69,6 +69,11 @@ class TranslateArticle extends React.Component {
 
     toggleRecording = () => {
         this.props.setRecording(!this.props.recording);
+    }
+
+    onPreviewChange = (preview) => {
+        console.log('on preview change', preview)
+        this.props.setPreview(preview);
     }
 
     _renderUploadAudio() {
@@ -146,22 +151,29 @@ class TranslateArticle extends React.Component {
                                 <Grid>
                                     <Grid.Row>
                                         <Grid.Column width={16}>
-                                            {originalArticle && (
-                                                <Editor
-                                                    showSidebar
-                                                    showDescription
-                                                    article={originalArticle}
-                                                    controlled
-                                                    muted={editorMuted}
-                                                    isPlaying={editorPlaying}
-                                                    onPlay={() => this.props.setEditorPlaying(true)}
-                                                    onPause={() => this.props.setEditorPlaying(false)}
-                                                    currentSlideIndex={currentSlideIndex}
-                                                    currentSubslideIndex={currentSubslideIndex}
-                                                    onSlideChange={this.onSlideChange}
-                                                    layout={1}
-                                                />
-                                            )}
+                                            <Editor
+                                                showSidebar
+                                                showDescription
+                                                article={originalArticle}
+                                                controlled
+                                                muted={editorMuted}
+                                                isPlaying={editorPlaying}
+                                                onPlay={() => this.props.setEditorPlaying(true)}
+                                                onPause={() => this.props.setEditorPlaying(false)}
+                                                currentSlideIndex={currentSlideIndex}
+                                                currentSubslideIndex={currentSubslideIndex}
+                                                onSlideChange={this.onSlideChange}
+                                                layout={1}
+                                            />
+                                        </Grid.Column>
+                                    </Grid.Row>
+                                    <Grid.Row>
+                                        <Grid.Column width={16}>
+                                            <Select
+                                                value={this.props.selectedSpeakerNumber}
+                                                options={[{ text: 'All', value: -1 }].concat(originalArticle.speakersProfile.map((sp) => ({ text: `Speaker ${sp.speakerNumber} (${sp.speakerGender})`, value: sp.speakerNumber})))}
+                                                onChange={(e, { value }) => this.props.setSelectedSpeakerNumber(value)}
+                                            />
                                         </Grid.Column>
                                     </Grid.Row>
                                     <Grid.Row>
@@ -211,7 +223,7 @@ class TranslateArticle extends React.Component {
                                                                 >
                                                                     <source src={translatableArticle.slides[currentSlideIndex].content[currentSubslideIndex].audio} />
                                                                     Your browser does not support the audio element.
-                                                </audio>
+                                                                </audio>
                                                                 <Icon
                                                                     name="close"
                                                                     className="c-export-human-voice__clear-record"
@@ -255,30 +267,22 @@ class TranslateArticle extends React.Component {
                                     currentSubslideIndex={currentSubslideIndex}
                                     slides={translatableArticle.slides}
                                     onSubslideClick={this.onSlideChange}
+                                    preview={this.props.preview}
+                                    onPreviewChange={this.onPreviewChange}
+                                    showPreview={true}
+                                    previewDisabled={true}
                                 />
                             </Grid.Column>
                         </Grid.Row>
-
-
                     </React.Fragment>
-
                 )}
-
-
             </Grid>
         )
     }
 }
 
 const mapStateToProps = ({ translation }) => ({
-    recording: translation.recording,
-    originalArticle: translation.originalArticle,
-    translatableArticle: translation.translatableArticle,
-    currentSlideIndex: translation.currentSlideIndex,
-    currentSubslideIndex: translation.currentSubslideIndex,
-    recordUploadLoading: translation.recordUploadLoading,
-    editorPlaying: translation.editorPlaying,
-    editorMuted: translation.editorMuted,
+    ...translation
 })
 const mapDispatchToProps = dispatch => ({
     fetchTranslatableArticle: (originalArticleId, lang) => dispatch(translationActions.fetchTranslatableArticle(originalArticleId, lang)),
@@ -293,6 +297,8 @@ const mapDispatchToProps = dispatch => ({
     setEditorMuted: muted => dispatch(translationActions.setEditorMuted(muted)),
     startJob: (options, callFunc) => dispatch(pollerActions.startJob(options, callFunc)),
     stopJob: (jobName) => dispatch(pollerActions.stopJob(jobName)),
+    setPreview: preview => dispatch(translationActions.setPreview(preview)),
+    setSelectedSpeakerNumber: num => dispatch(translationActions.setSelectedSpeakerNumber(num)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(TranslateArticle);

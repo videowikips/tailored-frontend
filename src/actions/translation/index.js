@@ -13,9 +13,19 @@ const setTranslatableArticle = (payload) => ({
     payload,
 })
 
+const setOriginalTranslatableArticle = (payload) => ({
+    type: actionTypes.SET_ORIGINAL_TRANSLATABLE_ARTICLE,
+    payload,
+})
+
 const setRecordUploadLoading = loading => ({
     type: actionTypes.SET_RECORD_UPLOAD_LOADING,
     payload: loading,
+})
+
+export const setPreview = preview => ({
+    type: actionTypes.SET_PREVIEW,
+    payload: preview,
 })
 
 export const setRecording = recording => ({
@@ -48,6 +58,26 @@ export const setEditorMuted = muted => ({
     payload: muted,
 })
 
+export const setSelectedSpeakerNumber = speakerNumber => (dispatch, getState) => {
+    
+    const { originalTranslatableArticle } = getState().translation;
+    const translatableArticle = { ...originalTranslatableArticle };
+
+    const action = ({
+        type: actionTypes.SET_SELECTED_SPEAKER_NUMBER,
+        payload: speakerNumber,
+    })
+    if (speakerNumber !== -1) {
+        translatableArticle.slides.forEach((slide) => {
+            slide.content = slide.content.filter((subslide) => subslide.speakerProfile.speakerNumber === speakerNumber);
+        })
+        translatableArticle.slides = translatableArticle.slides.filter((s) => s.content.length !== 0);
+    }
+    dispatch(action);
+    dispatch(setTranslatableArticle(translatableArticle));
+
+}
+
 export const fetchTranslatableArticle = (originalArticleId, lang) => dispatch => {
     dispatch(setOriginalArticle(null));
     dispatch(setTranslatableArticle(null));
@@ -56,7 +86,9 @@ export const fetchTranslatableArticle = (originalArticleId, lang) => dispatch =>
     .then((res) => {
         const { article, originalArticle } = res.body;
         dispatch(setOriginalArticle(originalArticle));
-        dispatch(setTranslatableArticle(article));
+        dispatch(setTranslatableArticle({ ...article }));
+        dispatch(setOriginalTranslatableArticle({ ...article }));
+        dispatch(setSelectedSpeakerNumber(-1))
     })
     .catch((err) => {
         console.log(err);
