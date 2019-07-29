@@ -1,11 +1,12 @@
+import querystring from 'querystring';
 const API_ROOT = process.env.NODE_ENV === 'development' ? 'http://localhost:4000/api' : 'http://52.30.216.243:4000/api';
-
 export default {
     video: {
         uploadVideo: `${API_ROOT}/video/upload`,
         getVideoById: (id) => `${API_ROOT}/video/${id}`,
         convertVideo: (id) => `${API_ROOT}/video/${id}/convert`,
-        getOrganizationVideos: id => `${API_ROOT}/video?organization=${id}`
+        getVideos: (params = {}) => `${API_ROOT}/video?${querystring.encode(params)}`,
+        getOrganizationVideos: (id) => `${API_ROOT}/video?organization=${id}`
     },
     article: {
         getById: id => `${API_ROOT}/article/${id}`,

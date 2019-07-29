@@ -122,7 +122,7 @@ class Dashboard extends React.Component {
                         <Grid>
                             <Grid.Row>
                                 <Grid.Column width={16}>
-                                    <div style={{ marginTop: 20, height: 40 }}>
+                                    <div style={{ marginTop: 20, marginBottom: 20, height: 40 }}>
                                         
                                         <div className="pull-right">
                                             <Button

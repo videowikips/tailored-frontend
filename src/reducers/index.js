@@ -5,6 +5,7 @@ import article from './article';
 import authentication from './authentication';
 import organization from './organization';
 import translation from './translation';
+import organizationVideos from '../Pages/Organization/Videos/modules/reducer';
 
 export default function createRootReducer (additionalReducers = {}) {
   const reducers = {
@@ -15,6 +16,7 @@ export default function createRootReducer (additionalReducers = {}) {
     organization,
     translation,
     poller,
+    organizationVideos,
   }
 
   return combineReducers(Object.assign({}, additionalReducers, reducers))

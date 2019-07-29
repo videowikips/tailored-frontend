@@ -137,3 +137,8 @@ export const fetchOrganizationVideos = organizationId => dispatch => {
         dispatch({ type: actionTypes.FETCH_ORGANIZATION_VIDEOS_FAILED });
     })
 }
+
+export const setOrganizationVideosActiveTabIndex = index => ({
+    type: actionTypes.SET_ORGANIZATION_VIDEOS_ACTIVE_TAB_INDEX,
+    payload: index,
+})

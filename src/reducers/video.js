@@ -5,6 +5,7 @@ const INITIAL_STATE = {
     organizationVideos: {
         status: 'done',
         videosList: [],
+        activeTabIndex: 0,
     },
     fetchVideoState: 'done',
     fetchVideoError: '',
@@ -37,13 +38,13 @@ export default function (state = INITIAL_STATE, action) {
         case actionTypes.SET_STAGES:
             return { ...state, convertStages: action.payload };
         case actionTypes.FETCH_ORGANIZATION_VIDEOS_LOADING:
-                return { ...state, organizationVideos: { ...state.organizationVideos, status: 'loading '}};
-
+            return { ...state, organizationVideos: { ...state.organizationVideos, status: 'loading ' } };
         case actionTypes.FETCH_ORGANIZATION_VIDEOS_FAILED:
-                return { ...state, organizationVideos: { ...state.organizationVideos, status: 'failed '}};
-
+            return { ...state, organizationVideos: { ...state.organizationVideos, status: 'failed ' } };
         case actionTypes.FETCH_ORGANIZATION_VIDEOS_SUCCESS:
-                return { ...state, organizationVideos: { ...state.organizationVideos, status: 'done', videosList: action.payload }};
+            return { ...state, organizationVideos: { ...state.organizationVideos, status: 'done', videosList: action.payload } };
+        case actionTypes.SET_ORGANIZATION_VIDEOS_ACTIVE_TAB_INDEX:
+            return { ...state, organizationVideos: { ...state.organizationVideos, activeTabIndex: action.payload } };
         default:
             return state;
     }

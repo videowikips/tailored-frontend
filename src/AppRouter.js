@@ -21,7 +21,7 @@ const Logout = () => import('./Pages/Logout');
 
 const Article = () => import('./Pages/Organization/Article');
 const OrganizationUsers = () => import('./Pages/Organization/OrganizationUsers');
-const VideosList = () => import('./Pages/Organization/VideosList');
+const Videos = () => import('./Pages/Organization/Videos');
 const TranslateArticle = () => import('./Pages/Translation/TranslateArticle');
 
 class AppRouter extends React.Component {
@@ -39,13 +39,13 @@ class AppRouter extends React.Component {
               <LazyRoute exact path={routes.convertProgress()} title="Convert Video" loader={Convert} />
             {/* === Organization routes === */}
               <LazyRoute exact path={routes.organizationUsers()} title="Organziation: Users" isPrivateRoute={true} loader={OrganizationUsers} layout={DashboardLayout} />
-              <LazyRoute path={routes.organizationVideos()} isPrivateRoute={true} title="Organziation: Videos" loader={VideosList} layout={DashboardLayout} />
+              <LazyRoute path={routes.organizationVideos()} isPrivateRoute={true} title="Organziation: Videos" loader={Videos} layout={DashboardLayout} />
               <LazyRoute path={routes.organizationArticle()} title="Organziation: Article" loader={Article} layout={DashboardLayout} />
             {/* ==== End Organization routes === */}
 
             {/* === Translation routes === */}
               
-              <LazyRoute path={routes.translationArticle()} title="Translate Article" loader={TranslateArticle} layout={DashboardLayout} />
+              <LazyRoute path={routes.translationArticle()} title="Translate Article" isPrivateRoute={true} loader={TranslateArticle} layout={DashboardLayout} />
             {/* === End Translation routes === */}
             </Switch>
           </div>

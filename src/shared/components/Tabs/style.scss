@@ -1,0 +1,23 @@
+.tabs-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: space-between;
+    width: 100%;
+    .tab-item {
+        flex: 1;
+        text-align: center;
+        padding: 1rem;
+        border: 3px solid black;
+        font-size: 1.5rem;
+        cursor: pointer;
+    };
+    .tab-item:nth-child(2){
+        border-left: none;
+        border-right: none;
+    }
+    .tab-item.active, .tab-item:hover {
+        background-color: green;
+        color: white;
+    }
+}

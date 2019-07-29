@@ -2,7 +2,7 @@ export default {
     home: () => '/',
     logout: () => '/logout',
     demo: () => '/demo',
-    convertProgress: () => '/convert/:videoId',
+    convertProgress: (videoId) => `/convert/${videoId ? videoId : ':videoId'}`,
     
     // Organization
     organizationUsers: () => '/organization/users',
