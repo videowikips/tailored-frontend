@@ -2,6 +2,7 @@ import * as actionTypes from './types';
 import Api from '../../shared/api';
 import requestAgent from '../../shared/utils/requestAgent';
 import NotificationService from '../../shared/utils/NotificationService';
+import _ from 'lodash';
 
 const setOriginalArticle = payload => ({
     type: actionTypes.SET_ORIGINAL_ARTICLE,
@@ -15,6 +16,11 @@ const setTranslatableArticle = (payload) => ({
 
 const setOriginalTranslatableArticle = (payload) => ({
     type: actionTypes.SET_ORIGINAL_TRANSLATABLE_ARTICLE,
+    payload,
+})
+
+const setOriginalViewedArticle = payload => ({
+    type: actionTypes.SET_ORIGINAL_VIEWED_ARTICLE,
     payload,
 })
 
@@ -66,19 +72,25 @@ const setSelectedSpeakerNumber = speakerNumber => ({
 
 export const changeSelectedSpeakerNumber = speakerNumber => (dispatch, getState) => {
     
-    const { originalTranslatableArticle } = getState().translation;
-    const translatableArticle = { ...originalTranslatableArticle };
-
+    const { originalTranslatableArticle, originalArticle } = getState().translation;
+    const translatableArticle = _.cloneDeep(originalTranslatableArticle);
+    const originalViewedArticle = _.cloneDeep(originalArticle)
     if (speakerNumber !== -1) {
         translatableArticle.slides.forEach((slide) => {
             slide.content = slide.content.filter((subslide) => subslide.speakerProfile.speakerNumber === speakerNumber);
         })
         translatableArticle.slides = translatableArticle.slides.filter((s) => s.content.length !== 0);
+
+        originalViewedArticle.slides.forEach((slide) => {
+            slide.content = slide.content.filter((subslide) => subslide.speakerProfile.speakerNumber === speakerNumber);
+        })
+        originalViewedArticle.slides = originalViewedArticle.slides.filter((s) => s.content.length > 0);
     }
     dispatch(setCurrentSlideIndex(0));
     dispatch(setCurrentSubslideIndex(0));
     dispatch(setSelectedSpeakerNumber(speakerNumber));
     dispatch(setTranslatableArticle(translatableArticle));
+    dispatch(setOriginalViewedArticle(originalViewedArticle))
 
 }
 
@@ -90,9 +102,10 @@ export const fetchTranslatableArticle = (originalArticleId, lang) => dispatch =>
     .get(`${Api.translate.getTranslatableArticle(originalArticleId)}?lang=${lang}`)
     .then((res) => {
         const { article, originalArticle } = res.body;
-        dispatch(setOriginalArticle(originalArticle));
-        dispatch(setTranslatableArticle({ ...article }));
-        dispatch(setOriginalTranslatableArticle({ ...article }));
+        dispatch(setOriginalArticle(_.cloneDeep(originalArticle)));
+        dispatch(setOriginalViewedArticle(_.cloneDeep(originalArticle)));
+        dispatch(setTranslatableArticle(_.cloneDeep(article)));
+        dispatch(setOriginalTranslatableArticle(_.cloneDeep(article)));
         dispatch(changeSelectedSpeakerNumber(-1))
     })
     .catch((err) => {

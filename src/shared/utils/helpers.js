@@ -55,3 +55,7 @@ export function debounce(func, wait, immediate) {
 		if (callNow) func.apply(context, args);
 	};
 };
+
+export function cloneObject(obj) {
+  return JSON.parse(JSON.stringify(obj))
+}

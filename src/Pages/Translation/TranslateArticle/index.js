@@ -123,7 +123,7 @@ class TranslateArticle extends React.Component {
 
     render() {
         const {
-            originalArticle,
+            originalViewedArticle,
             translatableArticle,
             currentSlideIndex,
             currentSubslideIndex,
@@ -135,14 +135,14 @@ class TranslateArticle extends React.Component {
 
         return (
             <Grid style={{ width: '100%' }}>
-                {(!originalArticle || (!translatableArticle || translatableArticle.translationProgress !== 100)) && (
+                {(!originalViewedArticle || (!translatableArticle || translatableArticle.translationProgress !== 100)) && (
                     <Grid.Row>
                         <Grid.Column width={16}>
                             {this.renderLoadingLottie()}
                         </Grid.Column>
                     </Grid.Row>
                 )}
-                {originalArticle && translatableArticle && translatableArticle.translationProgress === 100 && (
+                {originalViewedArticle && translatableArticle && translatableArticle.translationProgress === 100 && (
                     <React.Fragment>
                         <Grid.Row>
                             {/* <Grid.Column width={4}>
@@ -160,7 +160,7 @@ class TranslateArticle extends React.Component {
                                             <Editor
                                                 showSidebar
                                                 showDescription
-                                                article={originalArticle}
+                                                article={originalViewedArticle}
                                                 controlled
                                                 muted={editorMuted}
                                                 isPlaying={editorPlaying}
@@ -177,7 +177,7 @@ class TranslateArticle extends React.Component {
                                         <Grid.Column width={16}>
                                             <Select
                                                 value={this.props.selectedSpeakerNumber}
-                                                options={[{ text: 'All', value: -1 }].concat(originalArticle.speakersProfile.map((sp) => ({ text: `Speaker ${sp.speakerNumber} (${sp.speakerGender})`, value: sp.speakerNumber})))}
+                                                options={[{ text: 'All', value: -1 }].concat(originalViewedArticle.speakersProfile.map((sp) => ({ text: `Speaker ${sp.speakerNumber} (${sp.speakerGender})`, value: sp.speakerNumber})))}
                                                 onChange={(e, { value }) => this.props.changeSelectedSpeakerNumber(value)}
                                             />
                                         </Grid.Column>
@@ -256,12 +256,15 @@ class TranslateArticle extends React.Component {
                                                             />
                                                         </div>
                                                     </div>
-                                                    <TranslateBox
+                                                    {translatableArticle.slides[currentSlideIndex] && (
+
+                                                        <TranslateBox
                                                         value={translatableArticle.slides[currentSlideIndex].content[currentSubslideIndex].text || ''}
                                                         onSave={this.onSaveTranslatedText}
                                                         currentSlideIndex={currentSlideIndex}
                                                         currentSubslideIndex={currentSubslideIndex}
-                                                    />
+                                                        />
+                                                    )}
                                                     {/* {this._renderSlideTranslateBox()} */}
                                                 </Card.Content>
                                             </Card>

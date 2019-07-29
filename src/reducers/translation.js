@@ -4,6 +4,7 @@ const INITIAL_STATE = {
     translatableArticle: null,
     originalTranslatableArticle: null,
     originalArticle: null,
+    originalViewedArticle: null,
 
     currentSlideIndex: 0,
     currentSubslideIndex: 0,
@@ -23,6 +24,8 @@ export default function (state = INITIAL_STATE, action) {
     switch (action.type) {
         case actionTypes.SET_ORIGINAL_ARTICLE:
             return { ...state, originalArticle: action.payload };
+        case actionTypes.SET_ORIGINAL_VIEWED_ARTICLE:
+            return { ...state, originalViewedArticle: action.payload };
         case actionTypes.SET_ORIGINAL_TRANSLATABLE_ARTICLE:
             return { ...state, originalTranslatableArticle: action.payload };
         case actionTypes.SET_TRANSLATABLE_ARTICLE:
