@@ -28,6 +28,11 @@ class ModalExampleSize extends Component {
 
     roles = [
         {
+            key: 'l0',
+            value: 'l0',
+            text: 'Admin',
+        },
+        {
             key: 'l1',
             value: 'l1',
             text: 'Review'
@@ -47,8 +52,10 @@ class ModalExampleSize extends Component {
 
         const { email, firstname, lastname, role } = this.state;
         let permissions;
-
-        if (role === 'l1') {
+        if (role === 'l0') {
+            permissions = ['admin'];
+        }
+        else if (role === 'l1') {
             permissions = ['review'];
         } else if (role === 'l2') {
             permissions = ['translate'];

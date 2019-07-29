@@ -10,7 +10,9 @@ import { fetchUsers, editPermissions } from '../../../actions/organization';
 function getUserRoleValue(permissions) {
     let role = 'l1';
     if (permissions.length === 1) {
-        if (permissions[0] === 'review') {
+        if (permissions[0] === 'admin') {
+            role = 'l0';
+        } else if (permissions[0] === 'review') {
             role = 'l1';
         } else if (permissions[0] === 'translate') {
             role = 'l2'
@@ -23,6 +25,11 @@ function getUserRoleValue(permissions) {
 
 class UserTable extends Component {
     roles = [
+        {
+            key: 'l0',
+            value: 'l0',
+            text: 'Admin',
+        },
         {
             key: 'l1',
             value: 'l1',
@@ -44,8 +51,9 @@ class UserTable extends Component {
 
     onRoleChange = (role, email) => {
         let permissions;
-
-        if (role === 'l1') {
+        if (role === 'l0') {
+            permissions = ['admin']
+        } else if (role === 'l1') {
             permissions = ['review'];
         } else if (role === 'l2') {
             permissions = ['translate'];

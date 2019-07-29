@@ -19,6 +19,11 @@ class ChangeRoleModal extends Component {
 
     roles = [
         {
+            key: 'l0',
+            value: 'l0',
+            text: 'Admin',
+        },
+        {
             key: 'l1',
             value: 'l1',
             text: 'Translate'
@@ -64,7 +69,9 @@ class ChangeRoleModal extends Component {
         const { role } = this.state;
         let permissions;
 
-        if (role === 'l1') {
+        if (role === 'l0') {
+            permissions = ['admin']
+        }else if (role === 'l1') {
             permissions = ['translate'];
         } else if (role === 'l2') {
             permissions = ['edit', 'update'];
