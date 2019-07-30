@@ -9,15 +9,19 @@
         text-align: center;
         padding: 1rem;
         border: 3px solid black;
+        border-left: none;
+        border-right: none;
         font-size: 1.5rem;
         cursor: pointer;
     };
-    .tab-item:nth-child(2){
-        border-left: none;
-        border-right: none;
+    .tab-item:nth-child(1), .tab-item:last-child{
+        border-left: 3px solid black;
+        border-right: 3px solid black;
     }
     .tab-item.active, .tab-item:hover {
         background-color: green;
         color: white;
+        font-weight: bold;
+        box-shadow: 0 0 10px #6f6e6e;
     }
 }
