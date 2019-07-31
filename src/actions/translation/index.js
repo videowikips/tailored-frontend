@@ -71,13 +71,19 @@ const setSelectedSpeakerNumber = speakerNumber => ({
 })
 
 const updateOriginalTranslatableArticle = (slidePosition, subslidePosition, changes) => (dispatch, getState) => {
-    console.log('update orignal tranlsatable ======================================= ', dispatch);
     const { originalTranslatableArticle } = getState().translation;
-    
-    Object.keys(changes).forEach((key) => {
-        originalTranslatableArticle.slides.find(s => s.position === slidePosition).content.find(s => s.position === subslidePosition)[key] = changes[key];
-    })
-    dispatch(setOriginalTranslatableArticle(_.cloneDeep(originalTranslatableArticle)));
+    if (originalTranslatableArticle) {
+        const slide = originalTranslatableArticle.slides.find(s => s.position === slidePosition);
+        if (slide) {
+            const subslide = slide.content.find(s => s.position === subslidePosition);
+            if (subslide) {
+                Object.keys(changes).forEach((key) => {
+                    originalTranslatableArticle.slides.find(s => s.position === slidePosition).content.find(s => s.position === subslidePosition)[key] = changes[key];
+                    dispatch(setOriginalTranslatableArticle(_.cloneDeep(originalTranslatableArticle)));
+                })
+            }
+        }
+    }
 }
 
 export const changeSelectedSpeakerNumber = speakerNumber => (dispatch, getState) => {
@@ -126,9 +132,16 @@ export const fetchTranslatableArticle = (originalArticleId, lang) => dispatch =>
 
 export const updateSlideAudio = (slidePosition, subslidePosition, audio) => (dispatch, getState) => {
     const { translatableArticle } = getState().translation;
-    translatableArticle.slides.find(s => s.position === slidePosition).content.find(s => s.position === subslidePosition).audio = audio;
-    dispatch(setTranslatableArticle(_.cloneDeep(translatableArticle)));
-    dispatch(updateOriginalTranslatableArticle(slidePosition, subslidePosition, { audio }));
+    const slide = translatableArticle.slides.find(s => s.position === slidePosition);
+    if (slide) {
+        const subslide = slide.content.find(s => s.position === subslidePosition)
+        if (subslide) {
+            translatableArticle.slides.find(s => s.position === slidePosition).content.find(s => s.position === subslidePosition).audio = audio; 
+            dispatch(setTranslatableArticle(_.cloneDeep(translatableArticle)));
+            dispatch(updateOriginalTranslatableArticle(slidePosition, subslidePosition, { audio }));
+        }
+
+    }
 }
 
 export const saveTranslatedText = (slidePosition, subslidePosition, text) => (dispatch, getState) => {
