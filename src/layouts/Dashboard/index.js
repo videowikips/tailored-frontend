@@ -39,7 +39,13 @@ class Dashboard extends React.Component {
 
     componentDidMount = () => {
         this.websocketConnection = websockets.createWebsocketConnection(WEBSOCKET_SERVER_URL)
-        console.log('====================== websocket =======================', this.websocketConnection)
+        console.log(this.props.organization, this.props.userToken);
+        if (this.props.userToken && this.props.organization && this.props.organization._id) {
+            websockets.emitEvent(websockets.websocketsEvents.AUTHENTICATE, { organization: this.props.organization._id, token: this.props.userToken });
+            websockets.subscribeToEvent(websockets.websocketsEvents.AUTHENTICATE_SUCCESS, (data) => {
+                console.log('============ auth seccuess', data);
+            })
+        }
     }
 
     componentWillUnmount = () => {
@@ -162,6 +168,7 @@ class Dashboard extends React.Component {
 
 const mapStateToProps = ({ authentication, organization, video, }) => ({
     user: authentication.user,
+    userToken: authentication.token,
     organization: organization.organization,
     uploadProgress: video.uploadProgress,
     uploadState: video.uploadState,
