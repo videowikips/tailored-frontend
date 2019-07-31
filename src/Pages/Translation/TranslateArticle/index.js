@@ -12,13 +12,15 @@ import Editor from '../../../shared/components/Editor';
 import *  as translationActions from '../../../actions/translation';
 import * as pollerActions from '../../../actions/poller';
 import aroundTheWorldLottie from '../../../shared/lottie/around-the-world.json';
+import websockets from '../../../websockets';
+// import NotificationService from '../../../shared/utils/NotificationService';
 
 const FETCH_ARTICLE_JOBNAME = 'FETCH_TRANSLATE_ARTICLE';
 
-const calculateCompletedArticlePercentage  = article => {
+const calculateCompletedArticlePercentage = article => {
     const slides = article.slides.reduce((acc, slide) => acc.concat(slide.content), []).filter((slide) => slide);
-    const completedCount = slides.reduce((acc, slide) => slide.text && slide.audio ? ++ acc : acc, 0);
-    return Math.floor(completedCount / slides.length * 100 )
+    const completedCount = slides.reduce((acc, slide) => slide.text && slide.audio ? ++acc : acc, 0);
+    return Math.floor(completedCount / slides.length * 100)
 }
 class TranslateArticle extends React.Component {
     state = {
@@ -31,6 +33,9 @@ class TranslateArticle extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
+        if (!this.props.translatableArticle && nextProps.translatableArticle && !this.socketSub) {
+            this.initSocketSub(nextProps.translatableArticle)
+        }
         if (nextProps.translatableArticle) {
             if (nextProps.translatableArticle.translationProgress !== 100 && !this.state.pollerStarted) {
                 this.props.startJob({ jobName: FETCH_ARTICLE_JOBNAME, interval: 3000 }, () => {
@@ -46,8 +51,21 @@ class TranslateArticle extends React.Component {
         }
     }
 
+    componentWillUnmount = () => {
+        websockets.unsubscribeFromEvent(`${websockets.websocketsEvents.RECORDED_AUDIO_PROCESSED}/${this.props.translatableArticle._id}`)
+    }
+
+    initSocketSub = (translatableArticle) => {
+        websockets.subscribeToEvent(`${websockets.websocketsEvents.RECORDED_AUDIO_PROCESSED}/${translatableArticle._id}`, (data) => {
+            console.log('got socket data', data);
+            const { slidePosition, subslidePosition, audio } = data;
+            this.props.updateSlideAudio(slidePosition, subslidePosition, audio);
+        })
+    }
+
     onSlideChange = (currentSlideIndex, currentSubslideIndex) => {
         this.props.setCurrentEditorIndexes({ currentSlideIndex, currentSubslideIndex });
+        this.props.setEditorPlaying(false);
     }
 
     getCurrentSlideAndSubslide = () => {
@@ -74,6 +92,13 @@ class TranslateArticle extends React.Component {
 
 
     toggleRecording = () => {
+        if (!this.props.recording) {
+            this.props.setEditorMuted(true);
+            this.props.setEditorPlaying(true);
+        } else {
+            this.props.setEditorMuted(false);
+            this.props.setEditorPlaying(false);
+        }
         this.props.setRecording(!this.props.recording);
     }
 
@@ -83,7 +108,7 @@ class TranslateArticle extends React.Component {
     }
 
     onUploadAudioChange = e => {
-        
+
         this.props.setRecording(false);
         const { slide, subslide } = this.getCurrentSlideAndSubslide();
         this.props.saveRecordedTranslation(slide.position, subslide.position, e.target.files[0]);;
@@ -185,7 +210,7 @@ class TranslateArticle extends React.Component {
                                         <Grid.Column width={16}>
                                             <Select
                                                 value={this.props.selectedSpeakerNumber}
-                                                options={[{ text: 'All', value: -1 }].concat(originalViewedArticle.speakersProfile.map((sp) => ({ text: `Speaker ${sp.speakerNumber} (${sp.speakerGender})`, value: sp.speakerNumber})))}
+                                                options={[{ text: 'All', value: -1 }].concat(originalViewedArticle.speakersProfile.map((sp) => ({ text: `Speaker ${sp.speakerNumber} (${sp.speakerGender})`, value: sp.speakerNumber })))}
                                                 onChange={(e, { value }) => this.props.changeSelectedSpeakerNumber(value)}
                                             />
                                         </Grid.Column>
@@ -267,10 +292,10 @@ class TranslateArticle extends React.Component {
                                                     {translatableArticle.slides[currentSlideIndex] && (
 
                                                         <TranslateBox
-                                                        value={translatableArticle.slides[currentSlideIndex].content[currentSubslideIndex].text || ''}
-                                                        onSave={this.onSaveTranslatedText}
-                                                        currentSlideIndex={currentSlideIndex}
-                                                        currentSubslideIndex={currentSubslideIndex}
+                                                            value={translatableArticle.slides[currentSlideIndex].content[currentSubslideIndex].text || ''}
+                                                            onSave={this.onSaveTranslatedText}
+                                                            currentSlideIndex={currentSlideIndex}
+                                                            currentSubslideIndex={currentSubslideIndex}
                                                         />
                                                     )}
                                                     {/* {this._renderSlideTranslateBox()} */}
@@ -321,6 +346,7 @@ const mapDispatchToProps = dispatch => ({
     stopJob: (jobName) => dispatch(pollerActions.stopJob(jobName)),
     setPreview: preview => dispatch(translationActions.setPreview(preview)),
     changeSelectedSpeakerNumber: num => dispatch(translationActions.changeSelectedSpeakerNumber(num)),
+    updateSlideAudio: (slidePositon, subslidePosition, audio) => dispatch(translationActions.updateSlideAudio(slidePositon, subslidePosition, audio)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(TranslateArticle);

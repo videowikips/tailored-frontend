@@ -5,6 +5,10 @@ import { withRouter } from 'react-router-dom';
 import { Button, Icon, Menu, Grid, Card, Dropdown } from 'semantic-ui-react'
 import Avatar from 'react-avatar';
 
+import websockets from '../../websockets';
+
+import { WEBSOCKET_SERVER_URL } from '../../shared/constants';
+
 import UploadNewVideoModal from '../../shared/components/UploadNewVideoModal';
 import NotificationService from '../../shared/utils/NotificationService';
 import { uploadVideo } from '../../actions/video';
@@ -31,6 +35,17 @@ class Dashboard extends React.Component {
             fileContent: null,
         },
         currentLocation: '/organization',
+    }
+
+    componentDidMount = () => {
+        this.websocketConnection = websockets.createWebsocketConnection(WEBSOCKET_SERVER_URL)
+        console.log('====================== websocket =======================', this.websocketConnection)
+    }
+
+    componentWillUnmount = () => {
+        if (this.websocketConnection) {
+            websockets.disconnectConnection();
+        }
     }
 
     componentWillReceiveProps = (nextProps) => {

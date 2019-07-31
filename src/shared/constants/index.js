@@ -15,3 +15,6 @@ export const SPEAKER_BACKGROUND_COLORS = {
     9: '#3e3e71',
     10: '#6435c9',
 }
+
+
+export const WEBSOCKET_SERVER_URL = process.env.NODE_ENV === 'development' ? 'http://localhost:4000' : 'http://52.30.216.243:4000';
