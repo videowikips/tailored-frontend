@@ -2,14 +2,15 @@ export default {
     home: () => '/',
     logout: () => '/logout',
     demo: () => '/demo',
-    convertProgress: (videoId) => `/convert/${videoId ? videoId : ':videoId'}`,
+    convertProgress: (videoId = ':videoId') => `/convert/${videoId}`,
     
     // Organization
     organizationUsers: () => '/organization/users',
     organizationVideos: () => '/organization/videos',
-    organizationArticle: (articleId) => `/organization/article/${articleId ? articleId : ':articleId'}`,
+    organizationHome: () => '/organization',
+    organizationArticle: (articleId = ':articleId') => `/organization/article/${articleId}`,
     
     // Translation
-    translationArticle: (articleId) => `/translation/article/${articleId ? articleId : ':articleId'}`,
+    translationArticle: (articleId = ':articleId') => `/translation/article/${articleId}`,
 
 }

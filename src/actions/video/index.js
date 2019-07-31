@@ -42,6 +42,10 @@ const setStages = (stages, activeStageIndex) => ({
     payload: { stages, activeStageIndex },
 })
 
+export const reset = () => ({
+    type: actionTypes.RESET,
+})
+
 export const uploadVideo = ({ title, numberOfSpeakers, video, langCode, organization }) => (dispatch) => {
     dispatch(uploadVideoLoading());
     requestAgent

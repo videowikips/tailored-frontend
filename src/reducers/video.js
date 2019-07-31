@@ -45,6 +45,8 @@ export default function (state = INITIAL_STATE, action) {
             return { ...state, organizationVideos: { ...state.organizationVideos, status: 'done', videosList: action.payload } };
         case actionTypes.SET_ORGANIZATION_VIDEOS_ACTIVE_TAB_INDEX:
             return { ...state, organizationVideos: { ...state.organizationVideos, activeTabIndex: action.payload } };
+        case actionTypes.RESET:
+            return { ...INITIAL_STATE };
         default:
             return state;
     }

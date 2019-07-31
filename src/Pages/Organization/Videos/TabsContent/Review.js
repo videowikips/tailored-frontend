@@ -47,9 +47,12 @@ class Review extends React.Component {
                     ) : this.props.videos.map((video) => {
                         return (
                             <Grid.Column key={video._id} width={4}>
-                                {video.status === 'done' && (
-                                    <Icon name="check circle" size="large" color="green" style={{ position: 'absolute', right: 0, top: 5, zIndex: 2 }} />
-                                )}
+                                <Icon 
+                                    name="check circle"
+                                    size="large"
+                                    color="green"
+                                    style={{ position: 'absolute', right: 0, top: 5, zIndex: 2, visibility: video.status === 'done' ? 'visible' : 'hidden' }}
+                                />
                                 <Card fluid>
                                     <Card.Content>
                                         <Card.Header style={{ textAlign: 'center' }}>

@@ -31,46 +31,6 @@ class Convert extends React.Component {
         isConfirmConvertModalVisible: false,
     }
 
-    componentDidMount = () => {
-        // setInterval(() => {
-        //     this.setState(({ currentTime }) => {
-        //         return ({ currentTime: currentTime + 50 });
-        //     })
-        // }, 50);
-    }
-
-    componentWillUnmount = () => {
-        if (this.videoRef) {
-            this.videoRef.ontimeupdate = null;
-            this.videoRef.onended = null;
-        }
-    }
-
-    onTimeChange = (currentTime) => {
-        this.videoRef.currentTime = currentTime / 1000;
-        this.setState({ currentTime });
-    }
-
-    onSubtitleChange = (subtitle, subtitleIndex, changes) => {
-        console.log('onSubtitleChange')
-        // this.props.onSaveSubtitle(subtitle, index)
-        // this.props.setSubtitles(subtitles);
-        const { slideIndex, subslideIndex } = subtitle;
-        this.props.updateSubslide(slideIndex, subslideIndex, subtitle);
-    }
-
-    onVideoLoad = (e) => {
-        if (this.videoRef) {
-            this.videoRef.ontimeupdate = () => {
-                this.setState({ currentTime: this.videoRef.currentTime * 1000 });
-            }
-            this.videoRef.onended = () => {
-                this.setState({ videoPlaying: false });
-            }
-            this.setState({ duration: this.videoRef.duration * 1000 })
-        }
-    }
-
 
     componentWillMount() {
         this.startPoller();
@@ -79,7 +39,13 @@ class Convert extends React.Component {
 
     componentWillUnmount() {
         this.stopPoller();
+        if (this.videoRef) {
+            this.videoRef.ontimeupdate = null;
+            this.videoRef.onended = null;
+        }
+        this.props.resetState();
     }
+
 
     componentWillReceiveProps(nextProps) {
         if (this.props.activeStageIndex !== nextProps.activeStageIndex) {
@@ -106,6 +72,30 @@ class Convert extends React.Component {
         if (this.props.fetchArticleState === 'loading' && nextProps.fetchArticleState === 'done' && nextProps.article) {
             const { slides } = nextProps.article;
             this.props.setSlidesToSubtitles(slides);
+        }
+    }
+
+    onTimeChange = (currentTime) => {
+        this.videoRef.currentTime = currentTime / 1000;
+        this.setState({ currentTime });
+    }
+
+    onSubtitleChange = (subtitle, subtitleIndex, changes) => {
+        // this.props.onSaveSubtitle(subtitle, index)
+        // this.props.setSubtitles(subtitles);
+        const { slideIndex, subslideIndex } = subtitle;
+        this.props.updateSubslide(slideIndex, subslideIndex, subtitle);
+    }
+
+    onVideoLoad = (e) => {
+        if (this.videoRef) {
+            this.videoRef.ontimeupdate = () => {
+                this.setState({ currentTime: this.videoRef.currentTime * 1000 });
+            }
+            this.videoRef.onended = () => {
+                this.setState({ videoPlaying: false });
+            }
+            this.setState({ duration: this.videoRef.duration * 1000 })
         }
     }
 
@@ -518,6 +508,7 @@ const mapDispatchToProps = (dispatch) => ({
     setSelectedSubtitle: (subtitle, index) => dispatch(articleActions.setSelectedSubtitle(subtitle, index)),
     onSpeakersChange: speakers => dispatch(articleActions.updateSpeakers(speakers)),
     convertVideoToArticle: videoId => dispatch(videoActions.convertVideoToArticle(videoId)),
+    resetState: () => dispatch(videoActions.reset())
 })
 
 export default withRouter(
