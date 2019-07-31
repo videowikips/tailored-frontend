@@ -5,9 +5,9 @@ export default {
     convertProgress: (videoId = ':videoId') => `/convert/${videoId}`,
     
     // Organization
+    organizationHome: () => '/organization',
     organizationUsers: () => '/organization/users',
     organizationVideos: () => '/organization/videos',
-    organizationHome: () => '/organization',
     organizationArticle: (articleId = ':articleId') => `/organization/article/${articleId}`,
     
     // Translation

@@ -82,6 +82,14 @@ class TranslateArticle extends React.Component {
         this.props.setPreview(preview);
     }
 
+    onUploadAudioChange = e => {
+        
+        this.props.setRecording(false);
+        const { slide, subslide } = this.getCurrentSlideAndSubslide();
+        this.props.saveRecordedTranslation(slide.position, subslide.position, e.target.files[0]);;
+        e.target.value = ''
+    }
+
     _renderUploadAudio() {
         return (
             <Input
@@ -89,7 +97,7 @@ class TranslateArticle extends React.Component {
                     <input
                         type="file"
                         onChange={this.onUploadAudioChange}
-                        value={this.props.uploadAudioInputValue}
+                        // value={this.props.uploadAudioInputValue}
                         accept=".webm, .mp3, .wav"
                     />
                 )}

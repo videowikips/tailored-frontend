@@ -47,7 +47,7 @@ class Review extends React.Component {
                     ) : this.props.videos.map((video) => {
                         return (
                             <Grid.Column key={video._id} width={4}>
-                                <Icon 
+                                <Icon
                                     name="check circle"
                                     size="large"
                                     color="green"
@@ -56,9 +56,11 @@ class Review extends React.Component {
                                 <Card fluid>
                                     <Card.Content>
                                         <Card.Header style={{ textAlign: 'center' }}>
-                                            <Link to={`/organization/article/${video.article}`} >
-                                                {video.title}
-                                            </Link>
+                                            {video.status === 'done' ? (
+                                                <Link to={routes.organizationArticle(video.article)} >
+                                                    {video.title}
+                                                </Link>
+                                            ) : video.title}
                                         </Card.Header>
                                     </Card.Content>
                                     <video src={video.url} controls width={'100%'} />
