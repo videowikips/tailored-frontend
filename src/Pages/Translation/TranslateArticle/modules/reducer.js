@@ -1,4 +1,4 @@
-import * as actionTypes from '../actions/translation/types';
+import * as actionTypes from './types';
 
 const INITIAL_STATE = {
     translatableArticle: null,

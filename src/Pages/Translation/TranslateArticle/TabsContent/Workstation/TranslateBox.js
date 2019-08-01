@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { TextArea, Button } from 'semantic-ui-react';
-import { debounce } from '../../../shared/utils/helpers';
+import { debounce } from '../../../../../shared/utils/helpers';
 
 class TranslateBox extends React.Component {
   constructor(props) {

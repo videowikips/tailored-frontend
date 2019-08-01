@@ -1,7 +1,7 @@
 import * as actionTypes from './types';
-import Api from '../../shared/api';
-import requestAgent from '../../shared/utils/requestAgent';
-import NotificationService from '../../shared/utils/NotificationService';
+import Api from '../../../../shared/api';
+import requestAgent from '../../../../shared/utils/requestAgent';
+import NotificationService from '../../../../shared/utils/NotificationService';
 import _ from 'lodash';
 
 const setOriginalArticle = payload => ({
@@ -71,7 +71,7 @@ const setSelectedSpeakerNumber = speakerNumber => ({
 })
 
 const updateOriginalTranslatableArticle = (slidePosition, subslidePosition, changes) => (dispatch, getState) => {
-    const { originalTranslatableArticle } = getState().translation;
+    const { originalTranslatableArticle } = getState().translateArticle;
     if (originalTranslatableArticle) {
         const slide = originalTranslatableArticle.slides.find(s => s.position === slidePosition);
         if (slide) {
@@ -88,7 +88,7 @@ const updateOriginalTranslatableArticle = (slidePosition, subslidePosition, chan
 
 export const changeSelectedSpeakerNumber = speakerNumber => (dispatch, getState) => {
     
-    const { originalTranslatableArticle, originalArticle } = getState().translation;
+    const { originalTranslatableArticle, originalArticle } = getState().translateArticle;
     const translatableArticle = _.cloneDeep(originalTranslatableArticle);
     const originalViewedArticle = _.cloneDeep(originalArticle)
     if (speakerNumber !== -1) {
@@ -114,10 +114,12 @@ export const changeSelectedSpeakerNumber = speakerNumber => (dispatch, getState)
 export const fetchTranslatableArticle = (originalArticleId, lang) => dispatch => {
     dispatch(setOriginalArticle(null));
     dispatch(setTranslatableArticle(null));
+    console.log('fetching translatable article ==========================================')
     requestAgent
     .get(`${Api.translate.getTranslatableArticle(originalArticleId)}?lang=${lang}`)
     .then((res) => {
         const { article, originalArticle } = res.body;
+        console.log('response', res.body)
         dispatch(setOriginalArticle(_.cloneDeep(originalArticle)));
         dispatch(setOriginalViewedArticle(_.cloneDeep(originalArticle)));
         dispatch(setTranslatableArticle(_.cloneDeep(article)));
@@ -131,7 +133,7 @@ export const fetchTranslatableArticle = (originalArticleId, lang) => dispatch =>
 }
 
 export const updateSlideAudio = (slidePosition, subslidePosition, audio) => (dispatch, getState) => {
-    const { translatableArticle } = getState().translation;
+    const { translatableArticle } = getState().translateArticle;
     const slide = translatableArticle.slides.find(s => s.position === slidePosition);
     if (slide) {
         const subslide = slide.content.find(s => s.position === subslidePosition)
@@ -145,7 +147,7 @@ export const updateSlideAudio = (slidePosition, subslidePosition, audio) => (dis
 }
 
 export const saveTranslatedText = (slidePosition, subslidePosition, text) => (dispatch, getState) => {
-    const { translatableArticle } = getState().translation
+    const { translatableArticle } = getState().translateArticle
     requestAgent
     .post(Api.translate.addTranslatedText(translatableArticle._id), { slidePosition, subslidePosition, text })
     .then((res) => {
@@ -163,7 +165,7 @@ export const saveTranslatedText = (slidePosition, subslidePosition, text) => (di
 
 export const saveRecordedTranslation = (slidePosition, subslidePosition, blob) => (dispatch, getState) => {
     dispatch(setRecordUploadLoading(true));
-    const { translatableArticle } = getState().translation
+    const { translatableArticle } = getState().translateArticle
     requestAgent.post(Api.translate.addRecordedTranslation(translatableArticle._id))
     .field('slidePosition', slidePosition)
     .field('subslidePosition', subslidePosition)
@@ -187,7 +189,7 @@ export const saveRecordedTranslation = (slidePosition, subslidePosition, blob) =
 
 export const deleteRecordedTranslation = (slidePosition, subslidePosition) => (dispatch, getState) => {
     dispatch(setRecordUploadLoading(true));
-    const { translatableArticle } = getState().translation
+    const { translatableArticle } = getState().translateArticle
     requestAgent.delete(Api.translate.deleteRecordedTranslation(translatableArticle._id), { slidePosition, subslidePosition })
     .then((res) => {
         const slideIndex = translatableArticle.slides.findIndex((s) => s.position === slidePosition);
