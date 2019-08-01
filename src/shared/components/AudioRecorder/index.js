@@ -21,7 +21,14 @@ function getBrowserUserMedia() {
   return userMediaFunc;
 }
 
-const getUserMedia = getBrowserUserMedia();
+let getUserMedia;
+
+try {
+
+  getUserMedia = getBrowserUserMedia();
+} catch(e) {
+  alert('Error initilizing mic recorder')
+}
 
 class AudioRecorder extends React.Component {
   constructor(props) {
