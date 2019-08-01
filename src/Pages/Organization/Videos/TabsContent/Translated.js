@@ -16,18 +16,29 @@ class Translated extends React.Component {
         this.props.fetchTranslatedArticles(this.props.organization._id);
     }
 
+    getLanguage = langCode => {
+        const fromOthers = isoLangs[langCode];
+        if (fromOthers) return fromOthers.name;
+        const fromSupported = supportedLangs.find(l => l.code === langCode);
+        if (fromSupported) return fromSupported.name;
+        return langCode
+    }
+
     render() {
         return (
             <LoaderComponent active={this.props.videosLoading}>
                 <Grid style={{ textAlign: 'center' }}>
                     {this.props.translatedArticles.map((translatedArticle) => (
                         <Grid.Row key={`translated-article-container-${translatedArticle.video._id}`}>
+                            <Grid.Column width={16} style={{ textAlign: 'left', margin: '1rem' }}>
+                                <h3>{translatedArticle.video.title}</h3>
+                            </Grid.Column>
                             <Grid.Column width={4}>
                                 <Card fluid>
                                     <video src={translatedArticle.video.url} width="100%" height="100%" controls preload="false" />
                                     <Card.Content>
                                         <Link to={routes.organizationArticle(translatedArticle.video.article)}>
-                                            Original {supportedLangs.find((l) => l.code === translatedArticle.video.langCode) ? supportedLangs.find((l) => l.code === translatedArticle.video.langCode).name : translatedArticle.video.langCode}
+                                            Original {this.getLanguage(translatedArticle.video.langCode)}
                                         </Link>
                                     <p>Number of speakers {translatedArticle.video.numberOfSpeakers}</p>
                                     </Card.Content>
@@ -40,7 +51,6 @@ class Translated extends React.Component {
                                             <Grid.Column width={6} key={`translated-article-article-${article._id}`}>
                                                 <Card fluid>
                                                     <Card.Header style={{ padding: '1rem', fontWeight: 'bold'}}>
-
                                                         <Link to={routes.translationArticle(translatedArticle.video.article) + `?lang=${article.langCode}`}>
                                                             {article.title} ( {isoLangs[article.langCode] ? isoLangs[article.langCode].name : article.langCode} )
                                                         </Link>
@@ -48,16 +58,20 @@ class Translated extends React.Component {
                                                     <Card.Content>
                                                         <Link to={routes.translationArticle(translatedArticle.video.article, article.langCode)}>
                                                             <Button color="blue">
-                                                                {article.metrics.completed}% Completed
+                                                                {article.metrics.completed.total}% Completed
                                                             </Button>
                                                         </Link>
-                                                        <p style={{ marginTop: '1rem' }}>Voice translation</p>
+                                                        <h3 style={{ marginTop: '1rem' }}>Voice translations</h3>
                                                         {article.metrics.speakersMetrics.map(speakerMetric => (
                                                             <p key={`speaker-voice-metric-${speakerMetric.speaker.speakerNumber}`}>
-                                                                {speakerMetric.speaker.speakerNumber}
-                                                                <Progress progress indicating percent={speakerMetric.progress} />
+                                                                Speaker {speakerMetric.speaker.speakerNumber} ( { speakerMetric.speaker.speakerGender } )
+                                                                <Progress progress indicating percent={speakerMetric.progress} style={{ marginTop: '0.5rem' }} />
                                                             </p>
                                                         ))}
+                                                        <h3 style={{ marginTop: '1rem' }}>Text translations</h3>
+                                                        <p>
+                                                            <Progress progress indicating percent={article.metrics.completed.text} />
+                                                        </p>
                                                     </Card.Content>
                                                 </Card>
                                             </Grid.Column>
