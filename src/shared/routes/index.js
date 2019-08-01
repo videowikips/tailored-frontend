@@ -11,6 +11,6 @@ export default {
     organizationArticle: (articleId = ':articleId') => `/organization/article/${articleId}`,
     
     // Translation
-    translationArticle: (articleId = ':articleId') => `/translation/article/${articleId}`,
+    translationArticle: (articleId = ':articleId', langCode) => `/translation/article/${articleId}${langCode ? `?lang=${langCode}` : ''}`,
 
 }

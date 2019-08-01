@@ -33,6 +33,11 @@ export const setAddHumanVoiceModalVisible = visible => ({
     payload: visible,
 })
 
+export const setTranslatedArticles = translatedArticles => ({
+    type: actionTypes.SET_TRANSLATED_ARTICLES,
+    payload: translatedArticles,
+})
+
 export const fetchVideos = ({ organization, langCode, status }) => (dispatch, getState) => {
     // const { }
     dispatch(setVideoLoading(true));
@@ -42,6 +47,22 @@ export const fetchVideos = ({ organization, langCode, status }) => (dispatch, ge
         .then((res) => {
             const { videos } = res.body;
             dispatch(setVideos(videos));
+            dispatch(setVideoLoading(false))
+        })
+        .catch((err) => {
+            NotificationService.responseError(err);
+            dispatch(setVideoLoading(false))
+        })
+}
+
+export const fetchTranslatedArticles = organization => (dispatch, getState) => {
+    dispatch(setVideoLoading(true));
+    dispatch(setTranslatedArticles([]))
+    requestAgent
+        .get(Api.article.getTranslatedArticles(organization))
+        .then((res) => {
+            const { videos } = res.body;
+            dispatch(setTranslatedArticles(videos));
             dispatch(setVideoLoading(false))
         })
         .catch((err) => {

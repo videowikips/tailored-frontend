@@ -7,6 +7,7 @@ const INITIAL_STATE = {
     languageFilter: 'en-US',
     addHumanVoiceModalVisible: false,
     selectedVideo: null,
+    translatedArticles: [],
 }
 
 export default function(state = INITIAL_STATE, action) {
@@ -23,6 +24,8 @@ export default function(state = INITIAL_STATE, action) {
             return { ...state, addHumanVoiceModalVisible: action.payload };
         case actionTypes.SET_SELECTED_VIDEO:
             return { ...state, selectedVideo: action.payload };
+        case actionTypes.SET_TRANSLATED_ARTICLES:
+            return { ...state, translatedArticles: action.payload };
         default:
             return state;
     }
