@@ -78,6 +78,21 @@ class Convert extends React.Component {
     onTimeChange = (currentTime) => {
         this.videoRef.currentTime = currentTime / 1000;
         this.setState({ currentTime });
+        this.checkSelectedSubtitleChange(currentTime)
+    }
+
+    checkSelectedSubtitleChange = (currentTime) => {
+
+        if (this.props.selectedSubtitle && this.props.selectedSubtitle.subtitle && (this.props.selectedSubtitle.subtitle.startTime <= currentTime && this.props.selectedSubtitle.subtitle.endTime >= currentTime )) {
+            // same subtitle item;
+            return;
+        }
+
+        const currentSubtitleIndex = this.props.subtitles.findIndex((s) => s.startTime <= currentTime && s.endTime >= currentTime);
+        const currentSubtitle = this.props.subtitles[currentSubtitleIndex];
+        if (currentSubtitle) {
+            this.props.setSelectedSubtitle(currentSubtitle, currentSubtitleIndex);
+        }
     }
 
     onSubtitleChange = (subtitle, subtitleIndex, changes) => {
@@ -91,6 +106,7 @@ class Convert extends React.Component {
         if (this.videoRef) {
             this.videoRef.ontimeupdate = () => {
                 this.setState({ currentTime: this.videoRef.currentTime * 1000 });
+                this.checkSelectedSubtitleChange(this.videoRef.currentTime * 1000);
             }
             this.videoRef.onended = () => {
                 this.setState({ videoPlaying: false });
@@ -243,7 +259,7 @@ class Convert extends React.Component {
             >
                 <h2>Instructions:</h2>
                 <ol style={{ fontSize: 20 }}>
-                    {['Upload Video', 'Proofread the transcribed text', 'Set the speakers profiles (m/f)', 'Press on "Save and Convert"'].map((s) => (
+                    {['Proofread the transcribed text', 'Review \'who spoke when\'', 'Press on "Save and Convert"'].map((s) => (
                         <li style={{ paddingBottom: 40 }} key={'step' + s} >{s}</li>
                     ))}
                 </ol>
