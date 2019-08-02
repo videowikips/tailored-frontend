@@ -66,9 +66,26 @@ class Workstation extends React.Component {
         })
     }
 
+    canPreview = () => {
+        const { translatableArticle } = this.props;
+        if (!translatableArticle) return false;
+        if (this.props.preview) {
+            return true;
+        }
+        return translatableArticle.slides.reduce((acc, s) => acc.concat(s.content), []).every((s) => s.audio && s.text);
+    }
+
     onSlideChange = (currentSlideIndex, currentSubslideIndex) => {
         this.props.setCurrentEditorIndexes({ currentSlideIndex, currentSubslideIndex });
-        this.props.setEditorPlaying(false);
+        if (!this.props.preview) {
+            this.props.setEditorPlaying(false);
+        }
+    }
+
+    onPlayComplete = () => {
+        if (this.props.preview) {
+            // this.props.setEditorPlaying(false);
+        }
     }
 
     getCurrentSlideAndSubslide = () => {
@@ -107,7 +124,7 @@ class Workstation extends React.Component {
 
     onPreviewChange = (preview) => {
         console.log('on preview change', preview)
-        this.props.setPreview(preview);
+        this.props.onPreviewChange(preview);
     }
 
     onUploadAudioChange = e => {
@@ -206,6 +223,7 @@ class Workstation extends React.Component {
                                                     currentSlideIndex={currentSlideIndex}
                                                     currentSubslideIndex={currentSubslideIndex}
                                                     onSlideChange={this.onSlideChange}
+                                                    onPlayComplete={this.onPlayComplete}
                                                     layout={1}
                                                 />
                                             </Grid.Column>
@@ -321,7 +339,7 @@ class Workstation extends React.Component {
                                         preview={this.props.preview}
                                         onPreviewChange={this.onPreviewChange}
                                         showPreview={true}
-                                        previewDisabled={true}
+                                        previewDisabled={!this.canPreview()}
                                     />
                                 </Grid.Column>
                             </Grid.Row>
@@ -350,7 +368,7 @@ const mapDispatchToProps = dispatch => ({
     setEditorMuted: muted => dispatch(translationActions.setEditorMuted(muted)),
     startJob: (options, callFunc) => dispatch(pollerActions.startJob(options, callFunc)),
     stopJob: (jobName) => dispatch(pollerActions.stopJob(jobName)),
-    setPreview: preview => dispatch(translationActions.setPreview(preview)),
+    onPreviewChange: preview => dispatch(translationActions.onPreviewChange(preview)),
     changeSelectedSpeakerNumber: num => dispatch(translationActions.changeSelectedSpeakerNumber(num)),
     updateSlideAudio: (slidePositon, subslidePosition, audio) => dispatch(translationActions.updateSlideAudio(slidePositon, subslidePosition, audio)),
 })

@@ -4,6 +4,8 @@ import requestAgent from '../../../../shared/utils/requestAgent';
 import NotificationService from '../../../../shared/utils/NotificationService';
 import _ from 'lodash';
 
+const moduleName = 'translateArticle';
+
 const setOriginalArticle = payload => ({
     type: actionTypes.SET_ORIGINAL_ARTICLE,
     payload,
@@ -70,8 +72,13 @@ const setSelectedSpeakerNumber = speakerNumber => ({
     payload: speakerNumber,
 })
 
+const setTmpViewedArticle = article => ({
+    type: actionTypes.SET_TEMP_VIEWED_ARTICLE,
+    payload: article,
+})
+
 const updateOriginalTranslatableArticle = (slidePosition, subslidePosition, changes) => (dispatch, getState) => {
-    const { originalTranslatableArticle } = getState().translateArticle;
+    const { originalTranslatableArticle } = getState()[moduleName];
     if (originalTranslatableArticle) {
         const slide = originalTranslatableArticle.slides.find(s => s.position === slidePosition);
         if (slide) {
@@ -79,16 +86,35 @@ const updateOriginalTranslatableArticle = (slidePosition, subslidePosition, chan
             if (subslide) {
                 Object.keys(changes).forEach((key) => {
                     originalTranslatableArticle.slides.find(s => s.position === slidePosition).content.find(s => s.position === subslidePosition)[key] = changes[key];
-                    dispatch(setOriginalTranslatableArticle(_.cloneDeep(originalTranslatableArticle)));
                 })
+                dispatch(setOriginalTranslatableArticle(_.cloneDeep(originalTranslatableArticle)));
             }
         }
     }
 }
 
+export const onPreviewChange = preview => (dispatch, getState) => {
+    dispatch(setPreview(preview));
+    dispatch(setCurrentSlideIndex(0));
+    dispatch(setCurrentSubslideIndex(0));
+
+    const { translatableArticle, originalViewedArticle, tmpViewedArticle } = getState()[moduleName];
+    if (preview) {
+        dispatch(setTmpViewedArticle(originalViewedArticle));
+        dispatch(setOriginalViewedArticle(_.cloneDeep(translatableArticle)));
+        dispatch(setEditorMuted(false));
+        dispatch(setEditorPlaying(true));
+    } else {
+        dispatch(setOriginalViewedArticle(_.cloneDeep(tmpViewedArticle)));
+        dispatch(setTmpViewedArticle(null));
+        dispatch(setEditorMuted(false));
+        dispatch(setEditorPlaying(false));
+    }
+}
+
 export const changeSelectedSpeakerNumber = speakerNumber => (dispatch, getState) => {
     
-    const { originalTranslatableArticle, originalArticle } = getState().translateArticle;
+    const { originalTranslatableArticle, originalArticle } = getState()[moduleName];
     const translatableArticle = _.cloneDeep(originalTranslatableArticle);
     const originalViewedArticle = _.cloneDeep(originalArticle)
     if (speakerNumber !== -1) {
@@ -133,7 +159,7 @@ export const fetchTranslatableArticle = (originalArticleId, lang) => dispatch =>
 }
 
 export const updateSlideAudio = (slidePosition, subslidePosition, audio) => (dispatch, getState) => {
-    const { translatableArticle } = getState().translateArticle;
+    const { translatableArticle } = getState()[moduleName];
     const slide = translatableArticle.slides.find(s => s.position === slidePosition);
     if (slide) {
         const subslide = slide.content.find(s => s.position === subslidePosition)
@@ -147,7 +173,7 @@ export const updateSlideAudio = (slidePosition, subslidePosition, audio) => (dis
 }
 
 export const saveTranslatedText = (slidePosition, subslidePosition, text) => (dispatch, getState) => {
-    const { translatableArticle } = getState().translateArticle
+    const { translatableArticle } = getState()[moduleName]
     requestAgent
     .post(Api.translate.addTranslatedText(translatableArticle._id), { slidePosition, subslidePosition, text })
     .then((res) => {
@@ -165,7 +191,7 @@ export const saveTranslatedText = (slidePosition, subslidePosition, text) => (di
 
 export const saveRecordedTranslation = (slidePosition, subslidePosition, blob) => (dispatch, getState) => {
     dispatch(setRecordUploadLoading(true));
-    const { translatableArticle } = getState().translateArticle
+    const { translatableArticle } = getState()[moduleName]
     requestAgent.post(Api.translate.addRecordedTranslation(translatableArticle._id))
     .field('slidePosition', slidePosition)
     .field('subslidePosition', subslidePosition)
@@ -189,7 +215,7 @@ export const saveRecordedTranslation = (slidePosition, subslidePosition, blob) =
 
 export const deleteRecordedTranslation = (slidePosition, subslidePosition) => (dispatch, getState) => {
     dispatch(setRecordUploadLoading(true));
-    const { translatableArticle } = getState().translateArticle
+    const { translatableArticle } = getState()[moduleName]
     requestAgent.delete(Api.translate.deleteRecordedTranslation(translatableArticle._id), { slidePosition, subslidePosition })
     .then((res) => {
         const slideIndex = translatableArticle.slides.findIndex((s) => s.position === slidePosition);

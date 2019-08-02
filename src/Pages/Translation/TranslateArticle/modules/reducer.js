@@ -3,8 +3,11 @@ import * as actionTypes from './types';
 const INITIAL_STATE = {
     translatableArticle: null,
     originalTranslatableArticle: null,
+    
     originalArticle: null,
     originalViewedArticle: null,
+
+    tmpViewedArticle: null,
 
     currentSlideIndex: 0,
     currentSubslideIndex: 0,
@@ -30,6 +33,8 @@ export default function (state = INITIAL_STATE, action) {
             return { ...state, originalTranslatableArticle: action.payload };
         case actionTypes.SET_TRANSLATABLE_ARTICLE:
             return { ...state, translatableArticle: action.payload };
+        case actionTypes.SET_TEMP_VIEWED_ARTICLE:
+            return { ...state, tmpViewedArticle: action.payload };
         case actionTypes.SET_CURRENT_SLIDE_INDEX:
             return { ...state, currentSlideIndex: action.payload };
         case actionTypes.SET_CURRENT_SUBSLIDE_INDEX:
