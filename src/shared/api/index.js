@@ -1,5 +1,5 @@
 import querystring from 'querystring';
-const API_ROOT = process.env.NODE_ENV === 'development' ? 'http://localhost:4000/api' : 'http://52.30.216.243:4000/api';
+const API_ROOT = process.env.NODE_ENV === 'development' ? 'http://localhost:4000/api' : 'https://videowiki.org/api';
 export default {
     video: {
         uploadVideo: `${API_ROOT}/video/upload`,
