@@ -38,7 +38,11 @@ class Dashboard extends React.Component {
     }
 
     componentDidMount = () => {
-        this.websocketConnection = websockets.createWebsocketConnection(WEBSOCKET_SERVER_URL)
+        this.websocketConnection = websockets.createWebsocketConnection(WEBSOCKET_SERVER_URL, {
+            path: '/socket.io',
+            transports: ['websocket'],
+            secure: true,
+        })
         if (this.props.userToken && this.props.organization && this.props.organization._id) {
             websockets.emitEvent(websockets.websocketsEvents.AUTHENTICATE, { organization: this.props.organization._id, token: this.props.userToken });
             websockets.subscribeToEvent(websockets.websocketsEvents.AUTHENTICATE_SUCCESS, (data) => {
@@ -76,7 +80,7 @@ class Dashboard extends React.Component {
     }
 
     onSubmit = (values) => {
-        this.props.uploadVideo({ ...values, organization: this.props.organization._id});
+        this.props.uploadVideo({ ...values, organization: this.props.organization._id });
     }
 
     isFormValid = () => {
@@ -143,7 +147,7 @@ class Dashboard extends React.Component {
                             <Grid.Row>
                                 <Grid.Column width={16}>
                                     <div style={{ marginTop: 20, marginBottom: 20, height: 40 }}>
-                                        
+
                                         <div className="pull-right">
                                             <Button
                                                 color="blue"
