@@ -41,6 +41,7 @@ class TranslateBox extends React.Component {
     return (
       <div className="c-export-human-voice__translate_box">
         <TextArea
+          disabled={this.props.disabled}
           style={{ padding: 20, width: '100%' }}
           rows={5}
           placeholder="Translate slide text"

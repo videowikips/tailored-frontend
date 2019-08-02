@@ -231,6 +231,7 @@ class Workstation extends React.Component {
                                         <Grid.Row>
                                             <Grid.Column width={16}>
                                                 <Select
+                                                    disabled={this.props.preview}
                                                     value={this.props.selectedSpeakerNumber}
                                                     options={[{ text: 'All', value: -1 }].concat(originalViewedArticle.speakersProfile.map((sp) => ({ text: `Speaker ${sp.speakerNumber} (${sp.speakerGender})`, value: sp.speakerNumber })))}
                                                     onChange={(e, { value }) => this.props.changeSelectedSpeakerNumber(value)}
@@ -242,91 +243,94 @@ class Workstation extends React.Component {
                                                 <Progress progress indicating percent={calculateCompletedArticlePercentage(translatableArticle)} />
                                             </Grid.Column>
                                         </Grid.Row>
-                                        <Grid.Row>
-                                            <Grid.Column computer={16} mobile={16}>
-                                                <Card style={{ margin: 0, width: '100%' }}>
-                                                    <Card.Content>
-                                                        <div className="c-export-human-voice__recorder-container">
-                                                            <Button
-                                                                icon
-                                                                primary
-                                                                size="large"
-                                                                // ="left"
-                                                                loading={recordUploadLoading}
-                                                                disabled={recordUploadLoading}
-                                                                onClick={this.toggleRecording}
-                                                            >
-                                                                {!recording ? (
-                                                                    <Icon name="microphone" />
-                                                                ) : (
-                                                                        <Icon name="stop" />
-                                                                    )}
-                                                                {!recording ? ' Record' : ' Stop'}
-                                                            </Button>
-                                                            {!recording && (
-                                                                <div style={{ margin: 5 }}>
-                                                                    Or
+                                        {!this.props.preview ? (
+                                            <Grid.Row>
+                                                <Grid.Column computer={16} mobile={16}>
+                                                    <Card style={{ margin: 0, width: '100%' }}>
+                                                        <Card.Content>
+                                                            <div className="c-export-human-voice__recorder-container">
+                                                                <Button
+                                                                    icon
+                                                                    primary
+                                                                    size="large"
+                                                                    // ="left"
+                                                                    loading={recordUploadLoading}
+                                                                    disabled={recordUploadLoading}
+                                                                    onClick={this.toggleRecording}
+                                                                >
+                                                                    {!recording ? (
+                                                                        <Icon name="microphone" />
+                                                                    ) : (
+                                                                            <Icon name="stop" />
+                                                                        )}
+                                                                    {!recording ? ' Record' : ' Stop'}
+                                                                </Button>
+                                                                {!recording && (
+                                                                    <div style={{ margin: 5 }}>
+                                                                        Or
                                                             </div>
-                                                            )}
-                                                            {!recording && this._renderUploadAudio()}
-                                                            {translatableArticle.slides[currentSlideIndex] && translatableArticle.slides[currentSlideIndex].content[currentSubslideIndex].audio && !recording && (
-                                                                <div className="c-export-human-voice__audio_container" >
-                                                                    <audio
-                                                                        key={`audio-player-${translatableArticle.slides[currentSlideIndex].content[currentSubslideIndex].audio}`}
-                                                                        controls
-                                                                        onPlay={() => {
-                                                                            this.props.setEditorPlaying(true)
-                                                                            this.props.setEditorMuted(true);
-                                                                        }}
-                                                                        onPause={() => {
-                                                                            this.props.setEditorPlaying(false)
-                                                                            this.props.setEditorMuted(false);
-                                                                        }}
-                                                                        onEnded={() => {
-                                                                            this.props.setEditorPlaying(false)
-                                                                            this.props.setEditorMuted(false);
-                                                                        }}
-                                                                    >
-                                                                        <source src={translatableArticle.slides[currentSlideIndex].content[currentSubslideIndex].audio} />
-                                                                        Your browser does not support the audio element.
+                                                                )}
+                                                                {!recording && this._renderUploadAudio()}
+                                                                {translatableArticle.slides[currentSlideIndex] && translatableArticle.slides[currentSlideIndex].content[currentSubslideIndex].audio && !recording && (
+                                                                    <div className="c-export-human-voice__audio_container" >
+                                                                        <audio
+                                                                            key={`audio-player-${translatableArticle.slides[currentSlideIndex].content[currentSubslideIndex].audio}`}
+                                                                            controls
+                                                                            onPlay={() => {
+                                                                                this.props.setEditorPlaying(true)
+                                                                                this.props.setEditorMuted(true);
+                                                                            }}
+                                                                            onPause={() => {
+                                                                                this.props.setEditorPlaying(false)
+                                                                                this.props.setEditorMuted(false);
+                                                                            }}
+                                                                            onEnded={() => {
+                                                                                this.props.setEditorPlaying(false)
+                                                                                this.props.setEditorMuted(false);
+                                                                            }}
+                                                                        >
+                                                                            <source src={translatableArticle.slides[currentSlideIndex].content[currentSubslideIndex].audio} />
+                                                                            Your browser does not support the audio element.
                                                                 </audio>
-                                                                    <Icon
-                                                                        name="close"
-                                                                        className="c-export-human-voice__clear-record"
-                                                                        onClick={() => {
-                                                                            const { slide, subslide } = this.getCurrentSlideAndSubslide();
-                                                                            this.props.deleteRecordedTranslation(slide.position, subslide.position);
-                                                                        }}
+                                                                        <Icon
+                                                                            name="close"
+                                                                            className="c-export-human-voice__clear-record"
+                                                                            onClick={() => {
+                                                                                const { slide, subslide } = this.getCurrentSlideAndSubslide();
+                                                                                this.props.deleteRecordedTranslation(slide.position, subslide.position);
+                                                                            }}
+                                                                        />
+                                                                    </div>
+                                                                )}
+                                                                <div className="c-export-human-voice__recorder-mic-container" style={{ 'visibility': recording ? 'visible' : 'hidden' }} >
+                                                                    <AudioRecorder
+                                                                        record={recording}
+                                                                        loading={this.props.recordUploadLoading}
+                                                                        className="c-export-human-voice__recorder-mic"
+                                                                        onStop={this.onRecordingStop}
+                                                                        backgroundColor="#2185d0"
+                                                                        strokeColor="#000000"
                                                                     />
                                                                 </div>
-                                                            )}
-                                                            <div className="c-export-human-voice__recorder-mic-container" style={{ 'visibility': recording ? 'visible' : 'hidden' }} >
-                                                                <AudioRecorder
-                                                                    record={recording}
-                                                                    loading={this.props.recordUploadLoading}
-                                                                    className="c-export-human-voice__recorder-mic"
-                                                                    onStop={this.onRecordingStop}
-                                                                    backgroundColor="#2185d0"
-                                                                    strokeColor="#000000"
-                                                                />
                                                             </div>
-                                                        </div>
-                                                        {translatableArticle.slides[currentSlideIndex] && (
+                                                            {translatableArticle.slides[currentSlideIndex] && (
 
-                                                            <TranslateBox
-                                                                value={translatableArticle.slides[currentSlideIndex].content[currentSubslideIndex].text || ''}
-                                                                onSave={this.onSaveTranslatedText}
-                                                                currentSlideIndex={currentSlideIndex}
-                                                                currentSubslideIndex={currentSubslideIndex}
-                                                            />
-                                                        )}
-                                                        {/* {this._renderSlideTranslateBox()} */}
-                                                    </Card.Content>
-                                                </Card>
-                                            </Grid.Column>
-                                            <Grid.Column width={4}>
-                                            </Grid.Column>
-                                        </Grid.Row>
+                                                                <TranslateBox
+                                                                    value={translatableArticle.slides[currentSlideIndex].content[currentSubslideIndex].text || ''}
+                                                                    onSave={this.onSaveTranslatedText}
+                                                                    currentSlideIndex={currentSlideIndex}
+                                                                    currentSubslideIndex={currentSubslideIndex}
+                                                                />
+                                                            )}
+                                                            {/* {this._renderSlideTranslateBox()} */}
+                                                        </Card.Content>
+                                                    </Card>
+                                                </Grid.Column>
+                                                <Grid.Column width={4}>
+                                                </Grid.Column>
+                                            </Grid.Row>
+                                        ) : null}
+
                                     </Grid>
                                 </Grid.Column>
 
