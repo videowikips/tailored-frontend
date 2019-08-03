@@ -67,6 +67,9 @@ class UserTable extends Component {
     }
 
     render() {
+        const userRole = this.props.user.organizationRoles.find(r => r.organization._id === this.props.organization._id);
+        const canModify = userRole.organizationOwner || (userRole.permissions.indexOf('admin') !== -1);
+
         const template = this.props.users.length ? this.props.users.map((user) => {
             const isOrganizationOwner = user.organizationRoles[0].organizationOwner;
 
@@ -88,8 +91,11 @@ class UserTable extends Component {
                                         onChange={(e, { value }) => this.onRoleChange(value, user.email)}
                                         value={getUserRoleValue(user.organizationRoles[0].permissions)}
                                         options={this.roles}
+                                        disabled={!canModify}
                                     />
-                                    <DeleteUserModal email={user.email} />
+                                    {canModify && (
+                                        <DeleteUserModal email={user.email} />
+                                    )}
                                 </div>
                             )}
 
@@ -133,8 +139,9 @@ class UserTable extends Component {
     }
 }
 
-const mapStateToProps = ({ organization }) => ({
-    ...organization
+const mapStateToProps = ({ organization, authentication }) => ({
+    ...organization,
+    user: authentication.user,
 })
 
 const mapDispatchToProps = (dispatch) => ({

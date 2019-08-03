@@ -9,9 +9,9 @@ import { isoLangs, supportedLangs } from '../../../../shared/constants/langs';
 import routes from '../../../../shared/routes';
 
 import * as videoActions from '../modules/actions';
+import authorizeUser from '../../../../shared/hoc/authorizeUser';
 
 class Translated extends React.Component {
-
     componentWillMount = () => {
         this.props.fetchTranslatedArticles(this.props.organization._id);
     }
@@ -40,7 +40,7 @@ class Translated extends React.Component {
                                         <Link to={routes.organizationArticle(translatedArticle.video.article)}>
                                             Original {this.getLanguage(translatedArticle.video.langCode)}
                                         </Link>
-                                    <p>Number of speakers {translatedArticle.video.numberOfSpeakers}</p>
+                                        <p>Number of speakers {translatedArticle.video.numberOfSpeakers}</p>
                                     </Card.Content>
                                 </Card>
                             </Grid.Column>
@@ -50,28 +50,26 @@ class Translated extends React.Component {
                                         {translatedArticle.articles.map((article) => (
                                             <Grid.Column width={6} key={`translated-article-article-${article._id}`}>
                                                 <Card fluid>
-                                                    <Card.Header style={{ padding: '1rem', fontWeight: 'bold'}}>
+                                                    <Card.Header style={{ padding: '1rem', fontWeight: 'bold' }}>
                                                         <Link to={routes.translationArticle(translatedArticle.video.article) + `?lang=${article.langCode}`}>
                                                             {article.title} ( {isoLangs[article.langCode] ? isoLangs[article.langCode].name : article.langCode} )
-                                                        </Link>
+                                                            </Link>
                                                     </Card.Header>
                                                     <Card.Content>
                                                         <Link to={routes.translationArticle(translatedArticle.video.article, article.langCode)}>
                                                             <Button color="blue">
                                                                 {article.metrics.completed.total}% Completed
-                                                            </Button>
+                                                                </Button>
                                                         </Link>
                                                         <h3 style={{ marginTop: '1rem' }}>Voice translations</h3>
                                                         {article.metrics.speakersMetrics.map(speakerMetric => (
-                                                            <p key={`speaker-voice-metric-${speakerMetric.speaker.speakerNumber}`}>
-                                                                Speaker {speakerMetric.speaker.speakerNumber} ( { speakerMetric.speaker.speakerGender } )
+                                                            <div key={`speaker-voice-metric-${speakerMetric.speaker.speakerNumber}`}>
+                                                                <p>Speaker {speakerMetric.speaker.speakerNumber} ( {speakerMetric.speaker.speakerGender} )</p>
                                                                 <Progress progress indicating percent={speakerMetric.progress} style={{ marginTop: '0.5rem' }} />
-                                                            </p>
+                                                            </div>
                                                         ))}
                                                         <h3 style={{ marginTop: '1rem' }}>Text translations</h3>
-                                                        <p>
-                                                            <Progress progress indicating percent={article.metrics.completed.text} />
-                                                        </p>
+                                                        <Progress progress indicating percent={article.metrics.completed.text} />
                                                     </Card.Content>
                                                 </Card>
                                             </Grid.Column>
@@ -99,4 +97,4 @@ const mapDispatchToProps = (dispatch) => ({
     fetchTranslatedArticles: (organization) => dispatch(videoActions.fetchTranslatedArticles(organization))
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(Translated);
+export default connect(mapStateToProps, mapDispatchToProps)(authorizeUser(Translated, ['admin']));

@@ -146,3 +146,8 @@ export const setOrganizationVideosActiveTabIndex = index => ({
     type: actionTypes.SET_ORGANIZATION_VIDEOS_ACTIVE_TAB_INDEX,
     payload: index,
 })
+
+export const setOrganizationVideosTabs = tabs => ({
+    type: actionTypes.SET_ORGANIZATION_VIDEOS_TABS,
+    payload: tabs,
+})

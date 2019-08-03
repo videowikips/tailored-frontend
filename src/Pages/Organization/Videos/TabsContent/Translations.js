@@ -9,6 +9,7 @@ import routes from '../../../../shared/routes';
 import { supportedLangs, isoLangsArray } from '../../../../shared/constants/langs';
 import AddHumanVoiceModal from '../../../../shared/components/AddHumanVoiceModal';
 import LoaderComponent from '../../../../shared/components/LoaderComponent';
+import authorizeUser from '../../../../shared/hoc/authorizeUser';
 
 let langsToUse = supportedLangs.map((l) => ({ ...l, supported: true }));
 langsToUse = langsToUse.concat(isoLangsArray.filter((l) => supportedLangs.every((l2) => l2.code.indexOf(l.code) === -1)));
@@ -16,7 +17,6 @@ const langsOptions = langsToUse.map((lang) => ({ key: lang.code, value: lang.cod
 
 
 class Translations extends React.Component {
-
     componentWillMount() {
         this.props.fetchVideos({ organization: this.props.organization._id, langCode: this.props.languageFilter, status: ['done'] });
     }
@@ -93,7 +93,6 @@ class Translations extends React.Component {
                 <LoaderComponent active={this.props.videosLoading}>
                     {this._render()}
                 </LoaderComponent>
-
             </Grid>
         )
     }
@@ -117,4 +116,4 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 
-export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Translations));
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(authorizeUser(Translations, ['admin', 'translate'])));

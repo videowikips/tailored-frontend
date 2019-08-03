@@ -8,6 +8,8 @@ import routes from '../../../../shared/routes';
 import { supportedLangs, isoLangsArray } from '../../../../shared/constants/langs';
 import LoaderComponent from '../../../../shared/components/LoaderComponent';
 
+import authorizeUser from '../../../../shared/hoc/authorizeUser';
+
 let langsToUse = supportedLangs.map((l) => ({ ...l, supported: true }));
 langsToUse = langsToUse.concat(isoLangsArray.filter((l) => supportedLangs.every((l2) => l2.code.indexOf(l.code) === -1)));
 const langsOptions = langsToUse.map((lang) => ({ key: lang.code, value: lang.code, text: `${lang.name} ( ${lang.code} )` }));
@@ -15,7 +17,8 @@ const langsOptions = langsToUse.map((lang) => ({ key: lang.code, value: lang.cod
 
 class Review extends React.Component {
 
-    componentWillMount() {
+    componentWillMount = () => {
+        console.log(this.props)
         this.props.fetchVideos({ organization: this.props.organization._id, langCode: this.props.languageFilter, status: ['proofreading', 'done'] });
     }
 
@@ -105,4 +108,4 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 
-export default connect(mapStateToProps, mapDispatchToProps)(Review);
+export default connect(mapStateToProps, mapDispatchToProps)(authorizeUser(Review, ['admin', 'review']));
