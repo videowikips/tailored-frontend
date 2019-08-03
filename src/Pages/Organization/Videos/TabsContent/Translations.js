@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { Link } from 'react-router-dom/cjs/react-router-dom';
-import { Grid, Card, Select, Dropdown, Icon, Button, Loader } from 'semantic-ui-react';
+import { Grid, Card, Dropdown, Button, Pagination } from 'semantic-ui-react';
 
 import * as videoActions from '../modules/actions';
 import routes from '../../../../shared/routes';
@@ -18,9 +18,27 @@ const langsOptions = langsToUse.map((lang) => ({ key: lang.code, value: lang.cod
 
 class Translations extends React.Component {
     componentWillMount() {
-        this.props.fetchVideos({ organization: this.props.organization._id, langCode: this.props.languageFilter, status: ['done'] });
+        this.props.setCurrentPageNumber(1);
+        this.props.fetchVideos({ organization: this.props.organization._id, langCode: this.props.languageFilter, status: ['done'], page: 1 });
     }
 
+    onPageChange = (e, { activePage }) => {
+        this.props.setCurrentPageNumber(activePage);
+        this.props.fetchVideos({ organization: this.props.organization._id, langCode: this.props.languageFilter, status: ['done'], page: activePage });
+    }
+
+    renderPagination = () => (
+        <Grid.Row>
+            <Grid.Column width={10} />
+            <Grid.Column width={6}>
+                <Pagination
+                    activePage={this.props.currentPageNumber}
+                    onPageChange={this.onPageChange}
+                    totalPages={this.props.totalPagesCount}
+                />
+            </Grid.Column>
+        </Grid.Row>
+    )
     onAddHumanVoice = lang => {
         this.props.setAddHumanVoiceModalVisible(false);
         this.props.history.push(routes.translationArticle(this.props.selectedVideo.article) + `?lang=${lang}`);
@@ -92,6 +110,7 @@ class Translations extends React.Component {
             <Grid>
                 <LoaderComponent active={this.props.videosLoading}>
                     {this._render()}
+                    {this.renderPagination()}
                 </LoaderComponent>
             </Grid>
         )
@@ -106,13 +125,16 @@ const mapStateToProps = ({ organization, authentication, organizationVideos }) =
     addHumanVoiceModalVisible: organizationVideos.addHumanVoiceModalVisible,
     selectedVideo: organizationVideos.selectedVideo,
     videosLoading: organizationVideos.videosLoading,
+    totalPagesCount: organizationVideos.totalPagesCount,
+    currentPageNumber: organizationVideos.currentPageNumber,
 })
 
 const mapDispatchToProps = (dispatch) => ({
-    fetchVideos: ({ organization, langCode, status }) => dispatch(videoActions.fetchVideos({ organization, langCode, status })),
+    fetchVideos: (params) => dispatch(videoActions.fetchVideos(params)),
     setLanguageFilter: (langCode) => dispatch(videoActions.setLanguageFilter(langCode)),
     setAddHumanVoiceModalVisible: visible => dispatch(videoActions.setAddHumanVoiceModalVisible(visible)),
     setSelectedVideo: video => dispatch(videoActions.setSelectedVideo(video)),
+    setCurrentPageNumber: pageNumber => dispatch(videoActions.setCurrentPageNumber(pageNumber)),
 });
 
 

@@ -3,6 +3,17 @@ import Api from '../../../../shared/api';
 import requestAgent from '../../../../shared/utils/requestAgent';
 import NotificationService from '../../../../shared/utils/NotificationService';
 
+
+export const setCurrentPageNumber = pageNumber => ({
+    type: actionTypes.SET_CURRENT_PAGE_NUMBER,
+    payload: pageNumber,
+})
+
+export const setTotalPagesCount = pagesCount => ({
+    type: actionTypes.SET_TOTAL_PAGES_COUNT,
+    payload: pagesCount,
+})
+
 export const setActiveTabIndex = index => ({
     type: actionTypes.SET_ACTIVE_TAB_INDEX,
     payload: index,
@@ -38,16 +49,19 @@ export const setTranslatedArticles = translatedArticles => ({
     payload: translatedArticles,
 })
 
-export const fetchVideos = ({ organization, langCode, status }) => (dispatch, getState) => {
+export const fetchVideos = ({ organization, langCode, status, page }) => (dispatch, getState) => {
     // const { }
     dispatch(setVideoLoading(true));
     dispatch(setVideos([]))
     requestAgent
-        .get(Api.video.getVideos({ organization, langCode, status }))
+        .get(Api.video.getVideos({ organization, langCode, status, page }))
         .then((res) => {
-            const { videos } = res.body;
+            const { videos, pagesCount } = res.body;
             dispatch(setVideos(videos));
             dispatch(setVideoLoading(false))
+            if (pagesCount) {
+                dispatch(setTotalPagesCount(pagesCount));
+            }
         })
         .catch((err) => {
             NotificationService.responseError(err);
@@ -55,15 +69,19 @@ export const fetchVideos = ({ organization, langCode, status }) => (dispatch, ge
         })
 }
 
-export const fetchTranslatedArticles = organization => (dispatch, getState) => {
+export const fetchTranslatedArticles = (organization, page) => (dispatch, getState) => {
     dispatch(setVideoLoading(true));
     dispatch(setTranslatedArticles([]))
+    console.log('page for trans', page)
     requestAgent
-        .get(Api.article.getTranslatedArticles(organization))
+        .get(Api.article.getTranslatedArticles({ organization, page }))
         .then((res) => {
-            const { videos } = res.body;
+            const { videos, pagesCount } = res.body;
             dispatch(setTranslatedArticles(videos));
             dispatch(setVideoLoading(false))
+            if (pagesCount) {
+                dispatch(setTotalPagesCount(pagesCount));
+            }
         })
         .catch((err) => {
             NotificationService.responseError(err);

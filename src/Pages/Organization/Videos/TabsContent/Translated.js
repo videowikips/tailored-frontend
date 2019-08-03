@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Grid, Card, Progress, Button } from 'semantic-ui-react';
+import { Grid, Card, Progress, Button, Pagination } from 'semantic-ui-react';
 
 import LoaderComponent from '../../../../shared/components/LoaderComponent';
 
@@ -13,7 +13,8 @@ import authorizeUser from '../../../../shared/hoc/authorizeUser';
 
 class Translated extends React.Component {
     componentWillMount = () => {
-        this.props.fetchTranslatedArticles(this.props.organization._id);
+        this.props.setCurrentPageNumber(1);
+        this.props.fetchTranslatedArticles(this.props.organization._id, 1);
     }
 
     getLanguage = langCode => {
@@ -23,6 +24,24 @@ class Translated extends React.Component {
         if (fromSupported) return fromSupported.name;
         return langCode
     }
+
+    onPageChange = (e, { activePage }) => {
+        this.props.setCurrentPageNumber(activePage);
+        this.props.fetchTranslatedArticles(this.props.organization._id, activePage);
+    }
+
+    renderPagination = () => (
+        <Grid.Row>
+            <Grid.Column width={10} />
+            <Grid.Column width={6}>
+                <Pagination
+                    activePage={this.props.currentPageNumber}
+                    onPageChange={this.onPageChange}
+                    totalPages={this.props.totalPagesCount}
+                />
+            </Grid.Column>
+        </Grid.Row>
+    )
 
     render() {
         return (
@@ -79,6 +98,7 @@ class Translated extends React.Component {
                             </Grid.Column>
                         </Grid.Row>
                     ))}
+                    {this.renderPagination()}
                 </Grid>
             </LoaderComponent>
         )
@@ -92,9 +112,12 @@ const mapStateToProps = ({ organization, authentication, organizationVideos }) =
     videos: organizationVideos.videos,
     languageFilter: organizationVideos.languageFilter,
     videosLoading: organizationVideos.videosLoading,
+    totalPagesCount: organizationVideos.totalPagesCount,
+    currentPageNumber: organizationVideos.currentPageNumber,
 })
 const mapDispatchToProps = (dispatch) => ({
-    fetchTranslatedArticles: (organization) => dispatch(videoActions.fetchTranslatedArticles(organization))
+    setCurrentPageNumber: pageNumber => dispatch(videoActions.setCurrentPageNumber(pageNumber)),
+    fetchTranslatedArticles: (organization, page) => dispatch(videoActions.fetchTranslatedArticles(organization, page))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(authorizeUser(Translated, ['admin']));

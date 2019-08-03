@@ -16,7 +16,7 @@ export default {
         addSubslide: (articleId, slideIndex, subslideIndex) => `${API_ROOT}/article/${articleId}/slides/${slideIndex}/content/${subslideIndex}`,
         deleteSubslide: (articleId, slideIndex, subslideIndex) => `${API_ROOT}/article/${articleId}/slides/${slideIndex}/content/${subslideIndex}`,
         updateSpeakers: (articleId) => `${API_ROOT}/article/${articleId}/speakersProfile`,
-        getTranslatedArticles: organization => `${API_ROOT}/article/translations?${querystring.encode({ organization })}`,
+        getTranslatedArticles: (params) => `${API_ROOT}/article/translations?${querystring.encode(params)}`,
 
     },
     translate: {

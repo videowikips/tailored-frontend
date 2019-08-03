@@ -4,6 +4,8 @@ const INITIAL_STATE = {
     activeTabIndex: 0,
     videos: [],
     videosLoading: false,
+    currentPageNumber: 0,
+    totalPagesCount: 0,
     languageFilter: 'en-US',
     addHumanVoiceModalVisible: false,
     selectedVideo: null,
@@ -26,6 +28,10 @@ export default function(state = INITIAL_STATE, action) {
             return { ...state, selectedVideo: action.payload };
         case actionTypes.SET_TRANSLATED_ARTICLES:
             return { ...state, translatedArticles: action.payload };
+        case actionTypes.SET_CURRENT_PAGE_NUMBER:
+            return { ...state, currentPageNumber: action.payload };
+        case actionTypes.SET_TOTAL_PAGES_COUNT:
+            return { ...state, totalPagesCount: action.payload };
         default:
             return state;
     }
