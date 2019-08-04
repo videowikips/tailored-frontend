@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import querystring from 'query-string';
 import Lottie from 'react-lottie';
 import { Grid, Card, Button, Icon, Input, Progress, Select } from 'semantic-ui-react';
+import Switch from 'react-switch';
 import { withRouter } from 'react-router-dom';
 
 import SlidesList from '../../../../../shared/components/SlidesList';
@@ -15,8 +16,8 @@ import *  as translationActions from '../../modules/actions';
 import * as pollerActions from '../../../../../actions/poller';
 import aroundTheWorldLottie from '../../../../../shared/lottie/around-the-world.json';
 import websockets from '../../../../../websockets';
-// import NotificationService from '../../../shared/utils/NotificationService';
 
+import './style.scss'
 const FETCH_ARTICLE_JOBNAME = 'FETCH_TRANSLATE_ARTICLE';
 
 const calculateCompletedArticlePercentage = article => {
@@ -73,6 +74,12 @@ class Workstation extends React.Component {
             return true;
         }
         return translatableArticle.slides.reduce((acc, s) => acc.concat(s.content), []).every((s) => s.audio && s.text);
+    }
+
+    canExport = () => {
+        const { originalTranslatableArticle } = this.props;
+        if (!originalTranslatableArticle) return false;
+        return originalTranslatableArticle.slides.reduce((acc, s) => acc.concat(s.content), []).every((s) => s.audio && s.text);
     }
 
     onSlideChange = (currentSlideIndex, currentSubslideIndex) => {
@@ -318,7 +325,7 @@ class Workstation extends React.Component {
                                                                 </div>
 
                                                             </div>
-                                                            <small>Maximum audio duration: {translatableArticle.slides[currentSlideIndex].content[currentSubslideIndex].media[0].duration} seconds</small>
+                                                            <small>Maximum audio duration: {parseInt(translatableArticle.slides[currentSlideIndex].content[currentSubslideIndex].media[0].duration)} seconds</small>
                                                             {translatableArticle.slides[currentSlideIndex] && (
 
                                                                 <TranslateBox
@@ -341,20 +348,60 @@ class Workstation extends React.Component {
                                 </Grid.Column>
 
                                 <Grid.Column width={4}>
-                                    <Button
-                                        // disabled={!this.canPreview()}
-                                        onClick={this.onExport}
-                                    >Export</Button>
-                                    <SlidesList
-                                        currentSlideIndex={currentSlideIndex}
-                                        currentSubslideIndex={currentSubslideIndex}
-                                        slides={translatableArticle.slides}
-                                        onSubslideClick={this.onSlideChange}
-                                        preview={this.props.preview}
-                                        onPreviewChange={this.onPreviewChange}
-                                        showPreview={true}
-                                        previewDisabled={!this.canPreview()}
-                                    />
+
+                                    <Grid style={{ maxHeight: '850px', overflowY: 'scroll', border: '3px solid #eee', margin: 0, paddingTop: 5 }} >
+                                        <Grid.Row>
+                                            <Grid.Column width={16}>
+                                                <Grid className="preview-container">
+                                                    <Grid.Row>
+                                                        <Grid.Column width={16}>
+                                                            <h3 className="preview-header">All Slides</h3>
+                                                        </Grid.Column>
+                                                    </Grid.Row>
+                                                    <Grid.Row>
+                                                        <Grid.Column width={12}>
+                                                            <h3>Preview</h3>
+                                                        </Grid.Column>
+                                                        <Grid.Column width={4}>
+                                                            {/* <Rail /> */}
+                                                            <Switch
+                                                                disabled={!this.canPreview()}
+                                                                checked={this.props.preview}
+                                                                onChange={this.onPreviewChange}
+                                                                onColor="#86d3ff"
+                                                                onHandleColor="#2693e6"
+                                                                handleDiameter={30}
+                                                                uncheckedIcon={false}
+                                                                checkedIcon={false}
+                                                                boxShadow="0px 1px 5px rgba(0, 0, 0, 0.6)"
+                                                                activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
+                                                                height={20}
+                                                                width={48}
+                                                            />
+                                                        </Grid.Column>
+                                                    </Grid.Row>
+                                                    <Grid.Row>
+                                                        <Grid.Column width={16}>
+                                                            <Button
+                                                                fluid
+                                                                color="green"
+                                                                disabled={!this.canExport()}
+                                                                onClick={this.onExport}
+                                                            >
+                                                                Export
+                                                            </Button>
+                                                        </Grid.Column>
+                                                    </Grid.Row>
+                                                </Grid>
+                                            </Grid.Column>
+                                        </Grid.Row>
+                                        <SlidesList
+                                            currentSlideIndex={currentSlideIndex}
+                                            currentSubslideIndex={currentSubslideIndex}
+                                            slides={translatableArticle.slides}
+                                            onSubslideClick={this.onSlideChange}
+                                        />
+                                    </Grid>
                                 </Grid.Column>
                             </Grid.Row>
                         </React.Fragment>

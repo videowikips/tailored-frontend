@@ -59,46 +59,9 @@ class SlidesList extends React.Component {
     )
   }
 
-  renderPreview = () => (
-    <Grid.Row>
-      <Grid.Column width={16}>
-        <Grid className="preview-container">
-          <Grid.Row>
-            <Grid.Column width={16}>
-              <h3 className="preview-header">All Slides</h3>
-            </Grid.Column>
-          </Grid.Row>
-          <Grid.Row>
-            <Grid.Column width={12}>
-              <h3>Preview</h3>
-            </Grid.Column>
-            <Grid.Column width={4}>
-              {/* <Rail /> */}
-              <Switch
-                disabled={this.props.previewDisabled}
-                checked={this.props.preview}
-                onChange={this.props.onPreviewChange}
-                onColor="#86d3ff"
-                onHandleColor="#2693e6"
-                handleDiameter={30}
-                uncheckedIcon={false}
-                checkedIcon={false}
-                boxShadow="0px 1px 5px rgba(0, 0, 0, 0.6)"
-                activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
-                height={20}
-                width={48}
-              />
-            </Grid.Column>
-          </Grid.Row>
-        </Grid>
-      </Grid.Column>
-    </Grid.Row>
-  )
-
   render() {
     return (
-      <Grid style={{ maxHeight: '850px', overflowY: 'scroll', border: '3px solid #eee', margin: 0, paddingTop: 5 }} >
-        {this.props.showPreview && this.renderPreview()}
+      <Grid className="preview-slides-container">
         {reduceSlidesSubslides(this.props.slides).map((slide, index) => this.renderSubslide(slide, index))}
       </Grid>
     )
