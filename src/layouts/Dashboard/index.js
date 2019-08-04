@@ -125,7 +125,7 @@ class Dashboard extends React.Component {
                             {NAV_LINKS.map((l) => (
                                 <Link
                                     key={l.title + l.route} to={l.route}
-                                    style={{ backgroundColor: this.state.currentLocation.indexOf(l.route) === 0 ? '#eee' : 'transparent', color: this.state.currentLocation.indexOf(l.route) === 0 ? 'black' : 'white', width: '100%', padding: 15, display: 'block' }}
+                                    style={{ backgroundColor: this.props.location.pathname.indexOf(l.route) === 0 ? '#eee' : 'transparent', color: this.props.location.pathname.indexOf(l.route) === 0 ? 'black' : 'white', width: '100%', padding: 15, display: 'block' }}
                                     onClick={() => this.setState({ currentLocation: l.route })}
                                 >{l.title}</Link>
                             ))}
@@ -169,7 +169,7 @@ class Dashboard extends React.Component {
     }
 }
 
-const mapStateToProps = ({ authentication, organization, video, }) => ({
+const mapStateToProps = ({ authentication, organization, video, router }) => ({
     user: authentication.user,
     userToken: authentication.token,
     organization: organization.organization,
@@ -177,6 +177,7 @@ const mapStateToProps = ({ authentication, organization, video, }) => ({
     uploadState: video.uploadState,
     uploadError: video.uploadError,
     video: video.video,
+    location: router.location,
 })
 
 const mapDispatchToProps = (dispatch) => ({

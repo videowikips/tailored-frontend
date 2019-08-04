@@ -4,6 +4,7 @@ import requestAgent from '../../../../shared/utils/requestAgent';
 import NotificationService from '../../../../shared/utils/NotificationService';
 import _ from 'lodash';
 import { push } from 'connected-react-router';
+import routes from '../../../../shared/routes';
 
 const moduleName = 'translateArticle';
 
@@ -242,6 +243,8 @@ export const exportTranslation = (articleId) => (dispatch, getState) => {
     .post(Api.translate.exportTranslation(translatableArticle._id))
     .then((res) => {
         console.log('res is', res);
+        NotificationService.success('The video has been queued to be exported. we\'ll notify you once it\'s done :)');
+        dispatch(push(routes.organizationVideos()))
         // const slideIndex = translatableArticle.slides.findIndex((s) => s.position === slidePosition);
         // const subslideIndex = translatableArticle.slides[slideIndex].content.findIndex((s) => s.position === subslidePosition);
         // translatableArticle.slides[slideIndex].content[subslideIndex].text = text;
@@ -250,7 +253,6 @@ export const exportTranslation = (articleId) => (dispatch, getState) => {
     })
     .catch((err) => {
         console.log(err);
-        dispatch(push('/organization/users'))
         NotificationService.responseError(err);
     })
 }

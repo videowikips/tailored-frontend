@@ -272,7 +272,7 @@ class Workstation extends React.Component {
                                                                 {!recording && (
                                                                     <div style={{ margin: 5 }}>
                                                                         Or
-                                                            </div>
+                                                                    </div>
                                                                 )}
                                                                 {!recording && this._renderUploadAudio()}
                                                                 {translatableArticle.slides[currentSlideIndex] && translatableArticle.slides[currentSlideIndex].content[currentSubslideIndex].audio && !recording && (
@@ -316,7 +316,9 @@ class Workstation extends React.Component {
                                                                         strokeColor="#000000"
                                                                     />
                                                                 </div>
+
                                                             </div>
+                                                            <small>Maximum audio duration: {translatableArticle.slides[currentSlideIndex].content[currentSubslideIndex].media[0].duration} seconds</small>
                                                             {translatableArticle.slides[currentSlideIndex] && (
 
                                                                 <TranslateBox
