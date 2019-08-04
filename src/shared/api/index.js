@@ -24,6 +24,7 @@ export default {
         addTranslatedText: (translateableArticleId) => `${API_ROOT}/translate/${translateableArticleId}/text`,
         addRecordedTranslation: (translateableArticleId) => `${API_ROOT}/translate/${translateableArticleId}/audio`,
         deleteRecordedTranslation: (translateableArticleId) => `${API_ROOT}/translate/${translateableArticleId}/audio`,
+        exportTranslation: (translateableArticleId) => `${API_ROOT}/translate/${translateableArticleId}/export`,
     },
     authentication: {
         login: `${API_ROOT}/auth/login`,

@@ -2,8 +2,9 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
 import { PersistGate } from 'redux-persist/integration/react'
+import { ConnectedRouter } from 'connected-react-router'
 
-import { store, persistor } from './store'
+import { store, persistor, history } from './store'
 import AppRouter from './AppRouter'
 
 import * as serviceWorker from './serviceWorker';
@@ -16,7 +17,9 @@ import 'react-notifications/lib/notifications.css';
 ReactDOM.render(
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
-      <AppRouter />
+      <ConnectedRouter history={history}>
+        <AppRouter />
+      </ConnectedRouter>
       <NotificationContainer />
     </PersistGate>
   </Provider>,

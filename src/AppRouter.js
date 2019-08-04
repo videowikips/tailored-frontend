@@ -28,7 +28,6 @@ class AppRouter extends React.Component {
 
   render() {
     return (
-      <Router>
         <div className="c-app">
           <Header />
           <div className="c-app__main">
@@ -52,7 +51,6 @@ class AppRouter extends React.Component {
           </div>
           <Footer />
         </div>
-      </Router>
     )
   }
 }

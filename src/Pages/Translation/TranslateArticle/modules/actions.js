@@ -3,6 +3,7 @@ import Api from '../../../../shared/api';
 import requestAgent from '../../../../shared/utils/requestAgent';
 import NotificationService from '../../../../shared/utils/NotificationService';
 import _ from 'lodash';
+import { push } from 'connected-react-router';
 
 const moduleName = 'translateArticle';
 
@@ -229,6 +230,27 @@ export const deleteRecordedTranslation = (slidePosition, subslidePosition) => (d
     .catch((err) => {
         console.log(err);
         dispatch(setRecordUploadLoading(false));
+        NotificationService.responseError(err);
+    })
+}
+
+
+
+export const exportTranslation = (articleId) => (dispatch, getState) => {
+    const { translatableArticle } = getState()[moduleName]
+    requestAgent
+    .post(Api.translate.exportTranslation(translatableArticle._id))
+    .then((res) => {
+        console.log('res is', res);
+        // const slideIndex = translatableArticle.slides.findIndex((s) => s.position === slidePosition);
+        // const subslideIndex = translatableArticle.slides[slideIndex].content.findIndex((s) => s.position === subslidePosition);
+        // translatableArticle.slides[slideIndex].content[subslideIndex].text = text;
+        // dispatch(setTranslatableArticle({ ...translatableArticle }));
+        // dispatch(updateOriginalTranslatableArticle(slidePosition, subslidePosition, { text }))
+    })
+    .catch((err) => {
+        console.log(err);
+        dispatch(push('/organization/users'))
         NotificationService.responseError(err);
     })
 }
