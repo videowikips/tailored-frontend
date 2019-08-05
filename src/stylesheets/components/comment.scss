@@ -45,4 +45,30 @@
 
 .comment {
     margin-top: 5px;
+    position: relative;
+}
+
+.user-suggestions {
+  position: absolute;
+  bottom: 50px;
+  background: #ddd;
+  border-radius: 5px;
+
+  .suggestion {
+    display: grid;
+    grid-template-columns: 35px auto;
+    grid-column-gap: 10px;
+    align-items: center;
+    cursor: pointer;
+    padding: 5px 20px;
+
+    .avatar {
+      width: 30px !important;
+      height: 30px !important;
+    }
+
+    &:hover {
+      background: #aaa;
+    }
+  }
 }
