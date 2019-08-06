@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import { Progress, Grid,  Dropdown, Button, Icon, Modal } from 'semantic-ui-react';
+import { Progress, Grid, Dropdown, Button, Icon, Modal } from 'semantic-ui-react';
 
 import * as articleActions from '../../actions/article';
 import * as videoActions from '../../actions/video';
@@ -83,7 +83,7 @@ class Convert extends React.Component {
 
     checkSelectedSubtitleChange = (currentTime) => {
 
-        if (this.props.selectedSubtitle && this.props.selectedSubtitle.subtitle && (this.props.selectedSubtitle.subtitle.startTime <= currentTime && this.props.selectedSubtitle.subtitle.endTime >= currentTime )) {
+        if (this.props.selectedSubtitle && this.props.selectedSubtitle.subtitle && (this.props.selectedSubtitle.subtitle.startTime <= currentTime && this.props.selectedSubtitle.subtitle.endTime >= currentTime)) {
             // same subtitle item;
             return;
         }
@@ -321,7 +321,7 @@ class Convert extends React.Component {
                                         </Grid>
                                     </Grid.Column>
                                 </Grid.Row>
-                                {this.props.article && this.props.article.speakersProfile && this.props.selectedSubtitle && this.props.selectedSubtitle.subtitle && (
+                                {this.props.article && this.props.article.speakersProfile && this.props.selectedSubtitle && this.props.selectedSubtitle.subtitle && this.props.selectedSubtitle.subtitle.speakerProfile.speakerNumber !== -1 && (
                                     <Grid.Row>
                                         <Grid.Column width={16}>
 
@@ -368,6 +368,30 @@ class Convert extends React.Component {
                                                 </Grid>
                                                 <h3>Speakers: </h3>
                                                 <Grid>
+                                                    <Grid.Row style={{ listStyle: 'none', padding: 10 }}>
+                                                        <Grid.Column width={4}>
+                                                            <span>Background Music</span>
+                                                        </Grid.Column>
+                                                        <Grid.Column width={4}>
+                                                        </Grid.Column>
+                                                        <Grid.Column width={4}>
+                                                            <div
+                                                                draggable={true}
+                                                                style={{
+                                                                    backgroundColor: 'transparent',
+                                                                    position: 'relative',
+                                                                    color: 'white',
+                                                                    cursor: 'pointer',
+                                                                    height: 20,
+                                                                    display: 'inline-block',
+                                                                }}
+                                                                onDragStart={(e) => e.dataTransfer.setData('text', JSON.stringify({ speaker: { speakerNumber: -1 } }))}
+                                                            >
+                                                                <SpeakerDragItem speaker={{ speakerNumber: -1 }} />
+                                                            </div>
+                                                        </Grid.Column>
+
+                                                    </Grid.Row>
                                                     {this.props.article.speakersProfile.map((speaker, index) => (
                                                         <Grid.Row style={{ listStyle: 'none', padding: 10 }} key={'speakers' + index}>
                                                             <Grid.Column width={4}>

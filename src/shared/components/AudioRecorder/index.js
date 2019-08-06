@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import WaveStream from 'react-wave-stream';
 import Recorder from 'recorder-js';
 import NotificationService from '../../utils/NotificationService';
+import { Button, Icon } from 'semantic-ui-react';
 
 // shim for AudioContext when it's not avb.
 window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
@@ -26,7 +27,7 @@ let getUserMedia;
 try {
 
   getUserMedia = getBrowserUserMedia();
-} catch(e) {
+} catch (e) {
   alert('Error initilizing mic recorder')
 }
 
@@ -41,13 +42,21 @@ class AudioRecorder extends React.Component {
     };
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.record !== this.props.record) {
-      if (nextProps.record) {
-        this.startRecording();
-      } else {
-        this.stopRecording();
-      }
+  // componentWillReceiveProps(nextProps) {
+  //   if (nextProps.record !== this.props.record) {
+  //     if (nextProps.record) {
+  //       this.startRecording();
+  //     } else {
+  //       this.stopRecording();
+  //     }
+  //   }
+  // }
+
+  toggleRecord = () => {
+    if (this.state.recording) {
+      this.stopRecording();
+    } else {
+      this.startRecording();
     }
   }
 
@@ -68,7 +77,7 @@ class AudioRecorder extends React.Component {
         this.rec = new Recorder(this.audioContext, {
           numChannels: 1,
           onAnalysed: (waveData) => {
-            if (this.props.record) {
+            if (this.state.recording) {
               this.setState({ waveData });
             }
           },
@@ -78,6 +87,7 @@ class AudioRecorder extends React.Component {
         this.rec.init(stream);
         this.setState({ recording: true }, () => {
           this.rec.start();
+          this.props.onStart();
         });
       }).catch((err) => {
         console.log(err);
@@ -92,7 +102,7 @@ class AudioRecorder extends React.Component {
   stopRecording() {
     // tell the recorder to stop the recording
     if (this.rec) {
-
+      console.log('==================== stopRecording ===========================')
       this.rec.stop()
         .then(({ blob }) => {
           this.props.onStop(blob);
@@ -105,16 +115,61 @@ class AudioRecorder extends React.Component {
 
   }
 
+  cancelRecording = () => {
+    if (this.rec) {
+      console.log('==================== canelRecording ===========================')
+      this.rec.stop()
+        .then(({ blob }) => {
+          this.gumStream.getAudioTracks().forEach((track) => track.stop());
+          this.props.onStop(null);
+          this.setState({ waveData: null, recording: false });
+        })
+      // stop microphone access
+    }
+
+  }
+
   render() {
     return (
-      <div>
-        {this.state.waveData && (
-          <WaveStream
-            {...this.state.waveData}
-            backgroundColor="#2185d0"
-            strokeColor="#000000"
-          />
+      <div
+        style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center'}}
+      >
+        <Button
+          icon
+          primary
+          size="large"
+          // ="left"
+          loading={this.props.loading}
+          disabled={this.props.disabled}
+          onClick={this.toggleRecord}
+        >
+          {!this.state.recording ? (
+            <Icon name="microphone" />
+          ) : (
+              <Icon name="stop" />
+            )}
+          {!this.state.recording ? ' Record' : ' Stop'}
+        </Button>
+        {this.state.recording && (
+          <Button
+            onClick={this.cancelRecording}
+          >
+            Cancel
+          </Button>
         )}
+        {this.state.waveData && (
+          <div
+            style={{ 'display': this.state.recording ? 'block' : 'none' }} 
+          >
+            <WaveStream
+              {...this.state.waveData}
+              backgroundColor="#2185d0"
+              // width={200}
+              strokeColor="#000000"
+            />
+          </div>
+        )}
+
       </div>
     )
   }

@@ -112,9 +112,11 @@ class Workstation extends React.Component {
 
 
     onRecordingStop = (recordedBlob) => {
-        this.props.setRecording(false);
-        const { slide, subslide } = this.getCurrentSlideAndSubslide();
-        this.props.saveRecordedTranslation(slide.position, subslide.position, recordedBlob);
+        this.toggleRecording();
+        if (recordedBlob) {
+            const { slide, subslide } = this.getCurrentSlideAndSubslide();
+            this.props.saveRecordedTranslation(slide.position, subslide.position, recordedBlob);
+        }
     }
 
 
@@ -260,22 +262,18 @@ class Workstation extends React.Component {
                                                     <Card style={{ margin: 0, width: '100%' }}>
                                                         <Card.Content>
                                                             <div className="c-export-human-voice__recorder-container">
-                                                                <Button
-                                                                    icon
-                                                                    primary
-                                                                    size="large"
-                                                                    // ="left"
-                                                                    loading={recordUploadLoading}
-                                                                    disabled={recordUploadLoading}
-                                                                    onClick={this.toggleRecording}
-                                                                >
-                                                                    {!recording ? (
-                                                                        <Icon name="microphone" />
-                                                                    ) : (
-                                                                            <Icon name="stop" />
-                                                                        )}
-                                                                    {!recording ? ' Record' : ' Stop'}
-                                                                </Button>
+                                                                <div className="c-export-human-voice__recorder-mic-container">
+                                                                    <AudioRecorder
+                                                                        record={recording}
+                                                                        loading={recordUploadLoading}
+                                                                        disabled={recordUploadLoading}
+                                                                        onStart={this.toggleRecording}
+                                                                        className="c-export-human-voice__recorder-mic"
+                                                                        onStop={this.onRecordingStop}
+                                                                        backgroundColor="#2185d0"
+                                                                        strokeColor="#000000"
+                                                                    />
+                                                                </div>
                                                                 {!recording && (
                                                                     <div style={{ margin: 5 }}>
                                                                         Or
@@ -313,16 +311,6 @@ class Workstation extends React.Component {
                                                                         />
                                                                     </div>
                                                                 )}
-                                                                <div className="c-export-human-voice__recorder-mic-container" style={{ 'visibility': recording ? 'visible' : 'hidden' }} >
-                                                                    <AudioRecorder
-                                                                        record={recording}
-                                                                        loading={this.props.recordUploadLoading}
-                                                                        className="c-export-human-voice__recorder-mic"
-                                                                        onStop={this.onRecordingStop}
-                                                                        backgroundColor="#2185d0"
-                                                                        strokeColor="#000000"
-                                                                    />
-                                                                </div>
 
                                                             </div>
                                                             <small>Maximum audio duration: {parseInt(translatableArticle.slides[currentSlideIndex].content[currentSubslideIndex].media[0].duration)} seconds</small>

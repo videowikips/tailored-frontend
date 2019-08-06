@@ -245,11 +245,6 @@ export const exportTranslation = (articleId) => (dispatch, getState) => {
         console.log('res is', res);
         NotificationService.success('The video has been queued to be exported. we\'ll notify you once it\'s done :)');
         dispatch(push(routes.organizationVideos()))
-        // const slideIndex = translatableArticle.slides.findIndex((s) => s.position === slidePosition);
-        // const subslideIndex = translatableArticle.slides[slideIndex].content.findIndex((s) => s.position === subslidePosition);
-        // translatableArticle.slides[slideIndex].content[subslideIndex].text = text;
-        // dispatch(setTranslatableArticle({ ...translatableArticle }));
-        // dispatch(updateOriginalTranslatableArticle(slidePosition, subslidePosition, { text }))
     })
     .catch((err) => {
         console.log(err);

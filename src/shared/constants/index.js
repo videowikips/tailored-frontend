@@ -3,6 +3,7 @@ export const VIDEOS_EXTESION = ['webm', 'mp4', 'ogg', 'ogv'];
 export const GIF_EXTESIONS = ['gif'];
 export const VIDEO_PLAYER_THUMBNAIL_IMAGE = 'https://upload.wikimedia.org/wikipedia/commons/6/63/Video_play_icon.png';
 export const SPEAKER_BACKGROUND_COLORS = {
+    [-1]: 'white',
     0: '#800080',
     1: 'blue',
     2: 'green',
