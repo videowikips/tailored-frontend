@@ -8,6 +8,18 @@ import routes from '../../../../shared/routes';
 
 const moduleName = 'translateArticle';
 
+
+
+const setLaoding = loading => ({
+    type: actionTypes.SET_LOADING,
+    payload: loading,
+})
+
+const setTranslationExports = translationExports => ({
+    type: actionTypes.SET_TRANSLATION_EXPORTS,
+    payload: translationExports,
+})
+
 const setOriginalArticle = payload => ({
     type: actionTypes.SET_ORIGINAL_ARTICLE,
     payload,
@@ -31,6 +43,11 @@ const setOriginalViewedArticle = payload => ({
 const setRecordUploadLoading = loading => ({
     type: actionTypes.SET_RECORD_UPLOAD_LOADING,
     payload: loading,
+})
+
+export const setActiveTabIndex = index => ({
+    type: actionTypes.SET_ACTIVE_TAB_INDEX,
+    payload: index,
 })
 
 export const setPreview = preview => ({
@@ -242,10 +259,9 @@ export const exportTranslation = (articleId) => (dispatch, getState) => {
     requestAgent
     .post(Api.translate.exportTranslation(translatableArticle._id))
     .then((res) => {
-        console.log('res is', res);
-        NotificationService.success('The video has been queued to be exported. we\'ll notify you once it\'s done :)');
-        dispatch()
-        dispatch(push(routes.organizationVideos()))
+        // NotificationService.success('The video has been queued to be exported. we\'ll notify you once it\'s done :)');
+        NotificationService.success('The video has been queued to be exported.');
+        dispatch(setActiveTabIndex(2));
     })
     .catch((err) => {
         console.log(err);
@@ -253,21 +269,22 @@ export const exportTranslation = (articleId) => (dispatch, getState) => {
     })
 }
 
-const setTranslationExports = translationExports => ({
-    type: actionTypes.SET_TRANSLATION_EXPORTS,
-    payload: translationExports,
-})
-
-export const fetchTranslationExports = () =>  (dispatch, getState) => {
-    const { translatableArticle } = getState()[moduleName]
+export const fetchTranslationExports = (loading) =>  (dispatch, getState) => {
+    const { translatableArticle } = getState()[moduleName];
+    if (loading) {
+        dispatch(setTranslationExports([]));
+        dispatch(setLaoding(true))
+    }
     requestAgent
     .get(Api.translationExport.getByArticleId(translatableArticle._id))
     .then((res) => {
-        const { translationExports } = res.body;
+        const {translationExports} = res.body;
         dispatch(setTranslationExports(translationExports));
+        dispatch(setLaoding(false))
     })
     .catch((err) => {
         console.log(err);
         NotificationService.responseError(err);
+        dispatch(setLaoding(false))
     })
 }

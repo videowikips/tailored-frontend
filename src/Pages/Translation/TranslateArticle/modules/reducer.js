@@ -23,6 +23,8 @@ const INITIAL_STATE = {
     selectedSpeakerNumber: null,
 
     translationExports: [],
+    loading: false,
+    activeTabIndex: 0,
 }
 
 export default function (state = INITIAL_STATE, action) {
@@ -57,6 +59,10 @@ export default function (state = INITIAL_STATE, action) {
             return { ...state, selectedSpeakerNumber: action.payload };
         case actionTypes.SET_TRANSLATION_EXPORTS:
             return { ...state, translationExports: action.payload };
+        case actionTypes.SET_LOADING:
+            return { ...state, loading: action.payload };
+        case actionTypes.SET_ACTIVE_TAB_INDEX:
+            return { ...state, activeTabIndex: action.payload };
         default:
             return state;
     }

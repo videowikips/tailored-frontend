@@ -1,18 +1,18 @@
 import React from 'react';
+import { connect } from 'react-redux';
+
 import Tabs from '../../../shared/components/Tabs';
 import Workstation from './TabsContent/Workstation';
 import Comments from './TabsContent/Comments';
 import ExportHistory from './TabsContent/ExportHistory';
 
+import { setActiveTabIndex } from './modules/actions';
+
 class TranslateArticle extends React.Component {
-    state = {
-        pollerStarted: false,
-        currentTabIndex: 0,
-    }
     
     renderTabContent = () => {
         let comp;
-        switch(this.state.currentTabIndex) {
+        switch(this.props.activeTabIndex) {
             case 0:
                 comp = <Workstation />; break;
             case 1:
@@ -37,8 +37,8 @@ class TranslateArticle extends React.Component {
             <div style={{ width: '100%' }}>
                 <Tabs
                     items={[{ title: 'Workstation' }, { title: 'Comments' }, { title: 'Export History' }]}
-                    activeIndex={this.state.currentTabIndex}
-                    onActiveIndexChange={val => this.setState({ currentTabIndex: val })}
+                    activeIndex={this.props.activeTabIndex}
+                    onActiveIndexChange={val => this.props.setActiveTabIndex(val)}
                 />
                 {this.renderTabContent()}
             </div>
@@ -46,4 +46,12 @@ class TranslateArticle extends React.Component {
     }
 }
 
-export default TranslateArticle;
+const mapStateToProps = ({ translateArticle }) => ({
+    activeTabIndex: translateArticle.activeTabIndex,
+})
+
+const mapDispatchToProps = (dispatch) => ({
+    setActiveTabIndex: index => dispatch(setActiveTabIndex(index)),
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(TranslateArticle);
