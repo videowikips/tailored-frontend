@@ -26,6 +26,9 @@ export default {
         deleteRecordedTranslation: (translateableArticleId) => `${API_ROOT}/translate/${translateableArticleId}/audio`,
         exportTranslation: (translateableArticleId) => `${API_ROOT}/translate/${translateableArticleId}/export`,
     },
+    translationExport: {
+        getByArticleId: articleId => `${API_ROOT}/translationExport/by_article_id/${articleId}`,
+    },
     authentication: {
         login: `${API_ROOT}/auth/login`,
         register: `${API_ROOT}/auth/register`

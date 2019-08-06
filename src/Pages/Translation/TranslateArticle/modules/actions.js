@@ -244,7 +244,27 @@ export const exportTranslation = (articleId) => (dispatch, getState) => {
     .then((res) => {
         console.log('res is', res);
         NotificationService.success('The video has been queued to be exported. we\'ll notify you once it\'s done :)');
+        dispatch()
         dispatch(push(routes.organizationVideos()))
+    })
+    .catch((err) => {
+        console.log(err);
+        NotificationService.responseError(err);
+    })
+}
+
+const setTranslationExports = translationExports => ({
+    type: actionTypes.SET_TRANSLATION_EXPORTS,
+    payload: translationExports,
+})
+
+export const fetchTranslationExports = () =>  (dispatch, getState) => {
+    const { translatableArticle } = getState()[moduleName]
+    requestAgent
+    .get(Api.translationExport.getByArticleId(translatableArticle._id))
+    .then((res) => {
+        const { translationExports } = res.body;
+        dispatch(setTranslationExports(translationExports));
     })
     .catch((err) => {
         console.log(err);

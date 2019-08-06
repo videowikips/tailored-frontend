@@ -21,6 +21,8 @@ const INITIAL_STATE = {
     preview: false,
 
     selectedSpeakerNumber: null,
+
+    translationExports: [],
 }
 
 export default function (state = INITIAL_STATE, action) {
@@ -53,6 +55,8 @@ export default function (state = INITIAL_STATE, action) {
             return { ...state, preview: action.payload };
         case actionTypes.SET_SELECTED_SPEAKER_NUMBER:
             return { ...state, selectedSpeakerNumber: action.payload };
+        case actionTypes.SET_TRANSLATION_EXPORTS:
+            return { ...state, translationExports: action.payload };
         default:
             return state;
     }
