@@ -4,6 +4,8 @@ import WaveStream from 'react-wave-stream';
 import Recorder from 'recorder-js';
 import NotificationService from '../../utils/NotificationService';
 import { Button, Icon } from 'semantic-ui-react';
+import moment from 'moment';
+import { formatTime } from '../../utils/helpers';
 
 // shim for AudioContext when it's not avb.
 window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
@@ -39,6 +41,8 @@ class AudioRecorder extends React.Component {
       recording: false,
       blob: null,
       waveData: { data: [], lineTo: 0 },
+      startTime: null,
+      remainingMS: null,
     };
   }
 
@@ -78,14 +82,23 @@ class AudioRecorder extends React.Component {
           numChannels: 1,
           onAnalysed: (waveData) => {
             if (this.state.recording) {
-              this.setState({ waveData });
+              let remainingMS = null;
+              if (this.state.recording && this.props.maxDuration && this.state.startTime) {
+                const endTime = moment(this.state.startTime).add(this.props.maxDuration, 'seconds');
+                remainingMS = endTime.diff(moment());
+                if (remainingMS <= 200) {
+                  this.stopRecording();
+                }
+              }
+
+              this.setState({ waveData, remainingMS });
             }
           },
         })
 
         // start the recording process
         this.rec.init(stream);
-        this.setState({ recording: true }, () => {
+        this.setState({ recording: true, startTime: Date.now() }, () => {
           this.rec.start();
           this.props.onStart();
         });
@@ -99,40 +112,29 @@ class AudioRecorder extends React.Component {
     }
   }
 
-  stopRecording() {
+  stopRecording(cancel) {
     // tell the recorder to stop the recording
-    if (this.rec) {
-      console.log('==================== stopRecording ===========================')
-      this.rec.stop()
-        .then(({ blob }) => {
-          this.props.onStop(blob);
-          this.setState({ waveData: null, recording: false });
-        })
-
-      // stop microphone access
-      this.gumStream.getAudioTracks().forEach((track) => track.stop());
-    }
-
+    this.setState({ waveData: null, recording: false, startTime: null, remainingMS: null }, () => {
+      if (this.rec) {
+        this.rec.stop()
+          .then(({ blob }) => {
+            this.props.onStop(cancel ? null : blob);
+            // stop microphone access
+            this.gumStream.getAudioTracks().forEach((track) => track.stop());
+          })
+      }
+    });
   }
 
   cancelRecording = () => {
-    if (this.rec) {
-      console.log('==================== canelRecording ===========================')
-      this.rec.stop()
-        .then(({ blob }) => {
-          this.gumStream.getAudioTracks().forEach((track) => track.stop());
-          this.props.onStop(null);
-          this.setState({ waveData: null, recording: false });
-        })
-      // stop microphone access
-    }
-
+    this.stopRecording(true);
   }
 
   render() {
+    // console.log(this.state.startTime, this.props.maxDuration)
     return (
       <div
-        style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center'}}
+        style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}
       >
         <Button
           icon
@@ -157,9 +159,16 @@ class AudioRecorder extends React.Component {
             Cancel
           </Button>
         )}
+        {this.props.maxDuration && this.state.startTime && this.state.remainingMS !== null && (
+          <div
+            style={{ margin: 10 }}
+          >
+            {formatTime(this.state.remainingMS)}
+          </div>
+        )}
         {this.state.waveData && (
           <div
-            style={{ 'display': this.state.recording ? 'block' : 'none' }} 
+            style={{ 'display': this.state.recording ? 'block' : 'none' }}
           >
             <WaveStream
               {...this.state.waveData}
@@ -178,11 +187,13 @@ class AudioRecorder extends React.Component {
 AudioRecorder.propTypes = {
   record: PropTypes.bool,
   onStop: PropTypes.func,
+  maxDuration: PropTypes.number,
 }
 
 AudioRecorder.defaultProps = {
   record: false,
   onStop: () => { },
+  maxDuration: 0,
 }
 
 export default AudioRecorder;

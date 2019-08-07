@@ -268,6 +268,7 @@ class Workstation extends React.Component {
                                                                         loading={recordUploadLoading}
                                                                         disabled={recordUploadLoading}
                                                                         onStart={this.toggleRecording}
+                                                                        maxDuration={translatableArticle.slides[currentSlideIndex].content[currentSubslideIndex].media[0].duration}
                                                                         className="c-export-human-voice__recorder-mic"
                                                                         onStop={this.onRecordingStop}
                                                                         backgroundColor="#2185d0"
