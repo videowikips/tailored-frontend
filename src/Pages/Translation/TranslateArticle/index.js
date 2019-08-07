@@ -10,6 +10,10 @@ import { setActiveTabIndex } from './modules/actions';
 
 class TranslateArticle extends React.Component {
     
+    componentWillUnmount = () => {
+        this.props.setActiveTabIndex(0);
+    }
+
     renderTabContent = () => {
         let comp;
         switch(this.props.activeTabIndex) {
