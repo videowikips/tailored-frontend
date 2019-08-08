@@ -159,7 +159,7 @@ class Viewer extends Component {
   render () {
     const { currentSlideIndex, slides, onSlidePlayComplete, isPlaying, playbackSpeed } = this.props
     const currentSlide = slides[currentSlideIndex]
-
+    if (!currentSlide || !currentSlide.content[this.props.currentSubslideIndex]) return <div>Loading</div>
     const { audio, text } = currentSlide.content[this.props.currentSubslideIndex];
     return (
       <div className="carousel">
