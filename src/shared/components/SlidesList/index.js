@@ -41,17 +41,17 @@ class SlidesList extends React.Component {
         onClick={() => this.props.onSubslideClick(subslide.slideIndex, subslide.subslideIndex)}
       >
 
-        <Grid.Column width={2}>
+        <Grid.Column largeScreen={1} tablet={1} mobile={2}  >
           <h4 style={{ margin: 5 }} >
             {index + 1}
           </h4>
         </Grid.Column>
-        <Grid.Column width={8}>
+        <Grid.Column largeScreen={7} tablet={7} mobile={14}>
           <div style={{ border: `3px solid ${this.getsubSlideBorderColor(subslide)}`, padding: 10, height: 80, marginBottom: 10 }} >
             {comp}
           </div>
         </Grid.Column>
-        <Grid.Column width={5}>
+        <Grid.Column largeScreen={7} tablet={7} mobile={16}  style={{ textAlign: 'center' }}>
           <p>Text {subslide.text && (<Icon className="marker-icons" size="large" name="check circle" color="green" />)}</p>
           <p>Voice {subslide.audio && (<Icon className="marker-icons" size="large" name="check circle" color="green" />)}</p>
         </Grid.Column>
