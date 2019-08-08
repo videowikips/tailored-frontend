@@ -12,6 +12,7 @@ import { WEBSOCKET_SERVER_URL } from '../../shared/constants';
 import UploadNewVideoModal from '../../shared/components/UploadNewVideoModal';
 import NotificationService from '../../shared/utils/NotificationService';
 import { uploadVideo } from '../../actions/video';
+import routes from '../../shared/routes';
 
 const NAV_LINKS = [
     {
@@ -44,10 +45,16 @@ class Dashboard extends React.Component {
             secure: true,
         })
         if (this.props.userToken && this.props.organization && this.props.organization._id) {
-            websockets.emitEvent(websockets.websocketsEvents.AUTHENTICATE, { organization: this.props.organization._id, token: this.props.userToken });
             websockets.subscribeToEvent(websockets.websocketsEvents.AUTHENTICATE_SUCCESS, (data) => {
                 console.log('============ auth seccuess', data);
             })
+            websockets.subscribeToEvent(websockets.websocketsEvents.AUTHENTICATE_FAILED, (data) => {
+                setTimeout(() => {
+                    NotificationService.info('Session expired, please login');
+                    this.props.history.push(routes.logout())
+                }, 1000);
+            })
+            websockets.emitEvent(websockets.websocketsEvents.AUTHENTICATE, { organization: this.props.organization._id, token: this.props.userToken });
         }
     }
 

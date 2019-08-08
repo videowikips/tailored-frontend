@@ -33,7 +33,7 @@ class ExportHistory extends React.Component {
                                 </Grid.Column>
                             )}
                             {this.props.translationExports && this.props.translationExports.map((translationExport) => (
-                                <Grid.Column width={6} key={translationExport._id}>
+                                <Grid.Column width={5} key={translationExport._id}>
                                     <Card fluid>
                                         <Card.Content>
                                             <video width={'100%'} controls src={translationExport.videoUrl} />

@@ -62,9 +62,9 @@ class Review extends React.Component {
                     </Grid.Column>
                 </Grid.Row>
                 <Grid.Row>
-                    {this.props.videos.length === 0 ? (
+                    {this.props.videos && this.props.videos.length === 0 ? (
                         <div style={{ margin: 50 }}>No videos requires preview</div>
-                    ) : this.props.videos.map((video) => {
+                    ) : this.props.videos && this.props.videos.map((video) => {
                         return (
                             <Grid.Column key={video._id} width={4}>
                                 <Icon
