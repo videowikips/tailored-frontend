@@ -25,6 +25,9 @@ const INITIAL_STATE = {
     translationExports: [],
     loading: false,
     activeTabIndex: 0,
+
+    exportHistoryCurrentPageNumber: 1,
+    exportHistoryTotalPages: 1,
 }
 
 export default function (state = INITIAL_STATE, action) {
@@ -63,6 +66,10 @@ export default function (state = INITIAL_STATE, action) {
             return { ...state, loading: action.payload };
         case actionTypes.SET_ACTIVE_TAB_INDEX:
             return { ...state, activeTabIndex: action.payload };
+        case actionTypes.SET_EXPORT_HISTORY_TOTAL_PAGES:
+            return { ...state, exportHistoryTotalPages: action.payload };
+        case actionTypes.SET_EXPORT_HISTORY_CURRENT_PAGE_NUMBER:
+            return { ...state, exportHistoryCurrentPageNumber: action.payload };
         default:
             return state;
     }

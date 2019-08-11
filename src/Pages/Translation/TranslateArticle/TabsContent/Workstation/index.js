@@ -56,7 +56,9 @@ class Workstation extends React.Component {
     }
 
     componentWillUnmount = () => {
-        websockets.unsubscribeFromEvent(`${websockets.websocketsEvents.RECORDED_AUDIO_PROCESSED}/${this.props.translatableArticle._id}`)
+        if (this.socketSub && this.props.translatableArticle && this.props.translatableArticle._id) {
+            websockets.unsubscribeFromEvent(`${websockets.websocketsEvents.RECORDED_AUDIO_PROCESSED}/${this.props.translatableArticle._id}`)
+        }
     }
 
     initSocketSub = (translatableArticle) => {

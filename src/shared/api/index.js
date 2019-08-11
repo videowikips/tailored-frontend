@@ -27,7 +27,7 @@ export default {
         exportTranslation: (translateableArticleId) => `${API_ROOT}/translate/${translateableArticleId}/export`,
     },
     translationExport: {
-        getByArticleId: articleId => `${API_ROOT}/translationExport/by_article_id/${articleId}`,
+        getByArticleId: (articleId, params) => `${API_ROOT}/translationExport/by_article_id/${articleId}?${querystring.encode(params)}`,
     },
     authentication: {
         login: `${API_ROOT}/auth/login`,

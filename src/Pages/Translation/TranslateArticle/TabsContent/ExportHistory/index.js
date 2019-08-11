@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, Card, Progress } from 'semantic-ui-react';
+import { Grid, Card, Progress, Pagination } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 import LoaderComponent from '../../../../../shared/components/LoaderComponent';
 import * as translateArticleActions from '../../modules/actions';
@@ -10,15 +10,34 @@ const FETCH_TRANSLATIONEXPORTS = 'FETCH_TRANSLATIONEXPORTS';
 class ExportHistory extends React.Component {
 
     componentWillMount = () => {
-        this.props.fetchTranslationExports(true);
+        this.props.setExportHistoryPageNumber(1);
+        this.props.fetchTranslationExports(this.props.exportHistoryCurrentPageNumber, true);
         this.props.startJob({ jobName: FETCH_TRANSLATIONEXPORTS, interval: 10000 }, () => {
-            this.props.fetchTranslationExports(false);
+            this.props.fetchTranslationExports(this.props.exportHistoryCurrentPageNumber, false);
         })
     }
 
     componentWillUnmount = () => {
         this.props.stopJob(FETCH_TRANSLATIONEXPORTS);
     }
+    
+    onPageChange = (e, { activePage }) => {
+        this.props.setExportHistoryPageNumber(activePage);
+        this.props.fetchTranslationExports(activePage, true);
+    }
+
+    renderPagination = () => (
+        <Grid.Row>
+            <Grid.Column width={10} />
+            <Grid.Column width={6}>
+                <Pagination
+                    activePage={this.props.exportHistoryCurrentPageNumber}
+                    onPageChange={this.onPageChange}
+                    totalPages={this.props.exportHistoryTotalPages}
+                />
+            </Grid.Column>
+        </Grid.Row>
+    )
 
     render() {
         console.log(this.props.translationExports);
@@ -29,7 +48,7 @@ class ExportHistory extends React.Component {
                         <Grid.Row>
                             {(!this.props.translationExports || this.props.translationExports.length === 0) && (
                                 <Grid.Column>
-                                    No exports have been created yet
+                                    No exports are available here
                                 </Grid.Column>
                             )}
                             {this.props.translationExports && this.props.translationExports.map((translationExport) => (
@@ -47,6 +66,7 @@ class ExportHistory extends React.Component {
                                 </Grid.Column>
                             ))}
                         </Grid.Row>
+                        {this.renderPagination()}
                     </Grid>
                 </div>
             </LoaderComponent>
@@ -56,11 +76,14 @@ class ExportHistory extends React.Component {
 
 const mapStateToProps = ({ translateArticle }) => ({
     translationExports: translateArticle.translationExports,
+    exportHistoryCurrentPageNumber: translateArticle.exportHistoryCurrentPageNumber,
+    exportHistoryTotalPages: translateArticle.exportHistoryTotalPages,
     loading: translateArticle.loading,
 })
 
 const mapDispatchToProps = (dispatch) => ({
     fetchTranslationExports: (loading) => dispatch(translateArticleActions.fetchTranslationExports(loading)),
+    setExportHistoryPageNumber: pageNumber => dispatch(translateArticleActions.setExportHistoryPageNumber(pageNumber)),
     startJob: (options, callFunc) => dispatch(pollerActions.startJob(options, callFunc)),
     stopJob: (jobName) => dispatch(pollerActions.stopJob(jobName)),
 })

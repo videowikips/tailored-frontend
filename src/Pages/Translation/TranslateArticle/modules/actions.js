@@ -45,6 +45,16 @@ const setRecordUploadLoading = loading => ({
     payload: loading,
 })
 
+export const setExportHistoryPageNumber = pageNumber => ({
+    type: actionTypes.SET_EXPORT_HISTORY_CURRENT_PAGE_NUMBER,
+    payload: pageNumber,
+})
+
+export const setExportHistoryTotalPages = pagesCount => ({
+    type: actionTypes.SET_EXPORT_HISTORY_TOTAL_PAGES,
+    payload: pagesCount,
+})
+
 export const setActiveTabIndex = index => ({
     type: actionTypes.SET_ACTIVE_TAB_INDEX,
     payload: index,
@@ -269,14 +279,14 @@ export const exportTranslation = (articleId) => (dispatch, getState) => {
     })
 }
 
-export const fetchTranslationExports = (loading) =>  (dispatch, getState) => {
+export const fetchTranslationExports = (pageNumber, loading) =>  (dispatch, getState) => {
     const { translatableArticle } = getState()[moduleName];
     if (loading) {
         dispatch(setTranslationExports([]));
         dispatch(setLaoding(true))
     }
     requestAgent
-    .get(Api.translationExport.getByArticleId(translatableArticle._id))
+    .get(Api.translationExport.getByArticleId(translatableArticle._id, { page: pageNumber }))
     .then((res) => {
         const {translationExports} = res.body;
         dispatch(setTranslationExports(translationExports));
