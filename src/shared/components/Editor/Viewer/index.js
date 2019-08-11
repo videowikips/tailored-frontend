@@ -98,7 +98,7 @@ class Viewer extends Component {
             slides={mediaArray}
             playing={this.props.isPlaying && isActive}
             isActive={isActive}
-            key={`slideshow-${this.props.currentSlideIndex}-${this.props.currentSubslideIndex}`}
+            // key={`slideshow-${this.props.currentSlideIndex}-${this.props.currentSubslideIndex}`}
             defaultStartTime={this.props.defaultSlideStartTime}
             onSlideChange={this.props.onSubMediaSlideChange}
           />

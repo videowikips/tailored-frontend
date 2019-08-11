@@ -27,15 +27,20 @@ class Slideshow extends Component {
   }
 
   componentWillUpdate(nextProps) {
-    if (this.props.playing !== nextProps.playing) {
-      if (nextProps.playing && nextProps.isActive) {
-        this.restartSlideshow()
-      } else {
-        this.stopSlideShow();
+    if (this.mounted) {
+      if (nextProps.slides !== this.state.slides) {
+        this.setState({ slides: nextProps.slides });
       }
-    }
-    if (nextProps.isActive && this.props.defaultStartTime !== nextProps.defaultStartTime) {
-      this.onDefaultStartTimeChange(nextProps.defaultStartTime);
+      if (this.props.playing !== nextProps.playing) {
+        if (nextProps.playing && nextProps.isActive) {
+          this.restartSlideshow()
+        } else {
+          this.stopSlideShow();
+        }
+      }
+      if (nextProps.isActive && this.props.defaultStartTime !== nextProps.defaultStartTime) {
+        this.onDefaultStartTimeChange(nextProps.defaultStartTime);
+      }
     }
   }
 
@@ -103,6 +108,7 @@ class Slideshow extends Component {
   }
 
   restartSlideshow() {
+    if (!this.mounted) return;
     if (this.state.intervalId) {
       this.stopSlideShow();
     }
@@ -117,6 +123,7 @@ class Slideshow extends Component {
   }
 
   autoSlideshow() {
+    if (!this.mounted) return;
     if (this.state.currentSlide === this.props.slides.length - 1 && !this.props.repeat) {
       // if (this.props.resetOnFinish) {
       //   this.setState({ currentSlide: 0 }, () => {
@@ -174,8 +181,8 @@ class Slideshow extends Component {
             component: (
               <div
                 className="carousel__image_wrapper"
-                // key={`mutlimedia-slide-${slide.url}`}
-                
+              // key={`mutlimedia-slide-${slide.url}`}
+
               >
                 <ReactCSSTransitionGroup
                   transitionName="scale"
@@ -186,13 +193,13 @@ class Slideshow extends Component {
                   transitionLeaveTimeout={0}
                   className="carousel__image"
                 >
-                {!slide.fullWidth && (
-                  <img
-                  src={slide.url}
-                  alt=""
-                  className="blurred_background"
-                  />
-                )}
+                  {!slide.fullWidth && (
+                    <img
+                      src={slide.url}
+                      alt=""
+                      className="blurred_background"
+                    />
+                  )}
                   <img
                     src={slide.url}
                     alt=""
@@ -224,7 +231,7 @@ class Slideshow extends Component {
       let showingEffect = '';
       if (this.props.showEffects) {
         if (this.state.currentSlide === i) {
-          if ( this.state.fade === 'in') {
+          if (this.state.fade === 'in') {
             showingEffect = `showing-${slideEffect}`;
           } else if (this.state.fade === 'out') {
             showingEffect = `showing-${slideEffect}-out`;
@@ -290,7 +297,7 @@ Slideshow.defaultProps = {
   slides: [],
   height: '100%',
   width: '100%',
-  onSlideChange: () => {},
+  onSlideChange: () => { },
   resetOnFinish: false,
   defaultStartTime: 0,
 };

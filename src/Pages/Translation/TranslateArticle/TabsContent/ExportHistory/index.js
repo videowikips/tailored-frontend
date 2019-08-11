@@ -19,6 +19,7 @@ class ExportHistory extends React.Component {
 
     componentWillUnmount = () => {
         this.props.stopJob(FETCH_TRANSLATIONEXPORTS);
+        this.props.setExportHistoryPageNumber(1);
     }
     
     onPageChange = (e, { activePage }) => {
@@ -40,7 +41,6 @@ class ExportHistory extends React.Component {
     )
 
     render() {
-        console.log(this.props.translationExports);
         return (
             <LoaderComponent active={this.props.loading}>
                 <div>
