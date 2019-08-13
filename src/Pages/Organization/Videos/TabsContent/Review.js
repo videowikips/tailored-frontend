@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom/cjs/react-router-dom';
-import { Grid, Card, Dropdown, Icon, Button, Pagination } from 'semantic-ui-react';
+import { Grid, Card, Dropdown, Icon, Button, Pagination, Modal } from 'semantic-ui-react';
 
 import * as videoActions from '../modules/actions';
 import routes from '../../../../shared/routes';
@@ -14,17 +14,20 @@ let langsToUse = supportedLangs.map((l) => ({ ...l, supported: true }));
 langsToUse = langsToUse.concat(isoLangsArray.filter((l) => supportedLangs.every((l2) => l2.code.indexOf(l.code) === -1)));
 const langsOptions = langsToUse.map((lang) => ({ key: lang.code, value: lang.code, text: `${lang.name} ( ${lang.code} )` }));
 
+const videoSTATUS = ['uploaded', 'uploading', 'transcriping', 'cutting', 'proofreading', 'converting', 'done'];
 
 class Review extends React.Component {
-
+    state = {
+        confirmReviewModalVisible: false,
+    }
     componentWillMount = () => {
         this.props.setCurrentPageNumber(1);
-        this.props.fetchVideos({ organization: this.props.organization._id, langCode: this.props.languageFilter, status: ['proofreading', 'done'], page: 1 });
+        this.props.fetchVideos({ organization: this.props.organization._id, langCode: this.props.languageFilter, status: videoSTATUS, page: 1 });
     }
 
     onPageChange = (e, { activePage }) => {
         this.props.setCurrentPageNumber(activePage);
-        this.props.fetchVideos({ organization: this.props.organization._id, langCode: this.props.languageFilter, status: ['proofreading', 'done'], page: activePage });
+        this.props.fetchVideos({ organization: this.props.organization._id, langCode: this.props.languageFilter, status: videoSTATUS, page: activePage });
     }
 
     renderPagination = () => (
@@ -44,6 +47,41 @@ class Review extends React.Component {
         console.log('on review', video);
         this.props.reviewVideo(video);
     }
+
+    onReviewVideoClick = video => {
+        if (video.status === 'done') {
+            this.props.setSelectedVideo(video);
+            this.setState({ confirmReviewModalVisible: true });
+        } else {
+            this.onReviewVideo(video);
+        }
+
+    }
+    
+    renderConfirmReviewModal = () => (
+        <Modal open={this.state.confirmReviewModalVisible} size="tiny">
+            <Modal.Header>Re-Review Video</Modal.Header>
+            <Modal.Content>
+                <p>Are you sure you want to re-review this video? <small><strong>( All current translations will be archived )</strong></small></p>
+                
+            </Modal.Content>
+            <Modal.Actions>
+                <Button onClick={() => {
+                    this.setState({ confirmReviewModalVisible: false });
+                    this.props.setSelectedVideo(null);
+                }}>
+                    Cancel
+                </Button>
+                <Button color="blue" onClick={() => {
+                    this.setState({ confirmReviewModalVisible: false });
+                    this.onReviewVideo(this.props.selectedVideo);
+                    this.props.setSelectedVideo(null);
+                }}>
+                    Yes
+                </Button>
+            </Modal.Actions>
+        </Modal>
+    )
 
     _render = () => {
         return (
@@ -93,7 +131,7 @@ class Review extends React.Component {
                                     <video src={video.url} controls width={'100%'} />
 
                                     <Card.Content style={{ padding: 0 }}>
-                                        <Button fluid color="blue" onClick={() => this.onReviewVideo(video)}>Review</Button>
+                                        <Button fluid color="blue" onClick={() => this.onReviewVideoClick(video)}>{video.status === 'done' ? 'Re-Review' : 'Review'}</Button>
                                     </Card.Content>
 
                                 </Card>
@@ -111,6 +149,7 @@ class Review extends React.Component {
                 <LoaderComponent active={this.props.videosLoading}>
                     {this._render()}
                     {this.renderPagination()}
+                    {this.renderConfirmReviewModal()}
                 </LoaderComponent>
             </Grid>
         )
@@ -126,6 +165,7 @@ const mapStateToProps = ({ organization, authentication, organizationVideos }) =
     videosLoading: organizationVideos.videosLoading,
     totalPagesCount: organizationVideos.totalPagesCount,
     currentPageNumber: organizationVideos.currentPageNumber,
+    selectedVideo: organizationVideos.selectedVideo,
 })
 
 const mapDispatchToProps = (dispatch) => ({
@@ -133,6 +173,7 @@ const mapDispatchToProps = (dispatch) => ({
     reviewVideo: video => dispatch(videoActions.reviewVideo(video)),
     setLanguageFilter: (langCode) => dispatch(videoActions.setLanguageFilter(langCode)),
     setCurrentPageNumber: pageNumber => dispatch(videoActions.setCurrentPageNumber(pageNumber)),
+    setSelectedVideo: video => dispatch(videoActions.setSelectedVideo(video)),
 });
 
 
