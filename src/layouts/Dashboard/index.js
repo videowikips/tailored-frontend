@@ -68,7 +68,7 @@ class Dashboard extends React.Component {
         if (this.props.uploadState === 'loading' && nextProps.uploadState === 'done') {
             NotificationService.success('Uploaded successfully');
             this.setState({ uploadFormOpen: false });
-            this.props.history.push(`/convert/${nextProps.video._id}`);
+            // this.props.history.push(`/convert/${nextProps.video._id}`);
         }
         if (this.props.uploadState === 'loading' && nextProps.uploadState === 'failed') {
             NotificationService.error(nextProps.uploadError);

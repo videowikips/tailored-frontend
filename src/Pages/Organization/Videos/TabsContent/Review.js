@@ -40,6 +40,11 @@ class Review extends React.Component {
         </Grid.Row>
     )
 
+    onReviewVideo = video => {
+        console.log('on review', video);
+        this.props.reviewVideo(video);
+    }
+
     _render = () => {
         return (
             <React.Fragment>
@@ -74,6 +79,7 @@ class Review extends React.Component {
                                     style={{ position: 'absolute', right: 0, top: 5, zIndex: 2, visibility: video.status === 'done' ? 'visible' : 'hidden' }}
                                 />
                                 <Card fluid>
+
                                     <Card.Content>
                                         <Card.Header style={{ textAlign: 'center' }}>
                                             {video.status === 'done' ? (
@@ -83,12 +89,12 @@ class Review extends React.Component {
                                             ) : video.title}
                                         </Card.Header>
                                     </Card.Content>
+
                                     <video src={video.url} controls width={'100%'} />
-                                    {/* <Card.Content>
-                                    </Card.Content> */}
-                                    <Link to={routes.convertProgress(video._id)}>
-                                        <Button fluid color="blue">Review</Button>
-                                    </Link>
+
+                                    <Card.Content style={{ padding: 0 }}>
+                                        <Button fluid color="blue" onClick={() => this.onReviewVideo(video)}>Review</Button>
+                                    </Card.Content>
 
                                 </Card>
                             </Grid.Column>
@@ -124,6 +130,7 @@ const mapStateToProps = ({ organization, authentication, organizationVideos }) =
 
 const mapDispatchToProps = (dispatch) => ({
     fetchVideos: (params) => dispatch(videoActions.fetchVideos(params)),
+    reviewVideo: video => dispatch(videoActions.reviewVideo(video)),
     setLanguageFilter: (langCode) => dispatch(videoActions.setLanguageFilter(langCode)),
     setCurrentPageNumber: pageNumber => dispatch(videoActions.setCurrentPageNumber(pageNumber)),
 });

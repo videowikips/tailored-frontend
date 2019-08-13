@@ -1,7 +1,9 @@
+import { push } from 'connected-react-router';
 import * as actionTypes from './types';
 import Api from '../../../../shared/api';
 import requestAgent from '../../../../shared/utils/requestAgent';
 import NotificationService from '../../../../shared/utils/NotificationService';
+import routes from '../../../../shared/routes';
 
 
 export const setCurrentPageNumber = pageNumber => ({
@@ -72,7 +74,6 @@ export const fetchVideos = ({ organization, langCode, status, page }) => (dispat
 export const fetchTranslatedArticles = (organization, page) => (dispatch, getState) => {
     dispatch(setVideoLoading(true));
     dispatch(setTranslatedArticles([]))
-    console.log('page for trans', page)
     requestAgent
         .get(Api.article.getTranslatedArticles({ organization, page }))
         .then((res) => {
@@ -82,6 +83,20 @@ export const fetchTranslatedArticles = (organization, page) => (dispatch, getSta
             if (pagesCount) {
                 dispatch(setTotalPagesCount(pagesCount));
             }
+        })
+        .catch((err) => {
+            NotificationService.responseError(err);
+            dispatch(setVideoLoading(false))
+        })
+}
+
+export const reviewVideo = video => (dispatch, getState) => {
+    dispatch(setVideoLoading(true));
+    requestAgent
+        .post(Api.video.reviewVideo(video._id))
+        .then((res) => {
+            console.log(res);
+            dispatch(push(routes.convertProgress(video._id)));
         })
         .catch((err) => {
             NotificationService.responseError(err);

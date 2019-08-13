@@ -45,6 +45,7 @@
     "start": "pm2 start server.js --name tvw_frontend",
     "stop": "pm2 stop tvw_frontend && pm2 delete tvw_frontend",
     "start:dev": "react-scripts start",
+    "dev": "npm run start:dev",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

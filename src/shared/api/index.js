@@ -6,7 +6,8 @@ export default {
         getVideoById: (id) => `${API_ROOT}/video/${id}`,
         convertVideo: (id) => `${API_ROOT}/video/${id}/convert`,
         getVideos: (params = {}) => `${API_ROOT}/video?${querystring.encode(params)}`,
-        getOrganizationVideos: (id) => `${API_ROOT}/video?organization=${id}`
+        getOrganizationVideos: (id) => `${API_ROOT}/video?organization=${id}`,
+        reviewVideo: id => `${API_ROOT}/video/${id}/review`,
     },
     article: {
         getById: id => `${API_ROOT}/article/${id}`,

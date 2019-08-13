@@ -231,7 +231,7 @@ class Convert extends React.Component {
 
     onConvertVideo = () => {
         this.setState({ isConfirmConvertModalVisible: false });
-        this.props.convertVideoToArticle(this.props.video._id)
+        this.props.convertVideoToArticle(this.props.video._id, this.props.article._id)
     }
 
     renderConvertConfirmModal = () => {
@@ -547,7 +547,7 @@ const mapDispatchToProps = (dispatch) => ({
     setSubtitles: subtitles => dispatch(articleActions.setSubtitles(subtitles)),
     setSelectedSubtitle: (subtitle, index) => dispatch(articleActions.setSelectedSubtitle(subtitle, index)),
     onSpeakersChange: speakers => dispatch(articleActions.updateSpeakers(speakers)),
-    convertVideoToArticle: videoId => dispatch(videoActions.convertVideoToArticle(videoId)),
+    convertVideoToArticle: (videoId, articleId) => dispatch(videoActions.convertVideoToArticle(videoId, articleId)),
     resetState: () => dispatch(videoActions.reset())
 })
 
