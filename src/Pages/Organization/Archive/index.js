@@ -79,7 +79,7 @@ class Archive extends React.Component {
                                                             </Button>
                                                         <h3 style={{ marginTop: '1rem' }}>Voice translations</h3>
                                                         {article.metrics.speakersMetrics.map(speakerMetric => (
-                                                            <div key={`speaker-voice-metric-${speakerMetric.speaker.speakerNumber}`}>
+                                                            <div key={`speaker-voice-metric-${article._id}-${speakerMetric.speaker.speakerNumber}`}>
                                                                 <p>Speaker {speakerMetric.speaker.speakerNumber} ( {speakerMetric.speaker.speakerGender} )</p>
                                                                 <Progress progress indicating percent={speakerMetric.progress} style={{ marginTop: '0.5rem' }} />
                                                             </div>
