@@ -58,6 +58,12 @@ class Review extends React.Component {
 
     }
     
+    onLanguageFilterChange = (e, { value }) => {
+        this.props.setLanguageFilter(value);
+        this.props.setCurrentPageNumber(1)
+        this.props.fetchVideos({ organization: this.props.organization._id, langCode: value, status: videoSTATUS, page: 1 })
+    }
+
     renderConfirmReviewModal = () => (
         <Modal open={this.state.confirmReviewModalVisible} size="tiny">
             <Modal.Header>Re-Review Video</Modal.Header>
@@ -95,10 +101,7 @@ class Review extends React.Component {
                             fluid
                             search
                             selection
-                            onChange={(e, { value }) => {
-                                this.props.setLanguageFilter(value)
-                                this.props.fetchVideos({ organization: this.props.organization._id, langCode: value })
-                            }}
+                            onChange={this.onLanguageFilterChange}
                             options={langsOptions}
                             value={this.props.languageFilter}
                         />

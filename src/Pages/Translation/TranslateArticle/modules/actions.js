@@ -267,7 +267,7 @@ export const deleteRecordedTranslation = (slidePosition, subslidePosition) => (d
 export const exportTranslation = (articleId) => (dispatch, getState) => {
     const { translatableArticle } = getState()[moduleName]
     requestAgent
-    .post(Api.translate.exportTranslation(translatableArticle._id))
+    .post(Api.translationExport.exportTranslation(translatableArticle._id))
     .then((res) => {
         // NotificationService.success('The video has been queued to be exported. we\'ll notify you once it\'s done :)');
         NotificationService.success('The video has been queued to be exported.');

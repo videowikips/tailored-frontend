@@ -25,10 +25,10 @@ export default {
         addTranslatedText: (translateableArticleId) => `${API_ROOT}/translate/${translateableArticleId}/text`,
         addRecordedTranslation: (translateableArticleId) => `${API_ROOT}/translate/${translateableArticleId}/audio`,
         deleteRecordedTranslation: (translateableArticleId) => `${API_ROOT}/translate/${translateableArticleId}/audio`,
-        exportTranslation: (translateableArticleId) => `${API_ROOT}/translate/${translateableArticleId}/export`,
     },
     translationExport: {
         getByArticleId: (articleId, params) => `${API_ROOT}/translationExport/by_article_id/${articleId}?${querystring.encode(params)}`,
+        exportTranslation: (translateableArticleId) => `${API_ROOT}/translationExport/${translateableArticleId}/export`,
     },
     authentication: {
         login: `${API_ROOT}/auth/login`,

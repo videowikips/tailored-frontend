@@ -15,16 +15,16 @@ let langsToUse = supportedLangs.map((l) => ({ ...l, supported: true }));
 langsToUse = langsToUse.concat(isoLangsArray.filter((l) => supportedLangs.every((l2) => l2.code.indexOf(l.code) === -1)));
 const langsOptions = langsToUse.map((lang) => ({ key: lang.code, value: lang.code, text: `${lang.name} ( ${lang.code} )` }));
 
-
+const videoSTATUS = ['done'];
 class Translations extends React.Component {
     componentWillMount() {
         this.props.setCurrentPageNumber(1);
-        this.props.fetchVideos({ organization: this.props.organization._id, langCode: this.props.languageFilter, status: ['done'], page: 1 });
+        this.props.fetchVideos({ organization: this.props.organization._id, langCode: this.props.languageFilter, status: videoSTATUS, page: 1 });
     }
 
     onPageChange = (e, { activePage }) => {
         this.props.setCurrentPageNumber(activePage);
-        this.props.fetchVideos({ organization: this.props.organization._id, langCode: this.props.languageFilter, status: ['done'], page: activePage });
+        this.props.fetchVideos({ organization: this.props.organization._id, langCode: this.props.languageFilter, status: videoSTATUS, page: activePage });
     }
 
     renderPagination = () => (
@@ -42,6 +42,12 @@ class Translations extends React.Component {
     onAddHumanVoice = lang => {
         this.props.setAddHumanVoiceModalVisible(false);
         this.props.history.push(routes.translationArticle(this.props.selectedVideo.article) + `?lang=${lang}`);
+    }
+
+    onLanguageFilterChange = (e, {value}) => {
+        this.props.setLanguageFilter(value)
+        this.props.setCurrentPageNumber(1);
+        this.props.fetchVideos({ organization: this.props.organization._id, langCode: value, status: videoSTATUS, page: 1 });
     }
 
     _renderAddHumanVoiceModal() {
@@ -67,10 +73,7 @@ class Translations extends React.Component {
                             fluid
                             search
                             selection
-                            onChange={(e, { value }) => {
-                                this.props.setLanguageFilter(value)
-                                this.props.fetchVideos({ organization: this.props.organization._id, langCode: value })
-                            }}
+                            onChange={this.onLanguageFilterChange}
                             options={langsOptions}
                             value={this.props.languageFilter}
                         />
