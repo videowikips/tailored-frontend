@@ -9,7 +9,7 @@ export default {
     organizationUsers: () => '/organization/users',
     organizationVideos: () => '/organization/videos',
     organizationArticle: (articleId = ':articleId') => `/organization/article/${articleId}`,
-    
+    organizationArchive: () => `/organization/archive`,
     // Translation
     translationArticle: (articleId = ':articleId', langCode) => `/translation/article/${articleId}${langCode ? `?lang=${langCode}` : ''}`,
 

@@ -17,11 +17,15 @@ import routes from '../../shared/routes';
 const NAV_LINKS = [
     {
         title: 'Videos',
-        route: '/organization/videos',
+        route: routes.organizationVideos(),
+    },
+    {
+        title: 'Archive',
+        route: routes.organizationArchive(),
     },
     {
         title: 'Users',
-        route: '/organization/users'
+        route: routes.organizationUsers()
     }
 ]
 
