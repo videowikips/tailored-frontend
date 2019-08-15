@@ -147,7 +147,7 @@ class Workstation extends React.Component {
     }
 
     onExport = () => {
-        this.props.exportTranslation()
+        this.props.requestExportTranslationReview()
     }
 
     _renderUploadAudio() {
@@ -379,7 +379,7 @@ class Workstation extends React.Component {
                                                                 disabled={!this.canExport()}
                                                                 onClick={this.onExport}
                                                             >
-                                                                Export
+                                                                Request Export Review
                                                             </Button>
                                                         </Grid.Column>
                                                     </Grid.Row>
@@ -423,7 +423,7 @@ const mapDispatchToProps = dispatch => ({
     onPreviewChange: preview => dispatch(translationActions.onPreviewChange(preview)),
     changeSelectedSpeakerNumber: num => dispatch(translationActions.changeSelectedSpeakerNumber(num)),
     updateSlideAudio: (slidePositon, subslidePosition, audio) => dispatch(translationActions.updateSlideAudio(slidePositon, subslidePosition, audio)),
-    exportTranslation: (articleId) => dispatch(translationActions.exportTranslation(articleId)),
+    requestExportTranslationReview: (articleId) => dispatch(translationActions.requestExportTranslationReview(articleId)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Workstation));

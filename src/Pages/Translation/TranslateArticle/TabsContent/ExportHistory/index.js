@@ -1,6 +1,8 @@
 import React from 'react';
-import { Grid, Card, Progress, Pagination } from 'semantic-ui-react';
+import { Grid, Card, Progress, Pagination, Button } from 'semantic-ui-react';
 import { connect } from 'react-redux';
+import moment from 'moment';
+
 import LoaderComponent from '../../../../../shared/components/LoaderComponent';
 import * as translateArticleActions from '../../modules/actions';
 import * as pollerActions from '../../../../../actions/poller';
@@ -21,10 +23,23 @@ class ExportHistory extends React.Component {
         this.props.stopJob(FETCH_TRANSLATIONEXPORTS);
         this.props.setExportHistoryPageNumber(1);
     }
-    
+
     onPageChange = (e, { activePage }) => {
         this.props.setExportHistoryPageNumber(activePage);
         this.props.fetchTranslationExports(activePage, true);
+    }
+
+    onDeclineRequest = translationExport => {
+        this.props.declineTranslationExport(translationExport._id);
+    }
+
+    onApproveRequest = translationExport => {
+        this.props.approveTranslationExport(translationExport._id)
+    }
+
+    canApprove = () => {
+        const userRole = this.props.user.organizationRoles.find((r) => r.organization._id === this.props.organization._id)
+        return userRole && (userRole.organizationOwner || userRole.permissions.indexOf('admin') !== -1);
     }
 
     renderPagination = () => (
@@ -57,11 +72,33 @@ class ExportHistory extends React.Component {
                                         <Card.Content>
                                             <video width={'100%'} controls src={translationExport.videoUrl} />
                                         </Card.Content>
+
                                         <Card.Content>
-                                            <p>Status: {translationExport.status}</p>
-                                            <Progress progress indicating percent={translationExport.progress} />
-                                            <p>Created at: {translationExport.created_at}</p>
+                                            <p>Status: {'\t'} 
+                                            {translationExport.exportRequestStatus === 'declined' && <span>Declined</span>}
+                                            {translationExport.exportRequestStatus === 'pending' && (<span>Pending approval</span>)}
+                                            {translationExport.exportRequestStatus === 'approved' && translationExport.status}
+                                            </p>
+                                            {translationExport.exportRequestStatus === 'approved' && (
+                                                <Progress progress indicating percent={translationExport.progress} />
+                                            )}
+                                            <p>Created at: {moment(translationExport.created_at).format('hh:mm a DD/MM/YYYY')}</p>
                                         </Card.Content>
+
+
+                                        {this.canApprove() && translationExport.exportRequestStatus === 'pending' && (
+                                            <Card.Content>
+                                                <div className='pull-right'>
+                                                    <Button color="red" onClick={() => this.onDeclineRequest(translationExport)}>
+                                                        Decline
+                                                    </Button>
+                                                    <Button color="blue" onClick={() => this.onApproveRequest(translationExport)}>
+                                                        Approve
+                                                    </Button>
+                                                </div>
+                                            </Card.Content>
+                                        )}
+
                                     </Card>
                                 </Grid.Column>
                             ))}
@@ -74,16 +111,20 @@ class ExportHistory extends React.Component {
     }
 }
 
-const mapStateToProps = ({ translateArticle }) => ({
+const mapStateToProps = ({ translateArticle, authentication, organization }) => ({
     translationExports: translateArticle.translationExports,
     exportHistoryCurrentPageNumber: translateArticle.exportHistoryCurrentPageNumber,
     exportHistoryTotalPages: translateArticle.exportHistoryTotalPages,
     loading: translateArticle.loading,
+    organization: organization.organization,
+    user: authentication.user,
 })
 
 const mapDispatchToProps = (dispatch) => ({
     fetchTranslationExports: (loading) => dispatch(translateArticleActions.fetchTranslationExports(loading)),
     setExportHistoryPageNumber: pageNumber => dispatch(translateArticleActions.setExportHistoryPageNumber(pageNumber)),
+    approveTranslationExport: (translationExportId) => dispatch(translateArticleActions.approveTranslationExport(translationExportId)),
+    declineTranslationExport: (translationExportId) => dispatch(translateArticleActions.declineTranslationExport(translationExportId)),
     startJob: (options, callFunc) => dispatch(pollerActions.startJob(options, callFunc)),
     stopJob: (jobName) => dispatch(pollerActions.stopJob(jobName)),
 })

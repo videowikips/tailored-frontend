@@ -264,10 +264,10 @@ export const deleteRecordedTranslation = (slidePosition, subslidePosition) => (d
 
 
 
-export const exportTranslation = (articleId) => (dispatch, getState) => {
+export const requestExportTranslationReview = (articleId) => (dispatch, getState) => {
     const { translatableArticle } = getState()[moduleName]
     requestAgent
-    .post(Api.translationExport.exportTranslation(translatableArticle._id))
+    .post(Api.translationExport.requestExportTranslationReview(), { articleId: translatableArticle._id })
     .then((res) => {
         // NotificationService.success('The video has been queued to be exported. we\'ll notify you once it\'s done :)');
         NotificationService.success('The video has been queued to be exported.');
@@ -276,6 +276,36 @@ export const exportTranslation = (articleId) => (dispatch, getState) => {
     .catch((err) => {
         console.log(err);
         NotificationService.responseError(err);
+    })
+}
+
+export const approveTranslationExport = (translationExportId) => (dispatch, getState) => {
+    dispatch(setLaoding(true))
+    const { exportHistoryCurrentPageNumber } = getState()[moduleName];
+    requestAgent
+    .post(Api.translationExport.approveExportTranslation(translationExportId))
+    .then((res) => {
+        dispatch(fetchTranslationExports(exportHistoryCurrentPageNumber, true))
+    })
+    .catch((err) => {
+        console.log(err);
+        NotificationService.responseError(err);
+        dispatch(setLaoding(false))
+    })
+}
+
+export const declineTranslationExport = (translationExportId) => (dispatch, getState) => {
+    dispatch(setLaoding(true));
+    const { exportHistoryCurrentPageNumber } = getState()[moduleName];
+    requestAgent
+    .post(Api.translationExport.declineeExportTranslation(translationExportId))
+    .then((res) => {
+        dispatch(fetchTranslationExports(exportHistoryCurrentPageNumber, true));
+    })
+    .catch((err) => {
+        console.log(err);
+        NotificationService.responseError(err);
+        dispatch(setLaoding(false))
     })
 }
 

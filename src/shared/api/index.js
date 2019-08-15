@@ -28,7 +28,9 @@ export default {
     },
     translationExport: {
         getByArticleId: (articleId, params) => `${API_ROOT}/translationExport/by_article_id/${articleId}?${querystring.encode(params)}`,
-        exportTranslation: (translateableArticleId) => `${API_ROOT}/translationExport/${translateableArticleId}/export`,
+        requestExportTranslationReview: () => `${API_ROOT}/translationExport/requestExport`,
+        approveExportTranslation: (id) => `${API_ROOT}/translationExport/${id}/approve`,
+        declineeExportTranslation: (id) => `${API_ROOT}/translationExport/${id}/decline`,
     },
     authentication: {
         login: `${API_ROOT}/auth/login`,
