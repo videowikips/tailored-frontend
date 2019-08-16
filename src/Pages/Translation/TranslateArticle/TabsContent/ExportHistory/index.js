@@ -78,15 +78,40 @@ class ExportHistory extends React.Component {
                                             </Card.Content>
 
                                             <Card.Content>
-                                                <p>Status: {'\t'}
+
+                                                <p style={{ textTransform: 'capitalize' }}>
+                                                    <strong>Status:</strong>{'\t'}
                                                     {translationExport.exportRequestStatus === 'declined' && <span>Declined</span>}
                                                     {translationExport.exportRequestStatus === 'pending' && (<span>Pending approval</span>)}
                                                     {translationExport.exportRequestStatus === 'approved' && translationExport.status}
                                                 </p>
+
                                                 {translationExport.exportRequestStatus === 'approved' && (
                                                     <Progress progress indicating percent={translationExport.progress} />
                                                 )}
-                                                <p>Created at: {moment(translationExport.created_at).format('hh:mm a DD/MM/YYYY')}</p>
+
+                                                {translationExport.exportRequestBy && (
+                                                    <p><strong>Requested by:</strong> {translationExport.exportRequestBy.email}</p>
+                                                )}
+                                                {translationExport.approvedBy && (
+                                                    <p><strong>Approved by:</strong> {translationExport.approvedBy.email}</p>
+                                                )}
+
+                                                {translationExport.declinedBy && (
+                                                    <p><strong>Declined by:</strong> {translationExport.declinedBy.email}</p>
+                                                )}
+                                                {translationExport.translationBy && translationExport.translationBy.length > 0 && (
+                                                    <div>
+                                                        <strong>Translations by:</strong>
+                                                        <ul>
+
+                                                            {translationExport.translationBy && translationExport.translationBy.map((u) => (
+                                                                <li key={`translation_by-${u.email}`}>{u.email}</li>
+                                                            ))}
+                                                        </ul>
+                                                    </div>
+                                                )}
+                                                <p style={{ textAlign: 'right' }}>{moment(translationExport.created_at).format('hh:mm a DD/MM/YYYY')}</p>
                                             </Card.Content>
 
 
@@ -98,7 +123,7 @@ class ExportHistory extends React.Component {
                                                             </Button>
                                                         <Button color="blue" onClick={() => this.onApproveRequest(translationExport)}>
                                                             Approve
-                                                            </Button>
+                                                        </Button>
                                                     </div>
                                                 </Card.Content>
                                             )}
