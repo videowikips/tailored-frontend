@@ -4,7 +4,7 @@ import { Grid } from 'semantic-ui-react';
 
 import Review from './TabsContent/Review';
 import Translations from './TabsContent/Translations';
-import Translated from './TabsContent/Translated';
+// import Translated from './TabsContent/Translations';
 
 import Tabs from '../../../shared/components/Tabs';
 
@@ -26,13 +26,13 @@ class VideosList extends React.Component {
 
     renderTabContent = () => {
         let comp;
-        switch(this.props.organizationVideos.activeTabIndex) {
+        switch (this.props.organizationVideos.activeTabIndex) {
             case 0:
                 comp = <Review />; break;
             case 1:
-                comp = <Translations />;break;
-            case 2:
-                comp = <Translated />; break;
+                comp = <Translations />; break;
+            // case 2:
+            //     comp = <Translated />; break;
             default:
                 comp = <Review />; break;
         }
@@ -47,9 +47,9 @@ class VideosList extends React.Component {
         const { organizationVideos } = this.props;
         return (
             <div style={{ width: '100%' }}>
-                <Tabs 
-                    items={[{ title: 'Review' }, { title: 'Translations' }, { title: 'Translated' }]} 
-                    activeIndex={organizationVideos.activeTabIndex} 
+                <Tabs
+                    items={[{ title: 'Review' }, { title: 'Translations' }]}
+                    activeIndex={organizationVideos.activeTabIndex}
                     onActiveIndexChange={val => this.props.setOrganizationVideosActiveTabIndex(val)}
                 />
                 {this.renderTabContent()}
