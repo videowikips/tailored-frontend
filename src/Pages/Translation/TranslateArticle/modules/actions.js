@@ -187,15 +187,17 @@ export const fetchTranslatableArticle = (originalArticleId, lang) => dispatch =>
     })
 }
 
-export const updateSlideAudio = (slidePosition, subslidePosition, audio) => (dispatch, getState) => {
+export const updateSubslide = (slidePosition, subslidePosition, changes) => (dispatch, getState) => {
     const { translatableArticle } = getState()[moduleName];
     const slide = translatableArticle.slides.find(s => s.position === slidePosition);
     if (slide) {
         const subslide = slide.content.find(s => s.position === subslidePosition)
         if (subslide) {
-            translatableArticle.slides.find(s => s.position === slidePosition).content.find(s => s.position === subslidePosition).audio = audio; 
+            Object.keys(changes).forEach((key) => {
+                translatableArticle.slides.find(s => s.position === slidePosition).content.find(s => s.position === subslidePosition)[key] = changes[key]; 
+            })
             dispatch(setTranslatableArticle(_.cloneDeep(translatableArticle)));
-            dispatch(updateOriginalTranslatableArticle(slidePosition, subslidePosition, { audio }));
+            dispatch(updateOriginalTranslatableArticle(slidePosition, subslidePosition, { ...changes }));
         }
 
     }

@@ -2,6 +2,7 @@ import React from 'react';
 import { Grid, Card, Progress, Pagination, Button } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 import moment from 'moment';
+import _ from 'lodash';
 
 import LoaderComponent from '../../../../../shared/components/LoaderComponent';
 import * as translateArticleActions from '../../modules/actions';
@@ -60,49 +61,53 @@ class ExportHistory extends React.Component {
             <LoaderComponent active={this.props.loading}>
                 <div>
                     <Grid>
-                        <Grid.Row>
-                            {(!this.props.translationExports || this.props.translationExports.length === 0) && (
+                        {(!this.props.translationExports || this.props.translationExports.length === 0) && (
+                            <Grid.Row>
                                 <Grid.Column>
                                     No exports are available here
-                                </Grid.Column>
-                            )}
-                            {this.props.translationExports && this.props.translationExports.map((translationExport) => (
-                                <Grid.Column width={5} key={translationExport._id}>
-                                    <Card fluid>
-                                        <Card.Content>
-                                            <video width={'100%'} controls src={translationExport.videoUrl} />
-                                        </Card.Content>
-
-                                        <Card.Content>
-                                            <p>Status: {'\t'} 
-                                            {translationExport.exportRequestStatus === 'declined' && <span>Declined</span>}
-                                            {translationExport.exportRequestStatus === 'pending' && (<span>Pending approval</span>)}
-                                            {translationExport.exportRequestStatus === 'approved' && translationExport.status}
-                                            </p>
-                                            {translationExport.exportRequestStatus === 'approved' && (
-                                                <Progress progress indicating percent={translationExport.progress} />
-                                            )}
-                                            <p>Created at: {moment(translationExport.created_at).format('hh:mm a DD/MM/YYYY')}</p>
-                                        </Card.Content>
-
-
-                                        {this.canApprove() && translationExport.exportRequestStatus === 'pending' && (
+                                    </Grid.Column>
+                            </Grid.Row>
+                        )}
+                        {this.props.translationExports && _.chunk(this.props.translationExports, 3).map((translationExportChunk, index) => (
+                            <Grid.Row key={`translation-export-chunk-${index}`} >
+                                {translationExportChunk.map((translationExport) => (
+                                    <Grid.Column width={5} key={translationExport._id}>
+                                        <Card fluid>
                                             <Card.Content>
-                                                <div className='pull-right'>
-                                                    <Button color="red" onClick={() => this.onDeclineRequest(translationExport)}>
-                                                        Decline
-                                                    </Button>
-                                                    <Button color="blue" onClick={() => this.onApproveRequest(translationExport)}>
-                                                        Approve
-                                                    </Button>
-                                                </div>
+                                                <video width={'100%'} controls src={translationExport.videoUrl} />
                                             </Card.Content>
-                                        )}
 
-                                    </Card>
-                                </Grid.Column>
-                            ))}
-                        </Grid.Row>
+                                            <Card.Content>
+                                                <p>Status: {'\t'}
+                                                    {translationExport.exportRequestStatus === 'declined' && <span>Declined</span>}
+                                                    {translationExport.exportRequestStatus === 'pending' && (<span>Pending approval</span>)}
+                                                    {translationExport.exportRequestStatus === 'approved' && translationExport.status}
+                                                </p>
+                                                {translationExport.exportRequestStatus === 'approved' && (
+                                                    <Progress progress indicating percent={translationExport.progress} />
+                                                )}
+                                                <p>Created at: {moment(translationExport.created_at).format('hh:mm a DD/MM/YYYY')}</p>
+                                            </Card.Content>
+
+
+                                            {this.canApprove() && translationExport.exportRequestStatus === 'pending' && (
+                                                <Card.Content>
+                                                    <div className='pull-right'>
+                                                        <Button color="red" onClick={() => this.onDeclineRequest(translationExport)}>
+                                                            Decline
+                                                            </Button>
+                                                        <Button color="blue" onClick={() => this.onApproveRequest(translationExport)}>
+                                                            Approve
+                                                            </Button>
+                                                    </div>
+                                                </Card.Content>
+                                            )}
+
+                                        </Card>
+                                    </Grid.Column>
+                                ))}
+                            </Grid.Row>
+                        ))}
                         {this.renderPagination()}
                     </Grid>
                 </div>

@@ -57,15 +57,15 @@ class Workstation extends React.Component {
 
     componentWillUnmount = () => {
         if (this.socketSub && this.props.translatableArticle && this.props.translatableArticle._id) {
-            websockets.unsubscribeFromEvent(`${websockets.websocketsEvents.RECORDED_AUDIO_PROCESSED}/${this.props.translatableArticle._id}`)
+            websockets.unsubscribeFromEvent(`${websockets.websocketsEvents.TRANSLATION_SUBSLIDE_CHANGE}/${this.props.translatableArticle._id}`)
         }
     }
 
     initSocketSub = (translatableArticle) => {
-        websockets.subscribeToEvent(`${websockets.websocketsEvents.RECORDED_AUDIO_PROCESSED}/${translatableArticle._id}`, (data) => {
+        websockets.subscribeToEvent(`${websockets.websocketsEvents.TRANSLATION_SUBSLIDE_CHANGE}/${translatableArticle._id}`, (data) => {
             console.log('got socket data', data);
-            const { slidePosition, subslidePosition, audio } = data;
-            this.props.updateSlideAudio(slidePosition, subslidePosition, audio);
+            const { slidePosition, subslidePosition, changes } = data;
+            this.props.updateSubslide(slidePosition, subslidePosition, changes);
         })
     }
 
@@ -422,7 +422,7 @@ const mapDispatchToProps = dispatch => ({
     stopJob: (jobName) => dispatch(pollerActions.stopJob(jobName)),
     onPreviewChange: preview => dispatch(translationActions.onPreviewChange(preview)),
     changeSelectedSpeakerNumber: num => dispatch(translationActions.changeSelectedSpeakerNumber(num)),
-    updateSlideAudio: (slidePositon, subslidePosition, audio) => dispatch(translationActions.updateSlideAudio(slidePositon, subslidePosition, audio)),
+    updateSubslide: (slidePositon, subslidePosition, audio) => dispatch(translationActions.updateSubslide(slidePositon, subslidePosition, audio)),
     requestExportTranslationReview: (articleId) => dispatch(translationActions.requestExportTranslationReview(articleId)),
 })
 
