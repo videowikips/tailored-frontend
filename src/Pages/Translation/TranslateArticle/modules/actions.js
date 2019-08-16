@@ -320,7 +320,8 @@ export const fetchTranslationExports = (pageNumber, loading) =>  (dispatch, getS
     requestAgent
     .get(Api.translationExport.getByArticleId(translatableArticle._id, { page: pageNumber }))
     .then((res) => {
-        const {translationExports} = res.body;
+        const { translationExports, pagesCount } = res.body;
+        dispatch(setExportHistoryTotalPages(pagesCount))
         dispatch(setTranslationExports(translationExports));
         dispatch(setLaoding(false))
     })
