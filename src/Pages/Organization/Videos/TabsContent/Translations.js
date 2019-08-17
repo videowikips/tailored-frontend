@@ -37,16 +37,11 @@ class Translated extends React.Component {
     }
 
     renderPagination = () => (
-        <Grid.Row>
-            <Grid.Column width={10} />
-            <Grid.Column width={6}>
-                <Pagination
-                    activePage={this.props.currentPageNumber}
-                    onPageChange={this.onPageChange}
-                    totalPages={this.props.totalPagesCount}
-                />
-            </Grid.Column>
-        </Grid.Row>
+        <Pagination
+            activePage={this.props.currentPageNumber}
+            onPageChange={this.onPageChange}
+            totalPages={this.props.totalPagesCount}
+        />
     )
 
 
@@ -120,7 +115,13 @@ class Translated extends React.Component {
                             </Grid.Column>
                         </Grid.Row>
                     ))}
-                    {this.renderPagination()}
+
+                    <Grid.Row>
+                        <Grid.Column width={10} />
+                        <Grid.Column width={6}>
+                            {this.renderPagination()}
+                        </Grid.Column>
+                    </Grid.Row>
                     {this._renderAddHumanVoiceModal()}
 
                 </Grid>

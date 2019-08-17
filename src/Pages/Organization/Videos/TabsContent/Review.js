@@ -31,16 +31,11 @@ class Review extends React.Component {
     }
 
     renderPagination = () => (
-        <Grid.Row>
-            <Grid.Column width={10} />
-            <Grid.Column width={6}>
-                <Pagination
-                    activePage={this.props.currentPageNumber}
-                    onPageChange={this.onPageChange}
-                    totalPages={this.props.totalPagesCount}
-                />
-            </Grid.Column>
-        </Grid.Row>
+        <Pagination
+            activePage={this.props.currentPageNumber}
+            onPageChange={this.onPageChange}
+            totalPages={this.props.totalPagesCount}
+        />
     )
 
     onReviewVideo = video => {
@@ -57,7 +52,7 @@ class Review extends React.Component {
         }
 
     }
-    
+
     onLanguageFilterChange = (e, { value }) => {
         this.props.setLanguageFilter(value);
         this.props.setCurrentPageNumber(1)
@@ -69,7 +64,7 @@ class Review extends React.Component {
             <Modal.Header>Re-Review Video</Modal.Header>
             <Modal.Content>
                 <p>Are you sure you want to re-review this video? <small><strong>( All current translations will be archived )</strong></small></p>
-                
+
             </Modal.Content>
             <Modal.Actions>
                 <Button onClick={() => {
@@ -89,69 +84,69 @@ class Review extends React.Component {
         </Modal>
     )
 
-    _render = () => {
-        return (
-            <React.Fragment>
-                <Grid.Row>
-                    <Grid.Column width={13}>
-
-                    </Grid.Column>
-                    <Grid.Column width={3}>
-                        <Dropdown
-                            fluid
-                            search
-                            selection
-                            onChange={this.onLanguageFilterChange}
-                            options={langsOptions}
-                            value={this.props.languageFilter}
-                        />
-                    </Grid.Column>
-                </Grid.Row>
-                <Grid.Row>
-                    {this.props.videos && this.props.videos.length === 0 ? (
-                        <div style={{ margin: 50 }}>No videos requires preview</div>
-                    ) : this.props.videos && this.props.videos.map((video) => {
-                        return (
-                            <Grid.Column key={video._id} width={4}>
-                                <Icon
-                                    name="check circle"
-                                    size="large"
-                                    color="green"
-                                    style={{ position: 'absolute', right: 0, top: 5, zIndex: 2, visibility: video.status === 'done' ? 'visible' : 'hidden' }}
-                                />
-                                <Card fluid>
-
-                                    <Card.Content>
-                                        <Card.Header style={{ textAlign: 'center' }}>
-                                            {video.status === 'done' ? (
-                                                <Link to={routes.organizationArticle(video.article)} >
-                                                    {video.title}
-                                                </Link>
-                                            ) : video.title}
-                                        </Card.Header>
-                                    </Card.Content>
-
-                                    <video src={video.url} controls width={'100%'} />
-
-                                    <Card.Content style={{ padding: 0 }}>
-                                        <Button fluid color="blue" onClick={() => this.onReviewVideoClick(video)}>{video.status === 'done' ? 'Re-Review' : 'Review'}</Button>
-                                    </Card.Content>
-
-                                </Card>
-                            </Grid.Column>
-                        )
-                    })}
-
-                </Grid.Row>
-            </React.Fragment>
-        )
-    }
     render() {
         return (
             <Grid>
                 <LoaderComponent active={this.props.videosLoading}>
-                    {this._render()}
-                    {this.renderPagination()}
+
+
+                    <Grid.Row>
+                        <Grid.Column width={13}>
+
+                        </Grid.Column>
+                        <Grid.Column width={3}>
+                            <Dropdown
+                                fluid
+                                search
+                                selection
+                                onChange={this.onLanguageFilterChange}
+                                options={langsOptions}
+                                value={this.props.languageFilter}
+                            />
+                        </Grid.Column>
+                    </Grid.Row>
+                    <Grid.Row>
+                        {this.props.videos && this.props.videos.length === 0 ? (
+                            <div style={{ margin: 50 }}>No videos requires preview</div>
+                        ) : this.props.videos && this.props.videos.map((video) => {
+                            return (
+                                <Grid.Column key={video._id} width={4}>
+                                    <Icon
+                                        name="check circle"
+                                        size="large"
+                                        color="green"
+                                        style={{ position: 'absolute', right: 0, top: 5, zIndex: 2, visibility: video.status === 'done' ? 'visible' : 'hidden' }}
+                                    />
+                                    <Card fluid>
+
+                                        <Card.Content>
+                                            <Card.Header style={{ textAlign: 'center' }}>
+                                                {video.status === 'done' ? (
+                                                    <Link to={routes.organizationArticle(video.article)} >
+                                                        {video.title}
+                                                    </Link>
+                                                ) : video.title}
+                                            </Card.Header>
+                                        </Card.Content>
+
+                                        <video src={video.url} controls width={'100%'} />
+
+                                        <Card.Content style={{ padding: 0 }}>
+                                            <Button fluid color="blue" onClick={() => this.onReviewVideoClick(video)}>{video.status === 'done' ? 'Re-Review' : 'Review'}</Button>
+                                        </Card.Content>
+
+                                    </Card>
+                                </Grid.Column>
+                            )
+                        })}
+
+                    </Grid.Row>
+                    <Grid.Row>
+                        <Grid.Column width={10} />
+                        <Grid.Column width={6}>
+                            {this.renderPagination()}
+                        </Grid.Column>
+                    </Grid.Row>
                     {this.renderConfirmReviewModal()}
                 </LoaderComponent>
             </Grid>

@@ -4,6 +4,7 @@ import { withRouter } from 'react-router-dom';
 import { Message } from 'semantic-ui-react';
 
 import { login } from '../../actions/authentication';
+import routes from '../../shared/routes';
 
 class LoginForm extends Component {
     state = {
@@ -39,7 +40,7 @@ class LoginForm extends Component {
         console.log(nextProps);
 
         if (nextProps.isAuthenticated) {
-            this.props.history.push('/organization/users');
+            this.props.history.push(routes.organizationVideos());
         }
 
         if (nextProps.errorMessage) {
