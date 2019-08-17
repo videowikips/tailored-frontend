@@ -101,6 +101,14 @@ class Dashboard extends React.Component {
         return true;
     }
 
+    canUpload = () => {
+        const { organization, user } = this.props;
+        const userRole = user.organizationRoles.find((role) => role.organization._id === organization);
+        if (!userRole) return false;
+        if (userRole.organizationOwner || userRole.permissions.indexOf('admin') !== -1) return true;
+        return false;
+    }
+
     renderUserDropdown = () => {
         return (
             <Dropdown icon={<Avatar name={this.props.user.email} size={40} round="50%" />} floating labeled direction="left">
@@ -142,16 +150,6 @@ class Dashboard extends React.Component {
                             ))}
                         </Menu>
 
-                        <UploadNewVideoModal
-                            open={this.state.uploadFormOpen}
-                            onClose={() => this.setState({ uploadFormOpen: false })}
-                            onChange={this.onUploadFormChange}
-                            onSubmit={this.onSubmit}
-                            value={this.state.videoForm}
-                            valid={this.isFormValid() && this.props.uploadState !== 'loading'}
-                            loading={this.props.uploadState === 'loading'}
-                            uploadProgress={this.props.uploadProgress}
-                        />
                     </Grid.Column>
                     <Grid.Column width={13} stretched>
                         <Grid>
@@ -160,12 +158,27 @@ class Dashboard extends React.Component {
                                     <div style={{ marginTop: 20, marginBottom: 20, height: 40 }}>
 
                                         <div className="pull-right">
-                                            <Button
-                                                color="blue"
-                                                onClick={() => this.setState({ uploadFormOpen: true })} style={{ marginRight: 20 }}>
-                                                <Icon name="upload" />
-                                                Upload New Video
-                                            </Button>
+                                            {this.canUpload() && (
+                                                <React.Fragment>
+
+                                                    <Button
+                                                        color="blue"
+                                                        onClick={() => this.setState({ uploadFormOpen: true })} style={{ marginRight: 20 }}>
+                                                        <Icon name="upload" />
+                                                        Upload New Video
+                                                </Button>
+                                                    <UploadNewVideoModal
+                                                        open={this.state.uploadFormOpen}
+                                                        onClose={() => this.setState({ uploadFormOpen: false })}
+                                                        onChange={this.onUploadFormChange}
+                                                        onSubmit={this.onSubmit}
+                                                        value={this.state.videoForm}
+                                                        valid={this.isFormValid() && this.props.uploadState !== 'loading'}
+                                                        loading={this.props.uploadState === 'loading'}
+                                                        uploadProgress={this.props.uploadProgress}
+                                                    />
+                                                </React.Fragment>
+                                            )}
                                             {this.props.user && this.renderUserDropdown()}
                                         </div>
                                     </div>
