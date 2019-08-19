@@ -103,6 +103,7 @@ class Dashboard extends React.Component {
 
     canUpload = () => {
         const { organization, user } = this.props;
+        if (!user || !organization) return false;
         const userRole = user.organizationRoles.find((role) => role.organization._id === organization._id);
         if (!userRole) return false;
         if (userRole.organizationOwner || userRole.permissions.indexOf('admin') !== -1) return true;

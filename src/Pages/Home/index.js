@@ -19,9 +19,9 @@ export default class Home extends React.Component {
                         <div className="pull-right" style={{ display: 'flex', justifyContent: 'center', alignItems: 'stretch'}}>
                             <OrganizationSignupModal/>
 
-                            <Link to="/demo" className="large ui blue button" style={{ paddingTop: 20 }}>
+                            {/* <Link to="/demo" className="large ui blue button" style={{ paddingTop: 20 }}>
                                 Demo
-                            </Link>
+                            </Link> */}
                         </div>
                     </h2>
                 </div>
