@@ -47,11 +47,13 @@ export const respondToInvitation = (organizationId, status, inviteToken, email) 
     requestAgent.post(Api.organization.respondToInvitation(organizationId), { inviteToken, status, email })
     .then((res) => {
         const { setPassword: shouldSetPassword, tempPass, user, token } = res.body;
-        console.log(res.body);
         dispatch(authActions.authenticationSuccess({ user, token }))
         dispatch(setUser(user));
-        
-        dispatch(organizationActions.setOrganization(user.organizationRoles.find(role => role.organization._id === organizationId).organization))
+        const organization = user.organizationRoles.find(role => role.organization._id === organizationId).organization;
+        dispatch(organizationActions.setOrganization(organization))
+
+        NotificationService.success(`You've been added to ${organization.name} Successfully`)
+
         if (shouldSetPassword) {
             dispatch(setOldPassword(tempPass));
             dispatch(setShowPasswordForm(true));
