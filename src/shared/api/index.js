@@ -37,7 +37,7 @@ export default {
         register: `${API_ROOT}/auth/register`
     },
     organization: {
-        getUsers: `${API_ROOT}/user/getOrgUsers`,
+        getUsers: (params) => `${API_ROOT}/user/getOrgUsers?${querystring.encode(params)}`,
         inviteUser: `${API_ROOT}/user/add`,
         removeUser: `${API_ROOT}/user/remove`,
         editPermissions: `${API_ROOT}/user/editPermissions`,

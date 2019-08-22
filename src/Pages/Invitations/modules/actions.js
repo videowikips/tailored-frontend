@@ -47,6 +47,7 @@ export const respondToInvitation = (organizationId, status, inviteToken, email) 
     requestAgent.post(Api.organization.respondToInvitation(organizationId), { inviteToken, status, email })
     .then((res) => {
         const { setPassword: shouldSetPassword, tempPass, user, token } = res.body;
+        console.log(res.body)
         dispatch(authActions.authenticationSuccess({ user, token }))
         dispatch(setUser(user));
         const organization = user.organizationRoles.find(role => role.organization._id === organizationId).organization;

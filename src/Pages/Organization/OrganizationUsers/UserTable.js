@@ -46,7 +46,7 @@ class UserTable extends Component {
     ]
 
     componentDidMount() {
-        this.props.fetchUsers()
+        this.props.fetchUsers(this.props.organization._id)
     }
 
     onRoleChange = (role, email) => {
@@ -145,7 +145,7 @@ const mapStateToProps = ({ organization, authentication }) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-    fetchUsers: () => dispatch(fetchUsers()),
+    fetchUsers: (params) => dispatch(fetchUsers(params)),
     editPermissions: ({ email, permissions }) => dispatch(editPermissions({ email, permissions }))
 })
 

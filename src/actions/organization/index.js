@@ -32,8 +32,8 @@ export const setOrganization = organization => ({
     payload: organization,
 })
 
-export const fetchUsers = () => dispatch => {
-    requestAgent.get(Api.organization.getUsers)
+export const fetchUsers = (organizationId) => dispatch => {
+    requestAgent.get(Api.organization.getUsers({ organization: organizationId }))
         .then(({ body }) => {
             dispatch(fetchUserSuccess(body));
         });
