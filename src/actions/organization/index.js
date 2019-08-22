@@ -27,6 +27,11 @@ const editPermissionSuccess = (payload) => ({
     payload
 });
 
+export const setOrganization = organization => ({
+    type: actionTypes.SET_ORGANIZATION,
+    payload: organization,
+})
+
 export const fetchUsers = () => dispatch => {
     requestAgent.get(Api.organization.getUsers)
         .then(({ body }) => {

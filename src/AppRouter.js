@@ -27,6 +27,8 @@ const OrganizationVideos = () => import('./Pages/Organization/Videos');
 
 const TranslateArticle = () => import('./Pages/Translation/TranslateArticle');
 
+const Invitations = () => import('./Pages/Invitations');
+
 class AppRouter extends React.Component {
 
   render() {
@@ -51,6 +53,10 @@ class AppRouter extends React.Component {
               
               <LazyRoute path={routes.translationArticle()} title="Translate Article" isPrivateRoute={true} loader={TranslateArticle} layout={DashboardLayout} />
             {/* === End Translation routes === */}
+
+            {/* Invitations routes */}
+              <LazyRoute path={routes.invitationsRoute()} title="Invitation" loader={Invitations} />
+            {/* End invitations routes  */}
             </Switch>
           </div>
           <Footer />

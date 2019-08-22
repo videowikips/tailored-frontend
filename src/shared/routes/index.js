@@ -13,4 +13,5 @@ export default {
     // Translation
     translationArticle: (articleId = ':articleId', langCode) => `/translation/article/${articleId}${langCode ? `?lang=${langCode}` : ''}`,
 
+    invitationsRoute: (organizationId = ':organizationId') => `/invitations/${organizationId}`,
 }

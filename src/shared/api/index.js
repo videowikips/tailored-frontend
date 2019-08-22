@@ -41,9 +41,11 @@ export default {
         inviteUser: `${API_ROOT}/user/add`,
         removeUser: `${API_ROOT}/user/remove`,
         editPermissions: `${API_ROOT}/user/editPermissions`,
+        respondToInvitation: (organizationId) => `${API_ROOT}/organization/${organizationId}/invitations/respond`,
     },
     user: {
         isValidToken: `${API_ROOT}/user/isValidToken`,
         getUserDetails: `${API_ROOT}/user/getUserDetails`,
+        updatePassword: (userId) => `${API_ROOT}/user/${userId}/password`,
     }
 }

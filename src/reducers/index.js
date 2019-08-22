@@ -7,6 +7,7 @@ import organization from './organization';
 import organizationVideos from '../Pages/Organization/Videos/modules/reducer';
 import translateArticle from '../Pages/Translation/TranslateArticle/modules/reducer';
 import organizationArchive from '../Pages/Organization/Archive/modules/reducers';
+import invitations from '../Pages/Invitations/modules/reducer';
 
 export default function createRootReducer (additionalReducers = {}) {
   const reducers = {
@@ -19,6 +20,7 @@ export default function createRootReducer (additionalReducers = {}) {
     organizationVideos,
     translateArticle,
     organizationArchive,
+    invitations
   }
 
   return combineReducers(Object.assign({}, additionalReducers, reducers))

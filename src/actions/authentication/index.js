@@ -4,12 +4,12 @@ import * as orgActionTypes from '../organization/types';
 import Api from '../../shared/api';
 import requestAgent from '../../shared/utils/requestAgent';
 
-const authenticationSuccess = (userData) => ({
+export const authenticationSuccess = (userData) => ({
     type: actionTypes.AUTHENTICATION_SUCCESS,
     payload: userData,
 })
 
-const authenticationFailed = (message) => ({
+export const authenticationFailed = (message) => ({
     type: actionTypes.AUTHENTICATION_FAILED,
     payload: message,
 })
