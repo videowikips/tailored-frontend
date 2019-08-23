@@ -56,7 +56,7 @@ export const editPermissions = (organizationId, userId, permissions) => (dispatc
     requestAgent.patch(Api.organization.editPermissions(organizationId, userId), { permissions })
         .then(({ body }) => {
             const users = getState().organization.users
-            users.find((u) => u._id === userId).organizationRoles[0].permissions = permissions;
+            users.find((u) => u._id === userId).organizationRoles.find(role => role.organization === organizationId).permissions = permissions;
             dispatch(editPermissionSuccess({
                 userId,
                 permissions
