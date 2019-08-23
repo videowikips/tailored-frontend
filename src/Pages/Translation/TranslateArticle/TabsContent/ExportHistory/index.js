@@ -45,13 +45,14 @@ class ExportHistory extends React.Component {
 
     renderPagination = () => (
         <Grid.Row>
-            <Grid.Column width={10} />
-            <Grid.Column width={6}>
-                <Pagination
-                    activePage={this.props.exportHistoryCurrentPageNumber}
-                    onPageChange={this.onPageChange}
-                    totalPages={this.props.exportHistoryTotalPages}
-                />
+            <Grid.Column width={16}>
+                <div className="pull-right">
+                    <Pagination
+                        activePage={this.props.exportHistoryCurrentPageNumber}
+                        onPageChange={this.onPageChange}
+                        totalPages={this.props.exportHistoryTotalPages}
+                    />
+                </div>
             </Grid.Column>
         </Grid.Row>
     )
@@ -61,6 +62,8 @@ class ExportHistory extends React.Component {
             <LoaderComponent active={this.props.loading}>
                 <div>
                     <Grid>
+                        {this.renderPagination()}
+
                         {(!this.props.translationExports || this.props.translationExports.length === 0) && (
                             <Grid.Row>
                                 <Grid.Column>
@@ -133,7 +136,6 @@ class ExportHistory extends React.Component {
                                 ))}
                             </Grid.Row>
                         ))}
-                        {this.renderPagination()}
                     </Grid>
                 </div>
             </LoaderComponent>
