@@ -322,7 +322,7 @@ class Convert extends React.Component {
                                     </Grid.Column>
                                 </Grid.Row>
 
-                                <Grid.Row style={{ display: 'flex', alignItems: 'flex-start' }}>
+                                <Grid.Row style={{ display: 'flex', alignItems: 'flex-start', padding: '2rem' }}>
                                     <Grid.Column width={2} style={{ color: 'white' }}>
                                         <Grid>
                                             <Grid.Row style={{ display: 'flex', alignItems: 'center' }}>
