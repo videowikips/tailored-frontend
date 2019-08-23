@@ -38,9 +38,9 @@ export default {
     },
     organization: {
         getUsers: (params) => `${API_ROOT}/user/getOrgUsers?${querystring.encode(params)}`,
-        inviteUser: `${API_ROOT}/user/add`,
-        removeUser: `${API_ROOT}/user/remove`,
-        editPermissions: `${API_ROOT}/user/editPermissions`,
+        inviteUser: (organizationId) => `${API_ROOT}/organization/${organizationId}/users`,
+        removeUser: (organizationId, userId) =>  `${API_ROOT}/organization/${organizationId}/users/${userId}`,
+        editPermissions: (organizationId, userId) => `${API_ROOT}/organization/${organizationId}/users/${userId}/permissions`,
         respondToInvitation: (organizationId) => `${API_ROOT}/organization/${organizationId}/invitations/respond`,
     },
     user: {

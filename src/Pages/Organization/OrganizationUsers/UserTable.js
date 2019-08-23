@@ -49,7 +49,7 @@ class UserTable extends Component {
         this.props.fetchUsers(this.props.organization._id)
     }
 
-    onRoleChange = (role, email) => {
+    onRoleChange = (role, user) => {
         let permissions;
         if (role === 'l0') {
             permissions = ['admin']
@@ -60,10 +60,7 @@ class UserTable extends Component {
         } else if (role === 'l3') {
             permissions = ['review', 'translate'];
         }
-        this.props.editPermissions({
-            email,
-            permissions
-        });
+        this.props.editPermissions(this.props.organization._id, user._id, permissions);
     }
 
     render() {
@@ -88,13 +85,13 @@ class UserTable extends Component {
                                     <Select
                                         style={{ marginRight: 10 }}
                                         name="role"
-                                        onChange={(e, { value }) => this.onRoleChange(value, user.email)}
+                                        onChange={(e, { value }) => this.onRoleChange(value, user)}
                                         value={getUserRoleValue(user.organizationRoles[0].permissions)}
                                         options={this.roles}
                                         disabled={!canModify}
                                     />
                                     {canModify && (
-                                        <DeleteUserModal email={user.email} />
+                                        <DeleteUserModal userId={user._id} />
                                     )}
                                 </div>
                             )}
@@ -146,7 +143,7 @@ const mapStateToProps = ({ organization, authentication }) => ({
 
 const mapDispatchToProps = (dispatch) => ({
     fetchUsers: (params) => dispatch(fetchUsers(params)),
-    editPermissions: ({ email, permissions }) => dispatch(editPermissions({ email, permissions }))
+    editPermissions: (organizationId, userId, permissions) => dispatch(editPermissions(organizationId, userId, permissions))
 })
 
 export default withRouter(

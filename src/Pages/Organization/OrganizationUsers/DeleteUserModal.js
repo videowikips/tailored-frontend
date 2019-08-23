@@ -22,7 +22,7 @@ class DeleteUserModal extends Component {
     }
 
     removeUser = () => {
-        this.props.removeUser(this.props.email);
+        this.props.removeUser(this.props.organization._id, this.props.userId);
     }
 
     render() {
@@ -68,7 +68,7 @@ const mapStateToProps = ({ organization }) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-    removeUser: (email) => dispatch(removeUser(email))
+    removeUser: (organization, userId) => dispatch(removeUser(organization, userId))
 })
 
 export default withRouter(

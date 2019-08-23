@@ -43,7 +43,7 @@ export default function (state = INITIAL_STATE, action) {
 
         case actionTypes.REMOVE_USER_SUCCESS:
             const users = state.users.filter((user) => {
-                return user.email !== action.payload
+                return user._id !== action.payload
             });
             
             return {

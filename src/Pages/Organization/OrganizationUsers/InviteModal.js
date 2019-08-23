@@ -63,7 +63,7 @@ class ModalExampleSize extends Component {
             permissions = ['review', 'translate'];
         }
 
-        this.props.inviteUser({
+        this.props.inviteUser(this.props.organization._id, {
             email,
             firstname,
             lastname,
@@ -172,7 +172,7 @@ const mapStateToProps = ({ organization }) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-    inviteUser: ({ email, firstname, lastname, permissions }) => dispatch(inviteUser({ email, firstname, lastname, permissions }))
+    inviteUser: (organization, { email, firstname, lastname, permissions }) => dispatch(inviteUser(organization, { email, firstname, lastname, permissions }))
 })
 
 export default withRouter(

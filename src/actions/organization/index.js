@@ -17,9 +17,9 @@ const inviteUserError = (message) => ({
     payload: message
 });
 
-const removeUserSuccess = (email) => ({
+const removeUserSuccess = (userId) => ({
     type: actionTypes.REMOVE_USER_SUCCESS,
-    payload: email
+    payload: userId
 });
 
 const editPermissionSuccess = (payload) => ({
@@ -39,8 +39,8 @@ export const fetchUsers = (organizationId) => dispatch => {
         });
 }
 
-export const inviteUser = ({ email, firstname, lastname, permissions }) => dispatch => {
-    requestAgent.post(Api.organization.inviteUser, { email, firstname, lastname, permissions })
+export const inviteUser = (organizationId, {  email, firstname, lastname, permissions }) => dispatch => {
+    requestAgent.post(Api.organization.inviteUser(organizationId), { email, firstname, lastname, permissions })
         .then(({ body }) => {
             const { success, user, message } = body;
 
@@ -52,22 +52,22 @@ export const inviteUser = ({ email, firstname, lastname, permissions }) => dispa
         });
 }
 
-export const editPermissions = ({ email, permissions }) => (dispatch, getState) => {
-    requestAgent.post(Api.organization.editPermissions, { email, permissions })
+export const editPermissions = (organizationId, userId, permissions) => (dispatch, getState) => {
+    requestAgent.patch(Api.organization.editPermissions(organizationId, userId), { permissions })
         .then(({ body }) => {
             const users = getState().organization.users
-            users.find((u) => u.email === email).organizationRoles[0].permissions = permissions;
+            users.find((u) => u._id === userId).organizationRoles[0].permissions = permissions;
             dispatch(editPermissionSuccess({
-                email,
+                userId,
                 permissions
             }));
             dispatch(fetchUserSuccess([...users]));
         });
 }
 
-export const removeUser = (email) => dispatch => {
-    requestAgent.post(Api.organization.removeUser, { email })
+export const removeUser = (organizationId, userId) => dispatch => {
+    requestAgent.delete(Api.organization.removeUser(organizationId, userId))
         .then(({ body }) => {
-            dispatch(removeUserSuccess(email))
+            dispatch(removeUserSuccess(userId))
         });
 }
