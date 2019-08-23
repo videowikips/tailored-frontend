@@ -267,6 +267,159 @@ class Convert extends React.Component {
         );
     }
 
+    renderSpeakersProfiles = () => (
+        <Grid.Row>
+            <Grid.Column width={16}>
+                {this.props.article && (
+                    <div style={{ width: '100%', padding: '2rem', color: 'white' }}>
+                        <h3>Speakers Profiles: </h3>
+                        <Grid>
+                            {this.props.article.speakersProfile.map((speaker, index) => (
+                                <Grid.Row style={{ listStyle: 'none', padding: 10 }} key={'speakers' + index}>
+                                    <Grid.Column width={3}>
+                                        <span>Speaker {speaker.speakerNumber}</span>
+                                    </Grid.Column>
+                                    <Grid.Column width={3}>
+                                        <Dropdown
+                                            value={speaker.speakerGender}
+                                            options={[{ text: 'Male', value: 'male' }, { text: 'Female', value: 'female' }]}
+                                            onChange={(e, { value }) => this.onSpeakerGenderChange(speaker, value)}
+                                        />
+                                    </Grid.Column>
+                                    {/* <Grid.Column width={4}>
+                                        <div
+                                            draggable={true}
+                                            style={{
+                                                backgroundColor: 'transparent',
+                                                position: 'relative',
+                                                color: 'white',
+                                                cursor: 'pointer',
+                                                height: 20,
+                                                display: 'inline-block',
+                                            }}
+                                            onDragStart={(e) => e.dataTransfer.setData('text', JSON.stringify({ speaker }))}
+                                        >
+                                            <SpeakerDragItem speaker={speaker} />
+                                        </div>
+                                    </Grid.Column> */}
+
+                                    <Grid.Column width={2}>
+                                        {index === this.props.article.speakersProfile.length - 1 && (
+                                            <Button color="red" onClick={() => this.onDeleteSpeaker(index)} icon="trash" size="tiny" />
+                                        )}
+                                    </Grid.Column>
+                                </Grid.Row>
+                            ))}
+                            <Grid.Row>
+                                <Grid.Column style={{ display: 'flex', justifyContent: 'flex-start' }}>
+                                    <Button color="blue" onClick={this.onAddSpeaker} >Add Speaker</Button>
+                                </Grid.Column>
+                            </Grid.Row>
+                        </Grid>
+                    </div>
+                )}
+            </Grid.Column>
+        </Grid.Row>
+    )
+
+    renderSpeakersDragAndDrop = () => (
+        <Grid.Row style={{ display: 'flex', alignItems: 'flex-start', padding: '2rem' }}>
+            <Grid.Column width={2} style={{ color: 'white' }}>
+                <Grid>
+                    <Grid.Row style={{ display: 'flex', alignItems: 'center' }}>
+                        <Grid.Column width={8}>
+                            <span>Splitter</span>
+                        </Grid.Column>
+                        <Grid.Column width={4}>
+                            <span
+                                draggable
+                                onDragEnd={() => this.setState({ splitterDragging: false })}
+                                onDragStart={e => {
+                                    e.dataTransfer.setData('text', JSON.stringify({ split: true }));
+                                    this.setState({ splitterDragging: true })
+                                }}
+                                style={{ width: 30, height: 30, cursor: 'pointer', display: 'inline-block' }}
+                            >
+                                <SplitterIcon />
+                            </span>
+                        </Grid.Column>
+
+                    </Grid.Row>
+                </Grid>
+            </Grid.Column>
+            <Grid.Column width={3} style={{ color: 'white', marginTop: 10, marginBottom: 10 }}>
+                <Grid>
+                    <Grid.Row>
+                        <Grid.Column width={8}>
+                            <span>Background Music</span>
+                        </Grid.Column>
+                        <Grid.Column width={4}>
+                            <div
+                                draggable={true}
+                                style={{
+                                    backgroundColor: 'transparent',
+                                    position: 'relative',
+                                    color: 'white',
+                                    cursor: 'pointer',
+                                    height: 20,
+                                    display: 'inline-block',
+                                }}
+                                onDragStart={(e) => e.dataTransfer.setData('text', JSON.stringify({ speaker: { speakerNumber: -1 } }))}
+                            >
+                                <SpeakerDragItem speaker={{ speakerNumber: -1 }} />
+                            </div>
+                        </Grid.Column>
+
+                    </Grid.Row>
+                </Grid>
+            </Grid.Column>
+            <Grid.Column width={9}>
+                <Grid>
+                    <Grid.Row>
+                        {this.props.article && this.props.article.speakersProfile.map((speaker, index) => (
+                            <Grid.Column width={5} style={{ marginTop: 10, marginBottom: 10 }} key={'speakers-sda' + index}>
+                                <Grid>
+                                    <Grid.Row style={{ listStyle: 'none', padding: 10, color: 'white', display: 'flex', alignItems: 'center' }}>
+                                        <Grid.Column width={8}>
+                                            <span>Speaker {speaker.speakerNumber}</span>
+                                        </Grid.Column>
+                                        <Grid.Column width={4}>
+                                            <div
+                                                draggable={true}
+                                                style={{
+                                                    backgroundColor: 'transparent',
+                                                    position: 'relative',
+                                                    color: 'white',
+                                                    cursor: 'pointer',
+                                                    height: 20,
+                                                    display: 'inline-block',
+                                                }}
+                                                onDragStart={(e) => e.dataTransfer.setData('text', JSON.stringify({ speaker }))}
+                                            >
+                                                <SpeakerDragItem speaker={speaker} />
+                                            </div>
+                                        </Grid.Column>
+
+                                        {/* {index === this.props.article.speakersProfile.length - 1 && (
+                                            <Grid.Column width={3}>
+                                                <Button color="red" className="pull-right" onClick={() => this.onDeleteSpeaker(index)} icon="trash" size="tiny" />
+                                            </Grid.Column>
+                                        )} */}
+                                    </Grid.Row>
+                                </Grid>
+                            </Grid.Column>
+
+                        ))}
+                        {/* <Grid.Column width={3}>
+                            <Button color="blue" fluid onClick={this.onAddSpeaker} >Add Speaker</Button>
+                        </Grid.Column> */}
+                    </Grid.Row>
+                </Grid>
+            </Grid.Column>
+
+        </Grid.Row>
+    )
+
     renderProofreading = () => {
         return (
             <div className="proofreading" style={{ width: '100%' }}>
@@ -322,101 +475,7 @@ class Convert extends React.Component {
                                     </Grid.Column>
                                 </Grid.Row>
 
-                                <Grid.Row style={{ display: 'flex', alignItems: 'flex-start', padding: '2rem' }}>
-                                    <Grid.Column width={2} style={{ color: 'white' }}>
-                                        <Grid>
-                                            <Grid.Row style={{ display: 'flex', alignItems: 'center' }}>
-                                                <Grid.Column width={8}>
-                                                    <span>Splitter</span>
-                                                </Grid.Column>
-                                                <Grid.Column width={4}>
-                                                    <span
-                                                        draggable
-                                                        onDragEnd={() => this.setState({ splitterDragging: false })}
-                                                        onDragStart={e => {
-                                                            e.dataTransfer.setData('text', JSON.stringify({ split: true }));
-                                                            this.setState({ splitterDragging: true })
-                                                        }}
-                                                        style={{ width: 30, height: 30, cursor: 'pointer', display: 'inline-block' }}
-                                                    >
-                                                        <SplitterIcon />
-                                                    </span>
-                                                </Grid.Column>
-
-                                            </Grid.Row>
-                                        </Grid>
-                                    </Grid.Column>
-                                    <Grid.Column width={3} style={{ color: 'white', marginTop: 10, marginBottom: 10 }}>
-                                        <Grid>
-                                            <Grid.Row>
-                                                <Grid.Column width={8}>
-                                                    <span>Background Music</span>
-                                                </Grid.Column>
-                                                <Grid.Column width={4}>
-                                                    <div
-                                                        draggable={true}
-                                                        style={{
-                                                            backgroundColor: 'transparent',
-                                                            position: 'relative',
-                                                            color: 'white',
-                                                            cursor: 'pointer',
-                                                            height: 20,
-                                                            display: 'inline-block',
-                                                        }}
-                                                        onDragStart={(e) => e.dataTransfer.setData('text', JSON.stringify({ speaker: { speakerNumber: -1 } }))}
-                                                    >
-                                                        <SpeakerDragItem speaker={{ speakerNumber: -1 }} />
-                                                    </div>
-                                                </Grid.Column>
-
-                                            </Grid.Row>
-                                        </Grid>
-                                    </Grid.Column>
-                                    <Grid.Column width={9}>
-                                        <Grid>
-                                            <Grid.Row>
-                                                {this.props.article && this.props.article.speakersProfile.map((speaker, index) => (
-                                                    <Grid.Column width={5} style={{ marginTop: 10, marginBottom: 10 }} key={'speakers-sda' + index}>
-                                                        <Grid>
-                                                            <Grid.Row style={{ listStyle: 'none', padding: 10, color: 'white', display: 'flex', alignItems: 'center' }}>
-                                                                <Grid.Column width={8}>
-                                                                    <span>Speaker {speaker.speakerNumber}</span>
-                                                                </Grid.Column>
-                                                                <Grid.Column width={4}>
-                                                                    <div
-                                                                        draggable={true}
-                                                                        style={{
-                                                                            backgroundColor: 'transparent',
-                                                                            position: 'relative',
-                                                                            color: 'white',
-                                                                            cursor: 'pointer',
-                                                                            height: 20,
-                                                                            display: 'inline-block',
-                                                                        }}
-                                                                        onDragStart={(e) => e.dataTransfer.setData('text', JSON.stringify({ speaker }))}
-                                                                    >
-                                                                        <SpeakerDragItem speaker={speaker} />
-                                                                    </div>
-                                                                </Grid.Column>
-
-                                                                {/* {index === this.props.article.speakersProfile.length - 1 && (
-                                                                    <Grid.Column width={3}>
-                                                                        <Button color="red" className="pull-right" onClick={() => this.onDeleteSpeaker(index)} icon="trash" size="tiny" />
-                                                                    </Grid.Column>
-                                                                )} */}
-                                                            </Grid.Row>
-                                                        </Grid>
-                                                    </Grid.Column>
-
-                                                ))}
-                                                {/* <Grid.Column width={3}>
-                                                    <Button color="blue" fluid onClick={this.onAddSpeaker} >Add Speaker</Button>
-                                                </Grid.Column> */}
-                                            </Grid.Row>
-                                        </Grid>
-                                    </Grid.Column>
-
-                                </Grid.Row>
+                                {this.renderSpeakersDragAndDrop()}
 
                                 {this.props.article && this.props.article.speakersProfile && this.props.selectedSubtitle && this.props.selectedSubtitle.subtitle && (
                                     <Grid.Row>
@@ -431,13 +490,13 @@ class Convert extends React.Component {
                                                     onSave={(changes) => {
                                                         let { text, speakerNumber } = changes;
                                                         let speakerProfile = this.props.article.speakersProfile.find((speaker) => speaker.speakerNumber === speakerNumber);
-                                                            if (speakerNumber !== -1) {
-                                                                speakerProfile = this.props.article.speakersProfile.find((speaker) => speaker.speakerNumber === speakerNumber);
-                                                            } else {
-                                                                speakerProfile = { speakerNumber: -1 };
-                                                                text = ''
-                                                            }
-                                                        
+                                                        if (speakerNumber !== -1) {
+                                                            speakerProfile = this.props.article.speakersProfile.find((speaker) => speaker.speakerNumber === speakerNumber);
+                                                        } else {
+                                                            speakerProfile = { speakerNumber: -1 };
+                                                            text = ''
+                                                        }
+
                                                         this.onSaveSubtitle(this.props.selectedSubtitle.subtitle, this.props.selectedSubtitle.subtitleIndex, { text, speakerProfile })
                                                     }}
                                                     onDelete={() => this.onSubslideDelete(this.props.selectedSubtitle.subtitle, this.props.selectedSubtitle.subtitleIndex)}
@@ -447,58 +506,7 @@ class Convert extends React.Component {
                                     </Grid.Row>
                                 )}
 
-                                <Grid.Row>
-                                    <Grid.Column width={16}>
-                                        {this.props.article && (
-                                            <div style={{ width: '100%', padding: '2rem', color: 'white' }}>
-                                                <h3>Speakers Profiles: </h3>
-                                                <Grid>
-                                                    {this.props.article.speakersProfile.map((speaker, index) => (
-                                                        <Grid.Row style={{ listStyle: 'none', padding: 10 }} key={'speakers' + index}>
-                                                            <Grid.Column width={3}>
-                                                                <span>Speaker {speaker.speakerNumber}</span>
-                                                            </Grid.Column>
-                                                            <Grid.Column width={3}>
-                                                                <Dropdown
-                                                                    value={speaker.speakerGender}
-                                                                    options={[{ text: 'Male', value: 'male' }, { text: 'Female', value: 'female' }]}
-                                                                    onChange={(e, { value }) => this.onSpeakerGenderChange(speaker, value)}
-                                                                />
-                                                            </Grid.Column>
-                                                            {/* <Grid.Column width={4}>
-                                                                <div
-                                                                    draggable={true}
-                                                                    style={{
-                                                                        backgroundColor: 'transparent',
-                                                                        position: 'relative',
-                                                                        color: 'white',
-                                                                        cursor: 'pointer',
-                                                                        height: 20,
-                                                                        display: 'inline-block',
-                                                                    }}
-                                                                    onDragStart={(e) => e.dataTransfer.setData('text', JSON.stringify({ speaker }))}
-                                                                >
-                                                                    <SpeakerDragItem speaker={speaker} />
-                                                                </div>
-                                                            </Grid.Column> */}
-
-                                                            <Grid.Column width={2}>
-                                                                {index === this.props.article.speakersProfile.length - 1 && (
-                                                                    <Button color="red" onClick={() => this.onDeleteSpeaker(index)} icon="trash" size="tiny" />
-                                                                )}
-                                                            </Grid.Column>
-                                                        </Grid.Row>
-                                                    ))}
-                                                    <Grid.Row>
-                                                        <Grid.Column style={{ display: 'flex', justifyContent: 'flex-start' }}>
-                                                            <Button color="blue" onClick={this.onAddSpeaker} >Add Speaker</Button>
-                                                        </Grid.Column>
-                                                    </Grid.Row>
-                                                </Grid>
-                                            </div>
-                                        )}
-                                    </Grid.Column>
-                                </Grid.Row>
+                                {this.renderSpeakersProfiles()}
                             </Grid>
 
                         </Grid.Column>
