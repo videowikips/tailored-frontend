@@ -88,7 +88,7 @@ class Translated extends React.Component {
                                                 <Card fluid>
                                                     <Card.Header style={{ padding: '1rem', fontWeight: 'bold' }}>
                                                         <Link to={routes.translationArticle(translatedArticle.video.article) + `?lang=${article.langCode}`}>
-                                                            {article.title} ( {isoLangs[article.langCode] ? isoLangs[article.langCode].name : article.langCode} )
+                                                            {isoLangs[article.langCode] ? isoLangs[article.langCode].name : article.langCode}
                                                         </Link>
                                                     </Card.Header>
                                                     <Card.Content>
