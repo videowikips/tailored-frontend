@@ -418,7 +418,7 @@ class Convert extends React.Component {
 
                                 </Grid.Row>
 
-                                {this.props.article && this.props.article.speakersProfile && this.props.selectedSubtitle && this.props.selectedSubtitle.subtitle && this.props.selectedSubtitle.subtitle.speakerProfile.speakerNumber !== -1 && (
+                                {this.props.article && this.props.article.speakersProfile && this.props.selectedSubtitle && this.props.selectedSubtitle.subtitle && (
                                     <Grid.Row>
                                         <Grid.Column width={16}>
 
@@ -426,10 +426,18 @@ class Convert extends React.Component {
                                                 <SubtitleForm
                                                     loading={this.props.updateSubslideState === 'loading'}
                                                     subtitle={this.props.selectedSubtitle.subtitle}
-                                                    speakers={this.props.article.speakersProfile}
+                                                    speakers={[{ speakerNumber: -1 }].concat(this.props.article.speakersProfile)}
+                                                    showTextArea={this.props.selectedSubtitle.subtitle.speakerProfile.speakerNumber !== -1}
                                                     onSave={(changes) => {
-                                                        const { text, speakerNumber } = changes;
-                                                        const speakerProfile = this.props.article.speakersProfile.find((speaker) => speaker.speakerNumber === speakerNumber);
+                                                        let { text, speakerNumber } = changes;
+                                                        let speakerProfile = this.props.article.speakersProfile.find((speaker) => speaker.speakerNumber === speakerNumber);
+                                                            if (speakerNumber !== -1) {
+                                                                speakerProfile = this.props.article.speakersProfile.find((speaker) => speaker.speakerNumber === speakerNumber);
+                                                            } else {
+                                                                speakerProfile = { speakerNumber: -1 };
+                                                                text = ''
+                                                            }
+                                                        
                                                         this.onSaveSubtitle(this.props.selectedSubtitle.subtitle, this.props.selectedSubtitle.subtitleIndex, { text, speakerProfile })
                                                     }}
                                                     onDelete={() => this.onSubslideDelete(this.props.selectedSubtitle.subtitle, this.props.selectedSubtitle.subtitleIndex)}

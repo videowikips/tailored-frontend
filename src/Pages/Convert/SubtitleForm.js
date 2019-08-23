@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { TextArea, Button, Dropdown, Grid, Modal } from 'semantic-ui-react';
+import { Button, Dropdown, Grid, Modal } from 'semantic-ui-react';
 import { debounce } from '../../shared/utils/helpers';
 
 function mapSpeakersToDropdownOptions(speakers) {
-    return speakers.map((speaker) => ({ text: `Speaker ${speaker.speakerNumber}`, value: speaker.speakerNumber }));
+    return speakers.map((speaker) => ({ text: speaker.speakerNumber === -1 ? 'Background Music' : `Speaker ${speaker.speakerNumber}`, value: speaker.speakerNumber }));
 }
 
 export default class SubtitleForm extends React.Component {
@@ -66,10 +66,11 @@ export default class SubtitleForm extends React.Component {
                                 />
                             </Grid.Column>
                             <Grid.Column width={10}>
-                                <TextArea
+                                <textarea
+                                    disabled={!this.props.showTextArea}
                                     style={{ width: '100%', height: '100px', padding: 10 }}
                                     value={this.state.text}
-                                    onChange={(e, { value }) => this.setState({ text: value }, this.onSave)}
+                                    onChange={(e) => this.setState({ text: e.target.value }, this.onSave)}
                                 />
                             </Grid.Column>
                             <Grid.Column width={2} style={{ display: 'flex', alignItems: 'center' }}>
