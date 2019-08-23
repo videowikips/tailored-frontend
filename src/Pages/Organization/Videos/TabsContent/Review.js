@@ -92,7 +92,9 @@ class Review extends React.Component {
 
                     <Grid.Row>
                         <Grid.Column width={13}>
-
+                            <div className="pull-right">
+                                {this.renderPagination()}
+                            </div>
                         </Grid.Column>
                         <Grid.Column width={3}>
                             <Dropdown
@@ -105,6 +107,7 @@ class Review extends React.Component {
                             />
                         </Grid.Column>
                     </Grid.Row>
+
                     <Grid.Row>
                         {this.props.videos && this.props.videos.length === 0 ? (
                             <div style={{ margin: 50 }}>No videos requires preview</div>
@@ -140,12 +143,6 @@ class Review extends React.Component {
                             )
                         })}
 
-                    </Grid.Row>
-                    <Grid.Row>
-                        <Grid.Column width={10} />
-                        <Grid.Column width={6}>
-                            {this.renderPagination()}
-                        </Grid.Column>
                     </Grid.Row>
                     {this.renderConfirmReviewModal()}
                 </LoaderComponent>

@@ -60,6 +60,14 @@ class Translated extends React.Component {
         return (
             <LoaderComponent active={this.props.videosLoading}>
                 <Grid style={{ textAlign: 'center' }}>
+
+                    <Grid.Row>
+                        <Grid.Column width={16}>
+                            <div className="pull-right">
+                                {this.renderPagination()}
+                            </div>
+                        </Grid.Column>
+                    </Grid.Row>
                     {this.props.translatedArticles.map((translatedArticle) => (
                         <Grid.Row key={`translated-article-container-${translatedArticle.video._id}`}>
                             <Grid.Column width={16} style={{ textAlign: 'left', margin: '1rem' }}>
@@ -116,12 +124,6 @@ class Translated extends React.Component {
                         </Grid.Row>
                     ))}
 
-                    <Grid.Row>
-                        <Grid.Column width={10} />
-                        <Grid.Column width={6}>
-                            {this.renderPagination()}
-                        </Grid.Column>
-                    </Grid.Row>
                     {this._renderAddHumanVoiceModal()}
 
                 </Grid>
