@@ -56,6 +56,16 @@ class AudioRecorder extends React.Component {
   //   }
   // }
 
+  componentWillUnmount = () => {
+    try {
+      if (this.gumStream) {
+        this.gumStream.getAudioTracks().forEach((track) => track.stop());
+      }
+    } catch(e) {
+      console.log(e);
+    }
+  }
+
   toggleRecord = () => {
     if (this.state.recording) {
       this.stopRecording();
