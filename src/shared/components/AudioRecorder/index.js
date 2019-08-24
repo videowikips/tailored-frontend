@@ -86,7 +86,7 @@ class AudioRecorder extends React.Component {
               if (this.state.recording && this.props.maxDuration && this.state.startTime) {
                 const endTime = moment(this.state.startTime).add(this.props.maxDuration, 'seconds');
                 remainingMS = endTime.diff(moment());
-                if (remainingMS <= 60) {
+                if (remainingMS <= 200) {
                   this.stopRecording();
                 }
               }
