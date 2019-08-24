@@ -68,7 +68,13 @@ class AudioRecorder extends React.Component {
     console.log('starting record')
 
     const constraints = { audio: true, video: false }
-
+    if (this.rec) {
+      this.setState({ recording: true, startTime: Date.now() }, () => {
+        this.rec.start();
+        this.props.onStart();
+      });
+      return;
+    }
     if (getUserMedia) {
 
       getUserMedia(constraints).then((stream) => {
@@ -120,7 +126,7 @@ class AudioRecorder extends React.Component {
           .then(({ blob }) => {
             this.props.onStop(cancel ? null : blob);
             // stop microphone access
-            this.gumStream.getAudioTracks().forEach((track) => track.stop());
+            // this.gumStream.getAudioTracks().forEach((track) => track.stop());
           })
       }
     });
