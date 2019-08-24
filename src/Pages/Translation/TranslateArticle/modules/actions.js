@@ -223,13 +223,21 @@ export const saveTranslatedText = (slidePosition, subslidePosition, text) => (di
 export const saveRecordedTranslation = (slidePosition, subslidePosition, blob) => (dispatch, getState) => {
     dispatch(setRecordUploadLoading(true));
     const { translatableArticle } = getState()[moduleName]
+    const url = URL.createObjectURL(blob);
+
+    const slideIndex = translatableArticle.slides.findIndex((s) => s.position === slidePosition);
+    const subslideIndex = translatableArticle.slides[slideIndex].content.findIndex((s) => s.position === subslidePosition);
+    const oldAudio = translatableArticle.slides[slideIndex].content[subslideIndex].audio;
+
+    translatableArticle.slides[slideIndex].content[subslideIndex].audio = url;
+    dispatch(setTranslatableArticle(_.cloneDeep(translatableArticle)));
+    dispatch(updateOriginalTranslatableArticle(slidePosition, subslidePosition, { audio: url }))
+
     requestAgent.post(Api.translate.addRecordedTranslation(translatableArticle._id))
     .field('slidePosition', slidePosition)
     .field('subslidePosition', subslidePosition)
     .field('file', blob)
     .then((res) => {
-        const slideIndex = translatableArticle.slides.findIndex((s) => s.position === slidePosition);
-        const subslideIndex = translatableArticle.slides[slideIndex].content.findIndex((s) => s.position === subslidePosition);
         translatableArticle.slides[slideIndex].content[subslideIndex].audio = res.body.audio;
         dispatch(setTranslatableArticle(_.cloneDeep(translatableArticle)));
         dispatch(updateOriginalTranslatableArticle(slidePosition, subslidePosition, { audio: res.body.audio }))
@@ -238,6 +246,10 @@ export const saveRecordedTranslation = (slidePosition, subslidePosition, blob) =
     })
     .catch((err) => {
         console.log(err);
+
+        translatableArticle.slides[slideIndex].content[subslideIndex].audio = oldAudio;
+        dispatch(setTranslatableArticle(_.cloneDeep(translatableArticle)));
+        dispatch(updateOriginalTranslatableArticle(slidePosition, subslidePosition, { audio: oldAudio }))
         dispatch(setRecordUploadLoading(false));
         NotificationService.responseError(err);
     })

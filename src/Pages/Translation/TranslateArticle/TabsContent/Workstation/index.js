@@ -304,14 +304,16 @@ class Workstation extends React.Component {
                                                                             <source src={translatableArticle.slides[currentSlideIndex].content[currentSubslideIndex].audio} />
                                                                             Your browser does not support the audio element.
                                                                 </audio>
+                                                                    {!recordUploadLoading && (
                                                                         <Icon
-                                                                            name="close"
-                                                                            className="c-export-human-voice__clear-record"
-                                                                            onClick={() => {
-                                                                                const { slide, subslide } = this.getCurrentSlideAndSubslide();
-                                                                                this.props.deleteRecordedTranslation(slide.position, subslide.position);
-                                                                            }}
+                                                                        name="close"
+                                                                        className="c-export-human-voice__clear-record"
+                                                                        onClick={() => {
+                                                                            const { slide, subslide } = this.getCurrentSlideAndSubslide();
+                                                                            this.props.deleteRecordedTranslation(slide.position, subslide.position);
+                                                                        }}
                                                                         />
+                                                                    )}
                                                                     </div>
                                                                 )}
 
@@ -356,7 +358,7 @@ class Workstation extends React.Component {
                                                         <Grid.Column width={4}>
                                                             {/* <Rail /> */}
                                                             <Switch
-                                                                disabled={!this.canPreview()}
+                                                                // disabled={!this.canPreview()}
                                                                 checked={this.props.preview}
                                                                 onChange={this.onPreviewChange}
                                                                 onColor="#86d3ff"
