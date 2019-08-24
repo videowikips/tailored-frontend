@@ -243,6 +243,9 @@ export const saveRecordedTranslation = (slidePosition, subslidePosition, blob) =
         dispatch(updateOriginalTranslatableArticle(slidePosition, subslidePosition, { audio: res.body.audio }))
         dispatch(setRecordUploadLoading(false));
 
+        dispatch(setEditorPlaying(false));
+        dispatch(setEditorMuted(false));
+
     })
     .catch((err) => {
         console.log(err);
@@ -251,6 +254,9 @@ export const saveRecordedTranslation = (slidePosition, subslidePosition, blob) =
         dispatch(setTranslatableArticle(_.cloneDeep(translatableArticle)));
         dispatch(updateOriginalTranslatableArticle(slidePosition, subslidePosition, { audio: oldAudio }))
         dispatch(setRecordUploadLoading(false));
+
+        dispatch(setEditorPlaying(false));
+        dispatch(setEditorMuted(false));
         NotificationService.responseError(err);
     })
 }
