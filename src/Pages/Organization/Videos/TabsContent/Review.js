@@ -24,9 +24,6 @@ class Review extends React.Component {
     componentWillMount = () => {
         this.props.setCurrentPageNumber(1);
         this.props.fetchVideos({ organization: this.props.organization._id, langCode: this.props.languageFilter, status: videoSTATUS, page: 1 });
-    }
-
-    componentDidMount = () => {
         this.socketSub = websockets.subscribeToEvent(websockets.websocketsEvents.VIDEO_UPLOADED, (data) => {
             this.props.fetchVideos({ organization: this.props.organization._id, langCode: this.props.languageFilter, status: videoSTATUS, page: 1 });
         })
