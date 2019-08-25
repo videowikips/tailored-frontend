@@ -62,7 +62,7 @@ class Workstation extends React.Component {
     }
 
     initSocketSub = (translatableArticle) => {
-        websockets.subscribeToEvent(`${websockets.websocketsEvents.TRANSLATION_SUBSLIDE_CHANGE}/${translatableArticle._id}`, (data) => {
+        this.socketSub = websockets.subscribeToEvent(`${websockets.websocketsEvents.TRANSLATION_SUBSLIDE_CHANGE}/${translatableArticle._id}`, (data) => {
             console.log('got socket data', data);
             const { slidePosition, subslidePosition, changes } = data;
             this.props.updateSubslide(slidePosition, subslidePosition, changes);
