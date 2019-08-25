@@ -34,6 +34,7 @@ class Workstation extends React.Component {
         console.log(articleId)
         const { lang } = querystring.parse(window.location.search);
         this.props.fetchTranslatableArticle(articleId, lang);
+        this.props.changeSelectedSpeakerNumber(-1);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -191,7 +192,7 @@ class Workstation extends React.Component {
 
     isCurrentSlideLoading = () => {
         const { loadingSlides, currentSlideIndex, currentSubslideIndex } = this.props;
-        return loadingSlides && loadingSlides.find((slide) => slide.slideIndex === currentSlideIndex && slide.subslideIndex === currentSubslideIndex);
+        return loadingSlides && loadingSlides.find((slide) => slide.slideIndex === currentSlideIndex && slide.subslideIndex === currentSubslideIndex) ? true : false;
     }
 
     render() {

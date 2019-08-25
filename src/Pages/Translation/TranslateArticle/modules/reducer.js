@@ -77,6 +77,8 @@ export default function (state = INITIAL_STATE, action) {
         case actionTypes.REMOVE_LOADING_SLIDe:
             const loadingSlides = state.loadingSlides.filter((slide) => slide.slideIndex !== action.payload.slideIndex && slide.subslideIndex !== action.payload.subslideIndex);
             return { ...state, loadingSlides };
+        case actionTypes.BATCH_UPDATE_STATE:
+            return { ...state, ...action.payload };
         default:
             return state;
     }
