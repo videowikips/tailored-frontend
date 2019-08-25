@@ -189,6 +189,11 @@ class Workstation extends React.Component {
         )
     }
 
+    isCurrentSlideLoading = () => {
+        const { loadingSlides, currentSlideIndex, currentSubslideIndex } = this.props;
+        return loadingSlides && loadingSlides.find((slide) => slide.slideIndex === currentSlideIndex && slide.subslideIndex === currentSubslideIndex);
+    }
+
     render() {
         const {
             originalViewedArticle,
@@ -198,7 +203,6 @@ class Workstation extends React.Component {
             recording,
             editorMuted,
             editorPlaying,
-            recordUploadLoading
         } = this.props;
 
         return (
@@ -267,8 +271,8 @@ class Workstation extends React.Component {
                                                                 <div className="c-export-human-voice__recorder-mic-container">
                                                                     <AudioRecorder
                                                                         record={recording}
-                                                                        loading={recordUploadLoading}
-                                                                        disabled={recordUploadLoading}
+                                                                        loading={this.isCurrentSlideLoading()}
+                                                                        disabled={this.isCurrentSlideLoading()}
                                                                         onStart={this.toggleRecording}
                                                                         maxDuration={translatableArticle.slides[currentSlideIndex].content[currentSubslideIndex].media[0].duration}
                                                                         className="c-export-human-voice__recorder-mic"
@@ -304,7 +308,7 @@ class Workstation extends React.Component {
                                                                             <source src={translatableArticle.slides[currentSlideIndex].content[currentSubslideIndex].audio} />
                                                                             Your browser does not support the audio element.
                                                                 </audio>
-                                                                    {!recordUploadLoading && (
+                                                                    {!this.isCurrentSlideLoading() && (
                                                                         <Icon
                                                                         name="close"
                                                                         className="c-export-human-voice__clear-record"

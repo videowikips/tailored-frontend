@@ -95,6 +95,22 @@ export const setEditorMuted = muted => ({
     payload: muted,
 })
 
+const addLoadingSlide = (slideIndex, subslideIndex) => ({
+    type: actionTypes.ADD_LOADING_SLIDE,
+    payload: {
+        slideIndex,
+        subslideIndex,
+    }
+});
+
+const removeLoadingSlide = (slideIndex, subslideIndex) => ({
+    type: actionTypes.REMOVE_LOADING_SLIDe,
+    payload: {
+        slideIndex,
+        subslideIndex,
+    }
+})
+
 
 const setSelectedSpeakerNumber = speakerNumber => ({
     type: actionTypes.SET_SELECTED_SPEAKER_NUMBER,
@@ -228,7 +244,7 @@ export const saveRecordedTranslation = (slidePosition, subslidePosition, blob) =
     const slideIndex = translatableArticle.slides.findIndex((s) => s.position === slidePosition);
     const subslideIndex = translatableArticle.slides[slideIndex].content.findIndex((s) => s.position === subslidePosition);
     const oldAudio = translatableArticle.slides[slideIndex].content[subslideIndex].audio;
-
+    dispatch(addLoadingSlide(slideIndex, subslideIndex));
     translatableArticle.slides[slideIndex].content[subslideIndex].audio = url;
     dispatch(setTranslatableArticle(_.cloneDeep(translatableArticle)));
     dispatch(updateOriginalTranslatableArticle(slidePosition, subslidePosition, { audio: url }))
@@ -243,6 +259,7 @@ export const saveRecordedTranslation = (slidePosition, subslidePosition, blob) =
         dispatch(updateOriginalTranslatableArticle(slidePosition, subslidePosition, { audio: res.body.audio }))
         dispatch(setRecordUploadLoading(false));
 
+        dispatch(removeLoadingSlide(slideIndex, subslideIndex));
         dispatch(setEditorPlaying(false));
         dispatch(setEditorMuted(false));
 
@@ -255,6 +272,7 @@ export const saveRecordedTranslation = (slidePosition, subslidePosition, blob) =
         dispatch(updateOriginalTranslatableArticle(slidePosition, subslidePosition, { audio: oldAudio }))
         dispatch(setRecordUploadLoading(false));
 
+        dispatch(removeLoadingSlide(slideIndex, subslideIndex));
         dispatch(setEditorPlaying(false));
         dispatch(setEditorMuted(false));
         NotificationService.responseError(err);

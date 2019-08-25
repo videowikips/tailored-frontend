@@ -11,6 +11,8 @@ const INITIAL_STATE = {
 
     currentSlideIndex: 0,
     currentSubslideIndex: 0,
+    
+    loadingSlides: [],
 
     recording: false,
     recordUploadLoading: false,
@@ -70,6 +72,11 @@ export default function (state = INITIAL_STATE, action) {
             return { ...state, exportHistoryTotalPages: action.payload };
         case actionTypes.SET_EXPORT_HISTORY_CURRENT_PAGE_NUMBER:
             return { ...state, exportHistoryCurrentPageNumber: action.payload };
+        case actionTypes.ADD_LOADING_SLIDE:
+            return { ...state, loadingSlides: state.loadingSlides.concat(action.payload )};
+        case actionTypes.REMOVE_LOADING_SLIDe:
+            const loadingSlides = state.loadingSlides.filter((slide) => slide.slideIndex !== action.payload.slideIndex && slide.subslideIndex !== action.payload.subslideIndex);
+            return { ...state, loadingSlides };
         default:
             return state;
     }
