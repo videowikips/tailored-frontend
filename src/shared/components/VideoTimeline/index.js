@@ -231,6 +231,10 @@ class VideoTimeline extends React.Component {
                     subtitles[index].startTime = crossedSubtitleBackward.endTime;
                     subtitles[index].endTime = endTime;
                 }
+                if (subtitles[index].endTime > this.props.duration) {
+                    subtitles[index].startTime = startTime
+                    subtitles[index].endTime = this.props.duration;
+                }
                 subtitles[index].lastLeft = currentleft;
                 return { subtitles };
             })
@@ -306,6 +310,9 @@ class VideoTimeline extends React.Component {
                 const crossedSubtitle = subtitles.filter((s, i) => i !== index).find((s) => subtitles[index].endTime >= s.startTime & subtitles[index].endTime <= s.endTime)
                 if (crossedSubtitle) {
                     subtitles[index].endTime = crossedSubtitle.startTime;
+                }
+                if (subtitles[index].endTime > this.props.duration) {
+                    subtitles[index].endTime = this.props.duration
                 }
                 subtitles[index].lastLeft = currentleft;
 

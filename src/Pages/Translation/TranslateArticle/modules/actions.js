@@ -166,6 +166,7 @@ export const onPreviewChange = preview => (dispatch, getState) => {
     dispatch(setCurrentSubslideIndex(0));
 
     const { translatableArticle, originalViewedArticle, tmpViewedArticle } = getState()[moduleName];
+    dispatch(bulkActions.startBatchMode())
     if (preview) {
         dispatch(setTmpViewedArticle(originalViewedArticle));
         dispatch(setOriginalViewedArticle(_.cloneDeep(translatableArticle)));
@@ -177,6 +178,7 @@ export const onPreviewChange = preview => (dispatch, getState) => {
         dispatch(setEditorMuted(false));
         dispatch(setEditorPlaying(false));
     }
+    dispatch(bulkActions.flushBatchedActions());
 }
 
 export const changeSelectedSpeakerNumber = speakerNumber => (dispatch, getState) => {
