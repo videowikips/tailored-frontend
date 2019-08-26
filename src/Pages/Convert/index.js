@@ -274,7 +274,7 @@ class Convert extends React.Component {
                     <div style={{ width: '100%', padding: '2rem', color: 'white' }}>
                         <h3>Speakers Profiles: </h3>
                         <Grid>
-                            {this.props.article.speakersProfile.map((speaker, index) => (
+                            {this.props.article.speakersProfile.sort((a, b) => a.speakerNumber - b.speakerNumber).map((speaker, index) => (
                                 <Grid.Row style={{ listStyle: 'none', padding: 10 }} key={'speakers' + index}>
                                     <Grid.Column width={3}>
                                         <span>Speaker {speaker.speakerNumber}</span>
@@ -376,7 +376,7 @@ class Convert extends React.Component {
             <Grid.Column width={9}>
                 <Grid>
                     <Grid.Row>
-                        {this.props.article && this.props.article.speakersProfile.map((speaker, index) => (
+                        {this.props.article && this.props.article.speakersProfile.sort((a, b) => a.speakerNumber - b.speakerNumber).map((speaker, index) => (
                             <Grid.Column width={5} style={{ marginTop: 10, marginBottom: 10 }} key={'speakers-sda' + index}>
                                 <Grid>
                                     <Grid.Row style={{ listStyle: 'none', padding: 10, color: 'white', display: 'flex', alignItems: 'center' }}>
