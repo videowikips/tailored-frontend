@@ -3,6 +3,7 @@ import Api from '../../../../shared/api';
 import requestAgent from '../../../../shared/utils/requestAgent';
 import NotificationService from '../../../../shared/utils/NotificationService';
 import _ from 'lodash';
+import { actions as bulkActions } from 'redux-actions-bulk-batch'
 import { push } from 'connected-react-router';
 import routes from '../../../../shared/routes';
 
@@ -194,11 +195,15 @@ export const changeSelectedSpeakerNumber = speakerNumber => (dispatch, getState)
         })
         originalViewedArticle.slides = originalViewedArticle.slides.filter((s) => s.content.length > 0);
     }
+    dispatch(bulkActions.startBatchMode());
+    
     dispatch(setCurrentSlideIndex(0));
     dispatch(setCurrentSubslideIndex(0));
     dispatch(setSelectedSpeakerNumber(speakerNumber));
     dispatch(setTranslatableArticle(translatableArticle));
     dispatch(setOriginalViewedArticle(originalViewedArticle))
+    
+    dispatch(bulkActions.flushBatchedActions());
 
 }
 
@@ -256,8 +261,10 @@ export const saveTranslatedText = (slidePosition, subslidePosition, text) => (di
         const slideIndex = translatableArticle.slides.findIndex((s) => s.position === slidePosition);
         const subslideIndex = translatableArticle.slides[slideIndex].content.findIndex((s) => s.position === subslidePosition);
         translatableArticle.slides[slideIndex].content[subslideIndex].text = text;
+        dispatch(bulkActions.startBatchMode());
         dispatch(setTranslatableArticle({ ...translatableArticle }));
         dispatch(updateOriginalTranslatableArticle(slidePosition, subslidePosition, { text }))
+        dispatch(bulkActions.flushBatchedActions());
     })
     .catch((err) => {
         console.log(err);
@@ -274,9 +281,11 @@ export const saveRecordedTranslation = (slidePosition, subslidePosition, blob) =
     const subslideIndex = translatableArticle.slides[slideIndex].content.findIndex((s) => s.position === subslidePosition);
     const oldAudio = translatableArticle.slides[slideIndex].content[subslideIndex].audio;
     translatableArticle.slides[slideIndex].content[subslideIndex].audio = url;
+    dispatch(bulkActions.startBatchMode())
     dispatch(addLoadingSlide(slideIndex, subslideIndex));
     dispatch(setTranslatableArticle(_.cloneDeep(translatableArticle)));
     dispatch(updateOriginalTranslatableArticle(slidePosition, subslidePosition, { audio: url }))
+    dispatch(bulkActions.flushBatchedActions())
 
     requestAgent.post(Api.translate.addRecordedTranslation(translatableArticle._id))
     .field('slidePosition', slidePosition)
@@ -410,9 +419,11 @@ export const fetchTranslationExports = (pageNumber, loading) =>  (dispatch, getS
     .get(Api.translationExport.getByArticleId(translatableArticle._id, { page: pageNumber }))
     .then((res) => {
         const { translationExports, pagesCount } = res.body;
+        dispatch(bulkActions.startBatchMode());
         dispatch(setExportHistoryTotalPages(pagesCount))
         dispatch(setTranslationExports(translationExports));
         dispatch(setLaoding(false))
+        dispatch(bulkActions.flushBatchedActions());
     })
     .catch((err) => {
         console.log(err);

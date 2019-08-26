@@ -5,6 +5,7 @@ import reduxThunk from 'redux-thunk'
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import { connectRouter, routerMiddleware } from 'connected-react-router'
+import { reducer as batchReduxUpdatesReducer, reducerBatchUpdatesEnhancer } from  'redux-actions-bulk-batch';
 
 
 import createRootReducer from './reducers'
@@ -37,7 +38,9 @@ const middlewares = process.env.NODE_ENV === 'development'
   ? applyMiddleware(reduxThunk, routerMiddleware(history), createLogger())
   : applyMiddleware(reduxThunk, routerMiddleware(history))
 
-const rootReducer = createRootReducer({ router: connectRouter(history) })
+    
+const rootReducer = reducerBatchUpdatesEnhancer(createRootReducer({ router: connectRouter(history), batchReduxUpdates: batchReduxUpdatesReducer }))
+
 const { store, persistor } = configureStore(rootReducer, {}, middlewares)
 
 export {
