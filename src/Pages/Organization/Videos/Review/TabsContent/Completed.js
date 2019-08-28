@@ -5,6 +5,8 @@ import { Grid, Icon, Card, Button, Modal } from 'semantic-ui-react';
 import routes from '../../../../../shared/routes';
 import LoaderComponent from '../../../../../shared/components/LoaderComponent';
 import * as videoActions from '../../modules/actions';
+import websockets from '../../../../../websockets';
+import NotificationService from '../../../../../shared/utils/NotificationService';
 
 const videoSTATUS = ['done'];
 
@@ -18,8 +20,18 @@ class Completed extends React.Component {
         this.props.setVideoStatusFilter(videoSTATUS);
 
         this.props.fetchVideos();
+        this.videoDoneSub = websockets.subscribeToEvent(websockets.websocketsEvents.VIDEO_DONE, (video) => {
+            this.props.fetchVideos();
+            NotificationService.success(`The video "${video.title}" has been converted successfully!`);
+        })
     }
 
+    componentWillUnmount = () => {
+        if (this.videoDoneSub) {
+            websockets.unsubscribeFromEvent(websockets.websocketsEvents.VIDEO_DONE);
+        }
+    }
+    
     onReviewVideo = video => {
         console.log('on review', video);
         this.props.reviewVideo(video);
