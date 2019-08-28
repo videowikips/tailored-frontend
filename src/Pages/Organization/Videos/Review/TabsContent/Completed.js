@@ -77,13 +77,14 @@ class Completed extends React.Component {
                                 <Card fluid>
 
                                     <Card.Content>
-                                        {/* <Card.Header style={{ textAlign: 'center' }}>
-                                            {video.status === 'done' ? (
+                                        <Card.Header style={{ textAlign: 'center' }}>
+                                            {/* {video.status === 'done' ? (
                                                 <Link to={routes.organizationArticle(video.article)} >
                                                     {video.title}
                                                 </Link>
-                                            ) : video.title}
-                                        </Card.Header> */}
+                                            ) : } */}
+                                            {video.title}
+                                        </Card.Header>
                                     </Card.Content>
 
                                     <video src={video.url} controls preload={'false'} width={'100%'} />

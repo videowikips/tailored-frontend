@@ -3,6 +3,8 @@ import Api from '../../shared/api';
 import requestAgent from '../../shared/utils/requestAgent';
 import { generateConvertStages } from '../../shared/utils/helpers';
 import NotificationService from '../../shared/utils/NotificationService';
+import { push } from 'connected-react-router';
+import routes from '../../shared/routes';
 
 const uploadVideoLoading = () => ({
     type: actionTypes.UPLOAD_VIDEO_LOADING
@@ -118,7 +120,7 @@ export const convertVideoToArticle = (videoId, articleId) => (dispatch, getState
             stages[0].completed = true;
             stages[1].completed = true;
             stages[2].active = true;
-
+            dispatch(push(`${routes.organziationReview()}?activeTab=proofread`))
             dispatch(setStages(stages, 2));
         })
         .catch((err) => {

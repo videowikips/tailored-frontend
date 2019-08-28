@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
 import { Grid, Dropdown, Pagination, Input } from 'semantic-ui-react';
 
 import * as videoActions from '../modules/actions';
@@ -10,9 +11,10 @@ import Tabs from '../../../../shared/components/Tabs';
 import Proofread from './TabsContent/Proofread';
 import Completed from './TabsContent/Completed';
 import Transcribe from './TabsContent/Transcribe';
+import queryString from 'query-string';
+
 import { supportedLangs, isoLangsArray } from '../../../../shared/constants/langs';
 import { debounce } from '../../../../shared/utils/helpers';
-
 let langsToUse = supportedLangs.map((l) => ({ ...l, supported: true }));
 langsToUse = langsToUse.concat(isoLangsArray.filter((l) => supportedLangs.every((l2) => l2.code.indexOf(l.code) === -1)));
 const langsOptions = langsToUse.map((lang) => ({ key: lang.code, value: lang.code, text: `${lang.name} ( ${lang.code} )` }));
@@ -29,6 +31,22 @@ class Review extends React.Component {
         this.debouncedSearch = debounce((searchTerm) => {
             this.props.fetchVideos();
         }, 500)
+    }
+
+    componentWillMount = () => {
+        const { activeTab } = queryString.parse(this.props.location.search);
+        if (activeTab) {
+            switch(activeTab) {
+                case 'transcribe':
+                    return this.setState({ activeTab: 0 });
+                case 'proofread':
+                    return this.setState({ activeTab: 1 });
+                case 'completed': 
+                    return this.setState({ activeTab: 2 });
+                default:
+                    return this.setState({ activeTab: 0 });
+            }
+        }
     }
 
     onTabChange = index => {
@@ -61,7 +79,7 @@ class Review extends React.Component {
             totalPages={this.props.totalPagesCount}
         />
     )
-    
+
     _renderTabContent = () => {
         switch (this.state.activeTab) {
             case 0:
@@ -102,7 +120,7 @@ class Review extends React.Component {
 
                         <div className="pull-right" style={{ height: '100%', marginRight: 20 }}>
                             <Input
-                                style={{ height: '100%'}}
+                                style={{ height: '100%' }}
                                 type="text"
                                 icon="search"
                                 placeholder="Search"
@@ -152,4 +170,4 @@ const mapDispatchToProps = (dispatch) => ({
 
 
 
-export default connect(mapStateToProps, mapDispatchToProps)(authorizeUser(Review, ['admin', 'review']));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(authorizeUser(Review, ['admin', 'review'])));

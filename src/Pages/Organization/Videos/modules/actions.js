@@ -115,8 +115,13 @@ export const reviewVideo = video => (dispatch, getState) => {
         .post(Api.video.reviewVideo(video._id))
         .then((res) => {
             console.log(res);
-            dispatch(fetchVideos())
-            // dispatch(push(routes.convertProgress(video._id)));
+            const { success, queued } = res.body;
+            if (queued) {
+                dispatch(fetchVideos())
+                NotificationService.success('The vide has been queued successfully!');
+            } else {
+                dispatch(push(routes.convertProgress(video._id)));
+            }
         })
         .catch((err) => {
             NotificationService.responseError(err);

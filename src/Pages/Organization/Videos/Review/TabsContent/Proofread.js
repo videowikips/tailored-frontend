@@ -5,6 +5,8 @@ import { Grid, Icon, Card, Button } from 'semantic-ui-react';
 import routes from '../../../../../shared/routes';
 import LoaderComponent from '../../../../../shared/components/LoaderComponent';
 import * as videoActions from '../../modules/actions';
+import websockets from '../../../../../websockets';
+import NotificationService from '../../../../../shared/utils/NotificationService';
 
 const videoSTATUS = ['proofreading', 'converting'];
 
@@ -12,7 +14,17 @@ class Proofread extends React.Component {
 
     componentWillMount = () => {
         this.props.setVideoStatusFilter(videoSTATUS);
-        this.props.fetchVideos({ organization: this.props.organization._id });
+        this.props.fetchVideos();
+        this.videoDoneSub = websockets.subscribeToEvent(websockets.websocketsEvents.VIDEO_DONE, (video) => {
+            this.props.fetchVideos();
+            NotificationService.success(`The video "${video.title}" has been converted successfully!`);
+        })
+    }
+
+    componentWillUnmount = () => {
+        if (this.videoDoneSub) {
+            websockets.unsubscribeFromEvent(websockets.websocketsEvents.VIDEO_DONE);
+        }
     }
 
     render() {
@@ -42,14 +54,14 @@ class Proofread extends React.Component {
                                     <video src={video.url} controls preload={'false'} width={'100%'} />
 
                                     <Card.Content style={{ padding: 0 }}>
-                                        <Button fluid color="blue"
-                                            disabled={video.status === 'converting'}
-                                            loading={video.status === 'converting'}
-                                        >
-                                            <Link to={routes.convertProgress(video._id)} style={{ color: 'white' }}>
+                                        <Link to={routes.convertProgress(video._id)} style={{ color: 'white' }}>
+                                            <Button fluid color="blue"
+                                                disabled={video.status === 'converting'}
+                                                loading={video.status === 'converting'}
+                                            >
                                                 Proofread
-                                            </Link>
                                         </Button>
+                                        </Link>
                                     </Card.Content>
 
                                 </Card>
