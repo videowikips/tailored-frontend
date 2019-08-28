@@ -10,6 +10,8 @@ export default {
     organizationVideos: () => '/organization/videos',
     organizationArticle: (articleId = ':articleId') => `/organization/article/${articleId}`,
     organizationArchive: () => `/organization/archive`,
+    organziationReview: () => `/organization/videos/review`,
+    organziationTranslations: () => `/organization/videos/translations`,
     // Translation
     translationArticle: (articleId = ':articleId', langCode) => `/translation/article/${articleId}${langCode ? `?lang=${langCode}` : ''}`,
 

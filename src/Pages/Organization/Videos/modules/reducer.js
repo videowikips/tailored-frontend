@@ -4,12 +4,14 @@ const INITIAL_STATE = {
     activeTabIndex: 0,
     videos: [],
     videosLoading: false,
-    currentPageNumber: 0,
-    totalPagesCount: 0,
+    currentPageNumber: 1,
+    totalPagesCount: 1,
     languageFilter: 'en-US',
+    searchFilter: '',
     addHumanVoiceModalVisible: false,
     selectedVideo: null,
     translatedArticles: [],
+    videoStatusFilter: [],
 }
 
 export default function(state = INITIAL_STATE, action) {
@@ -32,6 +34,10 @@ export default function(state = INITIAL_STATE, action) {
             return { ...state, currentPageNumber: action.payload };
         case actionTypes.SET_TOTAL_PAGES_COUNT:
             return { ...state, totalPagesCount: action.payload };
+        case actionTypes.SET_VIDEO_STATUS_FILTER:
+            return { ...state, videoStatusFilter: action.payload };
+        case actionTypes.SET_VIDEO_SEARCH_FILTER:
+            return { ...state, searchFilter: action.payload };
         default:
             return state;
     }

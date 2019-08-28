@@ -11,6 +11,7 @@ import routes from '../../../../shared/routes';
 import * as videoActions from '../modules/actions';
 import authorizeUser from '../../../../shared/hoc/authorizeUser';
 import AddHumanVoiceModal from '../../../../shared/components/AddHumanVoiceModal';
+import VideosTabs from '../VideosTabs';
 
 class Translated extends React.Component {
     componentWillMount = () => {
@@ -58,9 +59,13 @@ class Translated extends React.Component {
 
     render() {
         return (
-            <LoaderComponent active={this.props.videosLoading}>
-                <Grid style={{ textAlign: 'center' }}>
-
+            <Grid style={{ textAlign: 'center' }}>
+                    <Grid.Row>
+                        <Grid.Column width={16}>
+                            <VideosTabs />
+                        </Grid.Column>
+                    </Grid.Row>
+                <LoaderComponent active={this.props.videosLoading}>
                     <Grid.Row>
                         <Grid.Column width={16}>
                             <div className="pull-right">
@@ -125,9 +130,9 @@ class Translated extends React.Component {
                     ))}
 
                     {this._renderAddHumanVoiceModal()}
+                    </LoaderComponent>
 
                 </Grid>
-            </LoaderComponent>
         )
     }
 }

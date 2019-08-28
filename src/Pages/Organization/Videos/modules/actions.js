@@ -5,6 +5,12 @@ import requestAgent from '../../../../shared/utils/requestAgent';
 import NotificationService from '../../../../shared/utils/NotificationService';
 import routes from '../../../../shared/routes';
 
+const moduleName = 'organizationVideos';
+
+export const setVideoStatusFilter = filter => ({
+    type: actionTypes.SET_VIDEO_STATUS_FILTER,
+    payload: filter,
+})
 
 export const setCurrentPageNumber = pageNumber => ({
     type: actionTypes.SET_CURRENT_PAGE_NUMBER,
@@ -24,6 +30,11 @@ export const setActiveTabIndex = index => ({
 export const setLanguageFilter = lang => ({
     type: actionTypes.SET_LANGUAGE_FILTER,
     payload: lang,
+})
+
+export const setSearchFilter = searchFilter => ({
+    type: actionTypes.SET_VIDEO_SEARCH_FILTER,
+    payload: searchFilter,
 })
 
 export const setVideoLoading = loading => ({
@@ -51,19 +62,29 @@ export const setTranslatedArticles = translatedArticles => ({
     payload: translatedArticles,
 })
 
-export const fetchVideos = ({ organization, langCode, status, page }) => (dispatch, getState) => {
+export const updateLocalVideo = (videoId, newVideo) => (dispatch, getState) => {
+    const { videos } = getState()[moduleName];
+    const videoIndex = videos.findIndex((v) => v._id === videoId);
+    if (videoIndex !== -1) {
+        videos[videoIndex] = newVideo;
+        dispatch(setVideos(videos));
+    }
+}
+
+export const fetchVideos = () => (dispatch, getState) => {
     // const { }
     dispatch(setVideoLoading(true));
     dispatch(setVideos([]))
+    const { videoStatusFilter, currentPageNumber, languageFilter, searchFilter } = getState()[moduleName];
+    const { organization } = getState().organization;
+
     requestAgent
-        .get(Api.video.getVideos({ organization, langCode, status, page }))
+        .get(Api.video.getVideos({ organization: organization._id, langCode: languageFilter, status: videoStatusFilter, page: currentPageNumber, search: searchFilter }))
         .then((res) => {
             const { videos, pagesCount } = res.body;
             dispatch(setVideos(videos));
             dispatch(setVideoLoading(false))
-            if (pagesCount) {
-                dispatch(setTotalPagesCount(pagesCount));
-            }
+            dispatch(setTotalPagesCount(pagesCount || 1));
         })
         .catch((err) => {
             NotificationService.responseError(err);
@@ -80,9 +101,7 @@ export const fetchTranslatedArticles = (organization, page) => (dispatch, getSta
             const { videos, pagesCount } = res.body;
             dispatch(setTranslatedArticles(videos));
             dispatch(setVideoLoading(false))
-            if (pagesCount) {
-                dispatch(setTotalPagesCount(pagesCount));
-            }
+            dispatch(setTotalPagesCount(pagesCount || 1));
         })
         .catch((err) => {
             NotificationService.responseError(err);
@@ -96,7 +115,8 @@ export const reviewVideo = video => (dispatch, getState) => {
         .post(Api.video.reviewVideo(video._id))
         .then((res) => {
             console.log(res);
-            dispatch(push(routes.convertProgress(video._id)));
+            dispatch(fetchVideos())
+            // dispatch(push(routes.convertProgress(video._id)));
         })
         .catch((err) => {
             NotificationService.responseError(err);

@@ -23,7 +23,9 @@ const Article = () => import('./Pages/Organization/Article');
 
 const OrganizationUsers = () => import('./Pages/Organization/OrganizationUsers');
 const OrganizationArchive = () => import('./Pages/Organization/Archive');
-const OrganizationVideos = () => import('./Pages/Organization/Videos');
+// const OrganizationVideos = () => import('./Pages/Organization/Videos');
+const OrganizationReview = () => import('./Pages/Organization/Videos/Review');
+const OrganzationTranslations = () => import('./Pages/Organization/Videos/Translations');
 
 const TranslateArticle = () => import('./Pages/Translation/TranslateArticle');
 
@@ -39,14 +41,16 @@ class AppRouter extends React.Component {
             <Switch>
               <LazyRoute exact path={routes.home()} title="VideoWiki" loader={Home} />
               <LazyRoute exact path={routes.logout()} loader={Logout} />
-              <LazyRoute exact path={routes.demo()} title="Demo" loader={Demo} />
+              {/* <LazyRoute exact path={routes.demo()} title="Demo" loader={Demo} /> */}
               <LazyRoute exact path={routes.convertProgress()} title="Convert Video" loader={Convert} />
             {/* === Organization routes === */}
               <LazyRoute exact path={routes.organizationUsers()} title="Organziation: Users" isPrivateRoute={true} loader={OrganizationUsers} layout={DashboardLayout} />
-              <LazyRoute path={routes.organizationVideos()} isPrivateRoute={true} title="Organziation: Videos" loader={OrganizationVideos} layout={DashboardLayout} />
-              <LazyRoute exact path={routes.organizationHome()} isPrivateRoute={true} title="Organziation: Videos" loader={OrganizationVideos} layout={DashboardLayout} />
+              <LazyRoute exact path={routes.organizationVideos()} isPrivateRoute={true} title="Organziation: Videos" loader={OrganizationReview} layout={DashboardLayout} />
+              <LazyRoute exact path={routes.organizationHome()} isPrivateRoute={true} title="Organziation: Videos" loader={OrganizationReview} layout={DashboardLayout} />
               <LazyRoute exact path={routes.organizationArchive()} isPrivateRoute={true} title="Organziation: Archive" loader={OrganizationArchive} layout={DashboardLayout} />
-              <LazyRoute path={routes.organizationArticle()} title="Organziation: Article" loader={Article} layout={DashboardLayout} />
+              <LazyRoute exact path={routes.organizationArticle()} isPrivateRoute={true} title="Organziation: Article" loader={Article} layout={DashboardLayout} />
+              <LazyRoute exact path={routes.organziationReview()} isPrivateRoute={true} title="Organziation: Reviews" loader={OrganizationReview} layout={DashboardLayout} />
+              <LazyRoute exact path={routes.organziationTranslations()} isPrivateRoute={true} title="Organziation: Translations" loader={OrganzationTranslations} layout={DashboardLayout} />
             {/* ==== End Organization routes === */}
 
             {/* === Translation routes === */}
