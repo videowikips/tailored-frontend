@@ -3,7 +3,9 @@ import * as actionTypes from '../actions/organization/types';
 const INITIAL_STATE = {
     users: [],
     organization: null,
+    createOrganizationLoading: false,
     permissionUpdateMessage: null,
+    newOrganizationName: '',
     inviteUserSuccess: null,
     inviteUserMessage: null,
     removeUserSuccess: null
@@ -50,8 +52,12 @@ export default function (state = INITIAL_STATE, action) {
                 ...state,
                 users,
                 removeUserSuccess: true
-            }
+            };
 
+        case actionTypes.SET_CREATE_ORGANIZATION_LOADING:
+            return { ...state, createOrganizationLoading: action.payload };
+        case actionTypes.SET_NEW_ORGANIZATION_NAME:
+            return { ...state, newOrganizationName: action.payload };
         default:
             return state;
     }

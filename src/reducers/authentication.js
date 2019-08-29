@@ -8,7 +8,8 @@ const INITIAL_STATE = {
     token: storedToken,
     errorMessage: null,
     signUpMessage: null,
-    signUpSuccess: null
+    signUpSuccess: null,
+    getUserDetailsLoading: false,
 }
 
 export default function (state = INITIAL_STATE, action) {
@@ -16,7 +17,8 @@ export default function (state = INITIAL_STATE, action) {
         case actionTypes.LOGOUT:
             localStorage.removeItem('authToken');
             return { ...INITIAL_STATE };
-
+        case actionTypes.SET_USER:
+            return { ...state, user: action.payload };
         case actionTypes.AUTHENTICATION_SUCCESS:
             const { token, user } = action.payload;
             localStorage.setItem('authToken', token);
@@ -60,6 +62,8 @@ export default function (state = INITIAL_STATE, action) {
                 signUpMessage: action.payload || 'Something went error, please try again later'
             }
 
+        case actionTypes.SET_GET_USER_DETAILS_LOADING:
+            return { ...state, getUserDetailsLoading: action.payload };
         default:
             return state;
     }

@@ -8,7 +8,7 @@ export default function authorizeUser(WrappedComponent, roles) {
         render() {
             const userRole = this.props.user.organizationRoles.find((r) => r.organization._id === this.props.organization._id)
             let canView = false;
-            if (userRole.organizationOwner) {
+            if (userRole && userRole.organizationOwner) {
                 canView = true;
             } else if (userRole) {
                 if (userRole && userRole.permissions.some(p => roles.indexOf(p) !== -1)) {

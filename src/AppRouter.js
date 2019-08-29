@@ -1,5 +1,6 @@
 import React from 'react'
 // import PropTypes from 'prop-types'
+import { connect } from 'react-redux';
 import {
   BrowserRouter as Router,
   Switch,
@@ -13,6 +14,7 @@ import Footer from './shared/components/Footer';
 
 import LazyRoute from './LazyRoute';
 import DashboardLayout from './layouts/Dashboard';
+import * as authenticationActions from './actions/authentication';
 
 const Home = () => import('./Pages/Home');
 const Demo = () => import('./Pages/Demo');
@@ -32,6 +34,12 @@ const TranslateArticle = () => import('./Pages/Translation/TranslateArticle');
 const Invitations = () => import('./Pages/Invitations');
 
 class AppRouter extends React.Component {
+
+  componentWillMount = () => {
+    if (this.props.isAuthenticated) {
+      this.props.getUserDetails();
+    }
+  }
 
   render() {
     return (
@@ -69,7 +77,16 @@ class AppRouter extends React.Component {
   }
 }
 
-export default AppRouter;
+const mapStateToProps = ({ authentication }) => ({
+  user: authentication.user,
+  isAuthenticated: authentication.isAuthenticated,
+})
+
+const mapDispatchToProps = dispatch => ({
+  getUserDetails: () => dispatch(authenticationActions.getUserDetails()),
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(AppRouter);
 
 // AppRouter.propTypes = {
 //   match: PropTypes.object,

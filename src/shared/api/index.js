@@ -37,6 +37,7 @@ export default {
         register: `${API_ROOT}/auth/register`
     },
     organization: {
+        createOrganization: () => `${API_ROOT}/organization`,
         getUsers: (params) => `${API_ROOT}/user/getOrgUsers?${querystring.encode(params)}`,
         inviteUser: (organizationId) => `${API_ROOT}/organization/${organizationId}/users`,
         removeUser: (organizationId, userId) =>  `${API_ROOT}/organization/${organizationId}/users/${userId}`,
@@ -45,7 +46,7 @@ export default {
     },
     user: {
         isValidToken: `${API_ROOT}/user/isValidToken`,
-        getUserDetails: `${API_ROOT}/user/getUserDetails`,
+        getUserDetails: () => `${API_ROOT}/user/getUserDetails`,
         updatePassword: (userId) => `${API_ROOT}/user/${userId}/password`,
     }
 }

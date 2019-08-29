@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { withRouter } from 'react-router-dom';
-import { Button, Icon, Menu, Grid, Card, Dropdown } from 'semantic-ui-react'
+import { Button, Icon, Menu, Grid, Card, Dropdown, Modal, Input } from 'semantic-ui-react'
 import Avatar from 'react-avatar';
 
 import websockets from '../../websockets';
@@ -12,6 +12,7 @@ import { WEBSOCKET_SERVER_URL } from '../../shared/constants';
 import UploadNewVideoModal from '../../shared/components/UploadNewVideoModal';
 import NotificationService from '../../shared/utils/NotificationService';
 import { uploadVideo } from '../../actions/video';
+import * as organizationActions from '../../actions/organization';
 import routes from '../../shared/routes';
 
 const NAV_LINKS = [
@@ -39,6 +40,7 @@ class Dashboard extends React.Component {
             video: null,
             fileContent: null,
         },
+        createOrganizationModalVisible: false,
         currentLocation: '/organization',
     }
 
@@ -94,6 +96,10 @@ class Dashboard extends React.Component {
         this.props.uploadVideo({ ...values, organization: this.props.organization._id });
     }
 
+    onCreateOrganization = () => {
+        const { newOrganizationName } = this.props;
+        this.props.createOrganization(newOrganizationName);
+    }
     isFormValid = () => {
         const { videoForm } = this.state;
         const { title, numberOfSpeakers, langCode, video } = videoForm;
@@ -110,11 +116,66 @@ class Dashboard extends React.Component {
         return false;
     }
 
-    renderUserDropdown = () => {
-        return (
-            <Dropdown icon={<Avatar name={this.props.user.email} size={40} round="50%" />} floating labeled direction="left">
-                <Dropdown.Menu style={{ minWidth: 200 }}>
+    onSwitchOrganization = organizationRole => {
+        this.props.setOrganization(organizationRole.organization);
+        setTimeout(() => {
+            window.location.reload();
+        }, 500);
+    }
 
+    renderCreateOrganizationModal = () => (
+        <Modal open={this.state.createOrganizationModalVisible} size="tiny">
+            <Modal.Header>
+                Create Organization
+            </Modal.Header>
+            <Modal.Content>
+                <Grid>
+                    <Grid.Row style={{ display: 'flex', alignItems: 'center'}}>
+                        <Grid.Column width={5}>
+                            Organization Name
+                        </Grid.Column>
+                        <Grid.Column width={11}>
+                            <Input
+                                fluid
+                                placeholder="name"
+                                onChange={(e, { value }) => this.props.setNewOrganizationName(value)}
+                                value={this.props.newOrganizationName}
+                            />
+                        </Grid.Column>
+                    </Grid.Row>
+                </Grid>
+            </Modal.Content>
+            <Modal.Actions>
+                <Button onClick={() => this.setState({ createOrganizationModalVisible: false })}>Cancel</Button>
+                <Button primary onClick={this.onCreateOrganization} disabled={!this.props.newOrganizationName || !this.props.newOrganizationName.trim()}>Create</Button>
+            </Modal.Actions>
+        </Modal>
+    )
+    renderUserDropdown = () => {
+        const { user, organization } = this.props
+        return (
+            <Dropdown icon={<Avatar name={user.email} size={40} round="50%" />} floating labeled direction="left">
+                <Dropdown.Menu style={{ minWidth: 200 }}>
+                    <Dropdown.Header>MY Organizations</Dropdown.Header>
+                    {user.organizationRoles.map((role) => (
+                        <Dropdown.Item
+                            active={organization._id === role.organization._id}
+                            key={`organization-dropdown-${role.organization._id}`}
+                            onClick={() => this.onSwitchOrganization(role)}
+                        >
+                            {role.organization.name}
+                            {organization._id !== role.organization._id && (
+                                <div className="pull-right">
+                                    <Icon name="arrow right"/>
+                                </div>
+                            )}
+                        </Dropdown.Item>
+                    ))}
+                    <Dropdown.Divider />
+                    <Dropdown.Item onClick={() => this.setState({ createOrganizationModalVisible: true })}>
+                        Create Organization
+                    </Dropdown.Item>
+                    <Dropdown.Divider />
                     <Dropdown.Item onClick={() => this.props.history.push('/logout')}  >
                         <Icon name="log out" />
                         Logout
@@ -181,6 +242,7 @@ class Dashboard extends React.Component {
                                                 </React.Fragment>
                                             )}
                                             {this.props.user && this.renderUserDropdown()}
+                                            {this.renderCreateOrganizationModal()}
                                         </div>
                                     </div>
                                     {this.props.children}
@@ -198,6 +260,7 @@ const mapStateToProps = ({ authentication, organization, video, router }) => ({
     user: authentication.user,
     userToken: authentication.token,
     organization: organization.organization,
+    newOrganizationName: organization.newOrganizationName,
     uploadProgress: video.uploadProgress,
     uploadState: video.uploadState,
     uploadError: video.uploadError,
@@ -207,6 +270,9 @@ const mapStateToProps = ({ authentication, organization, video, router }) => ({
 
 const mapDispatchToProps = (dispatch) => ({
     uploadVideo: values => dispatch(uploadVideo(values)),
+    setOrganization: org => dispatch(organizationActions.setOrganization(org)),
+    setNewOrganizationName: name => dispatch(organizationActions.setNewOrganizationName(name)),
+    createOrganization: (name) => dispatch(organizationActions.createOrganization(name))
 })
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Dashboard));

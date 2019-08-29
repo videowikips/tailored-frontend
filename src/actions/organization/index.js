@@ -1,6 +1,7 @@
 import * as actionTypes from './types';
 import Api from '../../shared/api';
 import requestAgent from '../../shared/utils/requestAgent';
+import NotificationService from '../../shared/utils/NotificationService';
 
 const fetchUserSuccess = (users) => ({
     type: actionTypes.FETCH_USER_SUCCESS,
@@ -27,10 +28,40 @@ const editPermissionSuccess = (payload) => ({
     payload
 });
 
+const setCreateOrganizationLoading = loading => ({
+    type: actionTypes.SET_CREATE_ORGANIZATION_LOADING,
+    payload: loading,
+})
+
+export const setNewOrganizationName = name => ({
+    type: actionTypes.SET_NEW_ORGANIZATION_NAME,
+    payload: name,
+})
+
 export const setOrganization = organization => ({
     type: actionTypes.SET_ORGANIZATION,
     payload: organization,
 })
+
+export const createOrganization = name => dispatch => {
+    dispatch(setCreateOrganizationLoading(true));
+    requestAgent.post(Api.organization.createOrganization(), { name })
+    .then((res) => {
+        const { organization } = res.body;
+        dispatch(setCreateOrganizationLoading(false));
+        dispatch(setOrganization(organization));
+        dispatch(setNewOrganizationName(''));
+        NotificationService.success('Organization created successfully');
+        setTimeout(() => {
+            window.location.reload();
+        }, 500);
+    })
+    .catch((err) => {
+        console.log(err);
+        dispatch(setCreateOrganizationLoading(false));
+        NotificationService.responseError(err);
+    })
+}
 
 export const fetchUsers = (organizationId) => dispatch => {
     requestAgent.get(Api.organization.getUsers({ organization: organizationId }))
