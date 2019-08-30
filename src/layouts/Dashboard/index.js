@@ -39,6 +39,8 @@ class Dashboard extends React.Component {
             langCode: 'en-US',
             video: null,
             fileContent: null,
+            withSubtitle: false,
+            subtitle: null,
         },
         createOrganizationModalVisible: false,
         currentLocation: '/organization',

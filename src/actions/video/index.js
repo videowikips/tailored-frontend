@@ -48,16 +48,20 @@ export const reset = () => ({
     type: actionTypes.RESET,
 })
 
-export const uploadVideo = ({ title, numberOfSpeakers, video, langCode, organization }) => (dispatch) => {
+export const uploadVideo = ({ title, numberOfSpeakers, video, langCode, organization, subtitle }) => (dispatch) => {
     dispatch(uploadVideoLoading());
-    requestAgent
+    const req = requestAgent
         .post(Api.video.uploadVideo)
         .field('title', title)
         .field('numberOfSpeakers', numberOfSpeakers)
         .field('langCode', langCode)
         .field('organization', organization || '')
         .attach('video', video)
-        .on('progress', function (e) {
+        if (subtitle) {
+            req.attach('subtitle', subtitle);
+        }
+
+        req.on('progress', function (e) {
             dispatch(uploadVideoProgress(e.percent))
         })
         .then(res => {

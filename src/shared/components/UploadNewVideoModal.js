@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Modal, Button, Input, Grid, Dropdown, Progress } from 'semantic-ui-react';
+import { Modal, Button, Input, Grid, Dropdown, Progress, Checkbox, Radio } from 'semantic-ui-react';
 import Dropzone from 'react-dropzone';
 import { supportedLangs, isoLangsArray } from '../constants/langs';
 const speakersOptions = Array.apply(null, { length: 10 }).map(Number.call, Number).map((a, index) => ({ value: index + 1, text: index + 1 }));
 let langsToUse = supportedLangs.map((l) => ({ ...l, supported: true }));
-langsToUse = langsToUse.concat(isoLangsArray.filter((l) =>  supportedLangs.every((l2) => l2.code.indexOf(l.code) === -1)));
+langsToUse = langsToUse.concat(isoLangsArray.filter((l) => supportedLangs.every((l2) => l2.code.indexOf(l.code) === -1)));
 const langsOptions = langsToUse.map((lang) => ({ key: lang.code, value: lang.code, text: `${lang.name} ( ${lang.code} ) ${lang.supported ? ' < Automated >' : ''}` }));
 
 const styles = {
@@ -23,8 +23,17 @@ class UploadNewVideoModal extends React.Component {
         this.props.onSubmit(this.props.value);
     }
 
-    onFieldChange = (e, { name, value }) => {
-        this.props.onChange({ [name]: value })
+    onFieldChange = (e, { name, value, checked }) => {
+        console.log('on change', name, value, checked)
+        if (name === 'withSubtitle') {
+            this.props.onChange({ [name]: checked })
+        } else {
+            this.props.onChange({ [name]: value })
+        }
+    }
+
+    onSubtitleChange = (file) => {
+        this.props.onChange({ subtitle: file });
     }
 
     onVideoChange = (file) => {
@@ -125,6 +134,43 @@ class UploadNewVideoModal extends React.Component {
                                     name="langCode"
                                     options={langsOptions}
                                 />
+                            </Grid.Column>
+                        </Grid.Row>
+
+                        <Grid.Row className="form-group">
+                            <Grid.Column width={3}>
+                                Transcript
+                            </Grid.Column>
+                            <Grid.Column width={6} className="label">
+                                <Radio
+                                    label="Use AI to generate transcription"
+                                    type="radio"
+                                    checked={!this.props.value.withSubtitle}
+                                    name="withSubtitle"
+                                    onClick={(e, { name, value, checked }) => {
+                                        this.onFieldChange(e, { name, checked: false, value });
+                                    }}
+                                />
+                                <br />
+                                <Radio
+                                    label="I have a subtitle file"
+                                    checked={this.props.value.withSubtitle}
+                                    name="withSubtitle"
+                                    onClick={(e, { name, value }) => {
+                                        this.onFieldChange(e, { name, checked: true, value });
+                                    }}
+                                />
+                                {this.props.value.withSubtitle && (
+                                    <input
+                                        style={{ marginTop: 20 }}
+                                        type="file"
+                                        accept=".srt, .vtt"
+                                        onChange={(e) => {
+                                            // console.log()
+                                            this.onSubtitleChange(e.target.files[0]);
+                                        }}
+                                    />
+                                )}
                             </Grid.Column>
                         </Grid.Row>
                     </Grid>

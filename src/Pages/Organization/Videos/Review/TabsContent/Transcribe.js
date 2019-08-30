@@ -81,8 +81,8 @@ class Transcribe extends React.Component {
 
                                     <Card.Content style={{ padding: 0 }}>
                                         <Button fluid color="blue" onClick={() => this.onReviewVideo(video)} 
-                                            loading={['transcriping', 'cutting'].indexOf(video.status) !== -1}
-                                            disabled={['transcriping', 'cutting'].indexOf(video.status) !== -1}
+                                            loading={['uploading', 'transcriping', 'cutting'].indexOf(video.status) !== -1}
+                                            disabled={['uploading', 'transcriping', 'cutting'].indexOf(video.status) !== -1}
                                             >
                                             AI Transcribe
                                         </Button>
