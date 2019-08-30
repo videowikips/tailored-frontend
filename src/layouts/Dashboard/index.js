@@ -2,8 +2,10 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { withRouter } from 'react-router-dom';
-import { Button, Icon, Menu, Grid, Card, Dropdown, Modal, Input } from 'semantic-ui-react'
+import { Button, Icon, Menu, Grid, Card, Dropdown, Modal, Input, Loader, Dimmer } from 'semantic-ui-react'
+import './style.scss';
 import Avatar from 'react-avatar';
+import LoaderComponent from '../../shared/components/LoaderComponent';
 
 import websockets from '../../websockets';
 
@@ -102,6 +104,11 @@ class Dashboard extends React.Component {
         const { newOrganizationName, newOrganizationLogo } = this.props;
         this.props.createOrganization(newOrganizationName, newOrganizationLogo);
     }
+
+    onUploadLogo = (file) => {
+        this.props.updateLogo(file);
+    }
+
     isFormValid = () => {
         const { videoForm } = this.state;
         const { title, numberOfSpeakers, langCode, video } = videoForm;
@@ -175,6 +182,7 @@ class Dashboard extends React.Component {
             </Modal.Actions>
         </Modal>
     )
+
     renderUserDropdown = () => {
         const { user, organization } = this.props
         return (
@@ -215,9 +223,28 @@ class Dashboard extends React.Component {
                 <Grid.Row style={{ padding: 0 }}>
                     <Grid.Column width={3} style={{ height: '100%', backgroundColor: '#1b1c1d', paddingRight: 0 }}>
                         <div style={{ display: 'flex', justifyContent: 'center', marginLeft: '-1rem' }}>
-                            <Card style={{ marginTop: 30 }}>
-                                <Card.Content style={{ padding: 0, border: 'none' }}>
-                                    <img src={this.props.organization && this.props.organization.logo ? this.props.organization.logo : '/img/logo.png'} alt="Video Wiki Logo" />
+
+                            <Card style={{ marginTop: 30, marginBottom: 30 }}>
+                                <Card.Content className="logo-container">
+
+                                    <div className="upload-container">
+                                        <Button onClick={() => this.uploadLogoRef.click()}>
+                                            Upload Logo
+                                        </Button>
+                                    </div>
+
+                                    <input
+                                        accept="image/*"
+                                        ref={(ref) => this.uploadLogoRef = ref}
+                                        type="file"
+                                        style={{ visibility: 'hidden' }}
+                                        onChange={(e) => this.onUploadLogo(e.target.files[0])}
+                                    />
+                                        <img src={this.props.organization && this.props.organization.logo ? this.props.organization.logo : '/img/logo.png'} alt="Video Wiki Logo" />
+
+                                    <Dimmer active={this.props.uploadLogoLoading}>
+                                        <Loader />
+                                    </Dimmer>
                                 </Card.Content>
                             </Card>
                         </div>
@@ -286,6 +313,7 @@ const mapStateToProps = ({ authentication, organization, video, router }) => ({
     organization: organization.organization,
     newOrganizationName: organization.newOrganizationName,
     newOrganizationLogo: organization.newOrganizationLogo,
+    uploadLogoLoading: organization.uploadLogoLoading,
     uploadProgress: video.uploadProgress,
     uploadState: video.uploadState,
     uploadError: video.uploadError,
@@ -298,7 +326,8 @@ const mapDispatchToProps = (dispatch) => ({
     setOrganization: org => dispatch(organizationActions.setOrganization(org)),
     setNewOrganizationName: name => dispatch(organizationActions.setNewOrganizationName(name)),
     setNewOrganizationLogo: file => dispatch(organizationActions.setNewOrganizationLogo(file)),
-    createOrganization: (name, logoFile) => dispatch(organizationActions.createOrganization(name, logoFile))
+    createOrganization: (name, logoFile) => dispatch(organizationActions.createOrganization(name, logoFile)),
+    updateLogo: (file) => dispatch(organizationActions.updateOrganizationLogo(file))
 })
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Dashboard));

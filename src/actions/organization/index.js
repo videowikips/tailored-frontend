@@ -43,10 +43,32 @@ export const setNewOrganizationLogo = file => ({
     payload: file,
 })
 
+export const setUploadLogoLoading = loading => ({
+    type: actionTypes.SET_UPLOAD_LOGO_LOADING,
+    payload: loading,
+})
+
 export const setOrganization = organization => ({
     type: actionTypes.SET_ORGANIZATION,
     payload: organization,
 })
+
+export const updateOrganizationLogo = file => (dispatch, getState) => {
+    const { organization } = getState().organization;
+    dispatch(setUploadLogoLoading(true))
+    requestAgent.patch(Api.organization.updateLogo(organization._id))
+    .attach('logo', file)
+    .then((res) => {
+        const { organization } = res.body;
+        dispatch(setOrganization(organization));
+        dispatch(setUploadLogoLoading(false))
+    })
+    .catch((err) => {
+        console.log(err);
+        dispatch(setUploadLogoLoading(false))
+        NotificationService.responseError(err);
+    })
+}
 
 export const createOrganization = (name, logoFile) => dispatch => {
     dispatch(setCreateOrganizationLoading(true));

@@ -38,6 +38,7 @@ export default {
     },
     organization: {
         createOrganization: () => `${API_ROOT}/organization`,
+        updateLogo: (orgId) => `${API_ROOT}/organization/${orgId}/logo`,
         getUsers: (params) => `${API_ROOT}/user/getOrgUsers?${querystring.encode(params)}`,
         inviteUser: (organizationId) => `${API_ROOT}/organization/${organizationId}/users`,
         removeUser: (organizationId, userId) =>  `${API_ROOT}/organization/${organizationId}/users/${userId}`,
