@@ -99,8 +99,8 @@ class Dashboard extends React.Component {
     }
 
     onCreateOrganization = () => {
-        const { newOrganizationName } = this.props;
-        this.props.createOrganization(newOrganizationName);
+        const { newOrganizationName, newOrganizationLogo } = this.props;
+        this.props.createOrganization(newOrganizationName, newOrganizationLogo);
     }
     isFormValid = () => {
         const { videoForm } = this.state;
@@ -132,9 +132,10 @@ class Dashboard extends React.Component {
             </Modal.Header>
             <Modal.Content>
                 <Grid>
-                    <Grid.Row style={{ display: 'flex', alignItems: 'center'}}>
+                    <Grid.Row style={{ display: 'flex', alignItems: 'center' }}>
                         <Grid.Column width={5}>
                             Organization Name
+                            <span style={{ color: 'red' }}> *</span>
                         </Grid.Column>
                         <Grid.Column width={11}>
                             <Input
@@ -142,6 +143,19 @@ class Dashboard extends React.Component {
                                 placeholder="name"
                                 onChange={(e, { value }) => this.props.setNewOrganizationName(value)}
                                 value={this.props.newOrganizationName}
+                            />
+                        </Grid.Column>
+                    </Grid.Row>
+                    <Grid.Row>
+
+                        <Grid.Column width={5}>
+                            Logo
+                        </Grid.Column>
+                        <Grid.Column width={11}>
+                            <Input
+                                accept="image/*"
+                                type="file"
+                                onChange={(e) => this.props.setNewOrganizationLogo(e.target.files[0])}
                             />
                         </Grid.Column>
                     </Grid.Row>
@@ -168,7 +182,7 @@ class Dashboard extends React.Component {
                             {role.organization.name}
                             {organization._id !== role.organization._id && (
                                 <div className="pull-right">
-                                    <Icon name="arrow right"/>
+                                    <Icon name="arrow right" />
                                 </div>
                             )}
                         </Dropdown.Item>
@@ -194,8 +208,8 @@ class Dashboard extends React.Component {
                     <Grid.Column width={3} style={{ height: '100%', backgroundColor: '#1b1c1d', paddingRight: 0 }}>
                         <div style={{ display: 'flex', justifyContent: 'center', marginLeft: '-1rem' }}>
                             <Card style={{ marginTop: 30 }}>
-                                <Card.Content>
-                                    <img src="/img/logo.png" alt="Video Wiki Logo" />
+                                <Card.Content style={{ padding: 0, border: 'none' }}>
+                                    <img src={this.props.organization && this.props.organization.logo ? this.props.organization.logo : '/img/logo.png'} alt="Video Wiki Logo" />
                                 </Card.Content>
                             </Card>
                         </div>
@@ -263,6 +277,7 @@ const mapStateToProps = ({ authentication, organization, video, router }) => ({
     userToken: authentication.token,
     organization: organization.organization,
     newOrganizationName: organization.newOrganizationName,
+    newOrganizationLogo: organization.newOrganizationLogo,
     uploadProgress: video.uploadProgress,
     uploadState: video.uploadState,
     uploadError: video.uploadError,
@@ -274,7 +289,8 @@ const mapDispatchToProps = (dispatch) => ({
     uploadVideo: values => dispatch(uploadVideo(values)),
     setOrganization: org => dispatch(organizationActions.setOrganization(org)),
     setNewOrganizationName: name => dispatch(organizationActions.setNewOrganizationName(name)),
-    createOrganization: (name) => dispatch(organizationActions.createOrganization(name))
+    setNewOrganizationLogo: file => dispatch(organizationActions.setNewOrganizationLogo(file)),
+    createOrganization: (name, logoFile) => dispatch(organizationActions.createOrganization(name, logoFile))
 })
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Dashboard));

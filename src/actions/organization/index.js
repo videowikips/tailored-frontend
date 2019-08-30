@@ -38,19 +38,29 @@ export const setNewOrganizationName = name => ({
     payload: name,
 })
 
+export const setNewOrganizationLogo = file => ({
+    type: actionTypes.SET_NEW_ORGANIZATION_LOGO,
+    payload: file,
+})
+
 export const setOrganization = organization => ({
     type: actionTypes.SET_ORGANIZATION,
     payload: organization,
 })
 
-export const createOrganization = name => dispatch => {
+export const createOrganization = (name, logoFile) => dispatch => {
     dispatch(setCreateOrganizationLoading(true));
-    requestAgent.post(Api.organization.createOrganization(), { name })
-    .then((res) => {
+    const req = requestAgent.post(Api.organization.createOrganization())
+    .field('name', name)
+    if (logoFile && Object.keys(logoFile).length > 0) {
+        req.attach('logo', logoFile);
+    }
+    req.then((res) => {
         const { organization } = res.body;
         dispatch(setCreateOrganizationLoading(false));
         dispatch(setOrganization(organization));
         dispatch(setNewOrganizationName(''));
+        dispatch(setNewOrganizationLogo(null));
         NotificationService.success('Organization created successfully');
         setTimeout(() => {
             window.location.reload();

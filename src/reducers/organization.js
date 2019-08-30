@@ -6,6 +6,7 @@ const INITIAL_STATE = {
     createOrganizationLoading: false,
     permissionUpdateMessage: null,
     newOrganizationName: '',
+    newOrganizationLogo: null,
     inviteUserSuccess: null,
     inviteUserMessage: null,
     removeUserSuccess: null
@@ -58,6 +59,8 @@ export default function (state = INITIAL_STATE, action) {
             return { ...state, createOrganizationLoading: action.payload };
         case actionTypes.SET_NEW_ORGANIZATION_NAME:
             return { ...state, newOrganizationName: action.payload };
+        case actionTypes.SET_NEW_ORGANIZATION_LOGO:
+            return { ...state, newOrganizationLogo: action.payload };
         default:
             return state;
     }
