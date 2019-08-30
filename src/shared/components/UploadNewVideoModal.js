@@ -159,13 +159,17 @@ class UploadNewVideoModal extends React.Component {
                                         type="file"
                                         accept=".srt, .vtt"
                                         value={this.props.subtitle}
+                                        ref={(ref) => this.subtitleRef = ref}
                                         onChange={(e) => {
                                             // console.log()
                                             this.onSubtitleChange(e.target.files[0]);
                                         }}
                                     />
                                     {this.props.value.subtitle && (
-                                        <Button icon="close" onClick={() => this.onSubtitleChange(null)} basic style={{ boxShadow: 'none', marginLeft: 20 }} />
+                                        <Button icon="close" onClick={() => {
+                                            this.onSubtitleChange(null);
+                                            this.subtitleRef.value = null;
+                                        }} basic style={{ boxShadow: 'none', marginLeft: 20 }} />
                                     )}
                                 </div>
                             </Grid.Column>

@@ -152,11 +152,19 @@ class Dashboard extends React.Component {
                             Logo
                         </Grid.Column>
                         <Grid.Column width={11}>
-                            <Input
+                            <input
                                 accept="image/*"
                                 type="file"
+                                ref={(ref) => this.logoItemRef = ref}
                                 onChange={(e) => this.props.setNewOrganizationLogo(e.target.files[0])}
                             />
+                            {this.props.newOrganizationLogo && (
+
+                                <Button icon="close" onClick={() => {
+                                    this.props.setNewOrganizationLogo(null);
+                                    this.logoItemRef.value = null;
+                                }} basic style={{ boxShadow: 'none', marginLeft: 20 }} />
+                            )}
                         </Grid.Column>
                     </Grid.Row>
                 </Grid>
