@@ -33,7 +33,13 @@ class UploadNewVideoModal extends React.Component {
     }
 
     onSubtitleChange = (file) => {
-        this.props.onChange({ subtitle: file });
+        if (file) {
+            this.props.onChange({ withSubtitle: true });
+            this.props.onChange({ subtitle: file });
+        } else {
+            this.props.onChange({ withSubtitle: false });
+            this.props.onChange({ subtitle: null });
+        }
     }
 
     onVideoChange = (file) => {
@@ -79,6 +85,12 @@ class UploadNewVideoModal extends React.Component {
         )
     }
 
+    renderRequiredStar = () => {
+        return (
+            <span style={{ color: 'red' }}>*</span>
+        )
+    }
+
     render() {
         console.log('this.props.valid', this.props.valid)
         return (
@@ -100,7 +112,7 @@ class UploadNewVideoModal extends React.Component {
                         </Grid.Row>
                         <Grid.Row className="form-group">
                             <Grid.Column width={3} className="label">
-                                Title
+                                Title {this.renderRequiredStar()}
                             </Grid.Column>
                             <Grid.Column width={10}>
                                 <Input fluid type="text" value={this.props.value.title} onChange={this.onFieldChange} name="title" />
@@ -108,8 +120,8 @@ class UploadNewVideoModal extends React.Component {
                         </Grid.Row>
                         <Grid.Row className="form-group">
                             <Grid.Column width={3} className="label">
-                                No. of speakers
-                                </Grid.Column>
+                                No. of speakers {this.renderRequiredStar()}
+                            </Grid.Column>
                             <Grid.Column width={10}>
                                 <Dropdown
                                     scrolling
@@ -122,7 +134,7 @@ class UploadNewVideoModal extends React.Component {
                         </Grid.Row>
                         <Grid.Row className="form-group">
                             <Grid.Column width={3} className="label">
-                                Language
+                                Language {this.renderRequiredStar()}
                             </Grid.Column>
                             <Grid.Column width={10}>
                                 <Dropdown
@@ -141,36 +153,21 @@ class UploadNewVideoModal extends React.Component {
                             <Grid.Column width={3}>
                                 Transcript
                             </Grid.Column>
-                            <Grid.Column width={6} className="label">
-                                <Radio
-                                    label="Use AI to generate transcription"
-                                    type="radio"
-                                    checked={!this.props.value.withSubtitle}
-                                    name="withSubtitle"
-                                    onClick={(e, { name, value, checked }) => {
-                                        this.onFieldChange(e, { name, checked: false, value });
-                                    }}
-                                />
-                                <br />
-                                <Radio
-                                    label="I have a subtitle file"
-                                    checked={this.props.value.withSubtitle}
-                                    name="withSubtitle"
-                                    onClick={(e, { name, value }) => {
-                                        this.onFieldChange(e, { name, checked: true, value });
-                                    }}
-                                />
-                                {this.props.value.withSubtitle && (
+                            <Grid.Column width={12} className="label">
+                                <div style={{ display: 'flex', alignItems: 'center' }}>
                                     <input
-                                        style={{ marginTop: 20 }}
                                         type="file"
                                         accept=".srt, .vtt"
+                                        value={this.props.subtitle}
                                         onChange={(e) => {
                                             // console.log()
                                             this.onSubtitleChange(e.target.files[0]);
                                         }}
                                     />
-                                )}
+                                    {this.props.value.subtitle && (
+                                        <Button icon="close" onClick={() => this.onSubtitleChange(null)} basic style={{ boxShadow: 'none', marginLeft: 20 }} />
+                                    )}
+                                </div>
                             </Grid.Column>
                         </Grid.Row>
                     </Grid>
