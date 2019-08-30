@@ -106,7 +106,9 @@ class Dashboard extends React.Component {
     }
 
     onUploadLogo = (file) => {
-        this.props.updateLogo(file);
+        if (file) {
+            this.props.updateOrganizationLogo(file);
+        }
     }
 
     isFormValid = () => {
@@ -218,6 +220,7 @@ class Dashboard extends React.Component {
     }
 
     render() {
+        const { organization } = this.props;
         return (
             <Grid style={{ height: '100%', margin: 0, }}>
                 <Grid.Row style={{ padding: 0 }}>
@@ -226,21 +229,26 @@ class Dashboard extends React.Component {
 
                             <Card style={{ marginTop: 30, marginBottom: 30 }}>
                                 <Card.Content className="logo-container">
+                                    {this.canUpload() && (
+                                        <React.Fragment>
 
-                                    <div className="upload-container">
-                                        <Button onClick={() => this.uploadLogoRef.click()}>
-                                            Upload Logo
-                                        </Button>
-                                    </div>
+                                            <div className={`upload-container ${!organization.logo ? 'visible' : ''}`}>
+                                                <Button onClick={() => this.uploadLogoRef.click()}>
+                                                    Upload Logo
+                                                </Button>
+                                            </div>
 
-                                    <input
-                                        accept="image/*"
-                                        ref={(ref) => this.uploadLogoRef = ref}
-                                        type="file"
-                                        style={{ visibility: 'hidden' }}
-                                        onChange={(e) => this.onUploadLogo(e.target.files[0])}
-                                    />
-                                        <img src={this.props.organization && this.props.organization.logo ? this.props.organization.logo : '/img/logo.png'} alt="Video Wiki Logo" />
+                                            <input
+                                                accept="image/*"
+                                                ref={(ref) => this.uploadLogoRef = ref}
+                                                type="file"
+                                                style={{ visibility: 'hidden' }}
+                                                onChange={(e) => this.onUploadLogo(e.target.files[0])}
+                                            />
+
+                                        </React.Fragment>
+                                    )}
+                                    <img src={this.props.organization && this.props.organization.logo ? this.props.organization.logo : '/img/logo.png'} alt="Video Wiki Logo" />
 
                                     <Dimmer active={this.props.uploadLogoLoading}>
                                         <Loader />
@@ -273,7 +281,6 @@ class Dashboard extends React.Component {
                                         <div className="pull-right">
                                             {this.canUpload() && (
                                                 <React.Fragment>
-
                                                     <Button
                                                         color="blue"
                                                         onClick={() => this.setState({ uploadFormOpen: true })} style={{ marginRight: 20 }}>
@@ -327,7 +334,7 @@ const mapDispatchToProps = (dispatch) => ({
     setNewOrganizationName: name => dispatch(organizationActions.setNewOrganizationName(name)),
     setNewOrganizationLogo: file => dispatch(organizationActions.setNewOrganizationLogo(file)),
     createOrganization: (name, logoFile) => dispatch(organizationActions.createOrganization(name, logoFile)),
-    updateLogo: (file) => dispatch(organizationActions.updateOrganizationLogo(file))
+    updateOrganizationLogo: (file) => dispatch(organizationActions.updateOrganizationLogo(file))
 })
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Dashboard));

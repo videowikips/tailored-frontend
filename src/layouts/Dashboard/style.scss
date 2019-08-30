@@ -4,7 +4,6 @@
     position: relative;   
     
 }
-
 .logo-container:hover .upload-container {
     visibility: visible;
 }
@@ -20,4 +19,8 @@
     align-items: center;
     background: rgba(0,0,0,0.4);
     visibility: hidden;
+}
+
+.upload-container.visible {
+    visibility: visible;
 }

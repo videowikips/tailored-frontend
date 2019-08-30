@@ -15,6 +15,7 @@ import queryString from 'query-string';
 
 import { supportedLangs, isoLangsArray } from '../../../../shared/constants/langs';
 import { debounce } from '../../../../shared/utils/helpers';
+import RoleRenderer from '../../../../shared/containers/RoleRenderer';
 let langsToUse = supportedLangs.map((l) => ({ ...l, supported: true }));
 langsToUse = langsToUse.concat(isoLangsArray.filter((l) => supportedLangs.every((l2) => l2.code.indexOf(l.code) === -1)));
 const langsOptions = langsToUse.map((lang) => ({ key: lang.code, value: lang.code, text: `${lang.name} ( ${lang.code} )` }));
@@ -36,12 +37,12 @@ class Review extends React.Component {
     componentWillMount = () => {
         const { activeTab } = queryString.parse(this.props.location.search);
         if (activeTab) {
-            switch(activeTab) {
+            switch (activeTab) {
                 case 'transcribe':
                     return this.setState({ activeTab: 0 });
                 case 'proofread':
                     return this.setState({ activeTab: 1 });
-                case 'completed': 
+                case 'completed':
                     return this.setState({ activeTab: 2 });
                 default:
                     return this.setState({ activeTab: 0 });
@@ -102,45 +103,47 @@ class Review extends React.Component {
                     </Grid.Column>
                 </Grid.Row>
 
-                <Grid.Row>
-                    <Grid.Column width={2} />
-                    <Grid.Column width={10}>
-                        <Tabs
-                            items={[{ title: 'AI Transcribe' }, { title: 'Proofread' }, { title: 'Completed' }]}
-                            onActiveIndexChange={(index) => this.onTabChange(index)}
-                            activeIndex={this.state.activeTab}
-                        />
-                    </Grid.Column>
-                </Grid.Row>
-                <Grid.Row>
-                    <Grid.Column width={13}>
-                        <div className="pull-right">
-                            {this.renderPagination()}
-                        </div>
-
-                        <div className="pull-right" style={{ height: '100%', marginRight: 20 }}>
-                            <Input
-                                style={{ height: '100%' }}
-                                type="text"
-                                icon="search"
-                                placeholder="Search"
-                                value={this.props.searchFilter}
-                                onChange={(e, { value }) => this.onSearchChange(value)}
+                <RoleRenderer roles={['admin', 'review']}>
+                    <Grid.Row>
+                        <Grid.Column width={2} />
+                        <Grid.Column width={10}>
+                            <Tabs
+                                items={[{ title: 'AI Transcribe' }, { title: 'Proofread' }, { title: 'Completed' }]}
+                                onActiveIndexChange={(index) => this.onTabChange(index)}
+                                activeIndex={this.state.activeTab}
                             />
-                        </div>
-                    </Grid.Column>
-                    <Grid.Column width={3}>
-                        <Dropdown
-                            fluid
-                            search
-                            selection
-                            onChange={this.onLanguageFilterChange}
-                            options={langsOptions}
-                            value={this.props.languageFilter}
-                        />
-                    </Grid.Column>
-                </Grid.Row>
-                {this._renderTabContent()}
+                        </Grid.Column>
+                    </Grid.Row>
+                    <Grid.Row>
+                        <Grid.Column width={13}>
+                            <div className="pull-right">
+                                {this.renderPagination()}
+                            </div>
+
+                            <div className="pull-right" style={{ height: '100%', marginRight: 20 }}>
+                                <Input
+                                    style={{ height: '100%' }}
+                                    type="text"
+                                    icon="search"
+                                    placeholder="Search"
+                                    value={this.props.searchFilter}
+                                    onChange={(e, { value }) => this.onSearchChange(value)}
+                                />
+                            </div>
+                        </Grid.Column>
+                        <Grid.Column width={3}>
+                            <Dropdown
+                                fluid
+                                search
+                                selection
+                                onChange={this.onLanguageFilterChange}
+                                options={langsOptions}
+                                value={this.props.languageFilter}
+                            />
+                        </Grid.Column>
+                    </Grid.Row>
+                    {this._renderTabContent()}
+                </RoleRenderer>
             </Grid>
         )
     }
@@ -170,4 +173,4 @@ const mapDispatchToProps = (dispatch) => ({
 
 
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(authorizeUser(Review, ['admin', 'review'])));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Review));

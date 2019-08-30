@@ -12,6 +12,7 @@ import * as videoActions from '../modules/actions';
 import authorizeUser from '../../../../shared/hoc/authorizeUser';
 import AddHumanVoiceModal from '../../../../shared/components/AddHumanVoiceModal';
 import VideosTabs from '../VideosTabs';
+import RoleRenderer from '../../../../shared/containers/RoleRenderer';
 
 class Translated extends React.Component {
     componentWillMount = () => {
@@ -60,79 +61,80 @@ class Translated extends React.Component {
     render() {
         return (
             <Grid style={{ textAlign: 'center' }}>
-                    <Grid.Row>
-                        <Grid.Column width={16}>
-                            <VideosTabs />
-                        </Grid.Column>
-                    </Grid.Row>
-                <LoaderComponent active={this.props.videosLoading}>
-                    <Grid.Row>
-                        <Grid.Column width={16}>
-                            <div className="pull-right">
-                                {this.renderPagination()}
-                            </div>
-                        </Grid.Column>
-                    </Grid.Row>
-                    {this.props.translatedArticles.map((translatedArticle) => (
-                        <Grid.Row key={`translated-article-container-${translatedArticle.video._id}`}>
-                            <Grid.Column width={16} style={{ textAlign: 'left', margin: '1rem' }}>
-                                <h3>{translatedArticle.video.title}</h3>
+                <Grid.Row>
+                    <Grid.Column width={16}>
+                        <VideosTabs />
+                    </Grid.Column>
+                </Grid.Row>
+                <RoleRenderer roles={['admin', 'translate']}>
+                    <LoaderComponent active={this.props.videosLoading}>
+                        <Grid.Row>
+                            <Grid.Column width={16}>
+                                <div className="pull-right">
+                                    {this.renderPagination()}
+                                </div>
                             </Grid.Column>
-                            <Grid.Column width={4}>
-                                <Card fluid>
-                                    <video src={translatedArticle.video.url} width="100%" height="100%" controls preload="false" />
-                                    {/* <Card.Content>
+                        </Grid.Row>
+                        {this.props.translatedArticles.map((translatedArticle) => (
+                            <Grid.Row key={`translated-article-container-${translatedArticle.video._id}`}>
+                                <Grid.Column width={16} style={{ textAlign: 'left', margin: '1rem' }}>
+                                    <h3>{translatedArticle.video.title}</h3>
+                                </Grid.Column>
+                                <Grid.Column width={4}>
+                                    <Card fluid>
+                                        <video src={translatedArticle.video.url} width="100%" height="100%" controls preload="false" />
+                                        {/* <Card.Content>
                                         <Link to={routes.organizationArticle(translatedArticle.video.article)}>
                                             Original {this.getLanguage(translatedArticle.video.langCode)}
                                         </Link>
                                         <p>Number of speakers {translatedArticle.video.numberOfSpeakers}</p>
                                     </Card.Content> */}
-                                    <Button fluid color="blue" onClick={() => {
-                                        this.props.setSelectedVideo(translatedArticle.video);
-                                        this.props.setAddHumanVoiceModalVisible(true);
-                                    }}>Translate</Button>
-                                </Card>
-                            </Grid.Column>
-                            <Grid.Column width={12}>
-                                <Grid>
-                                    <Grid.Row>
-                                        {translatedArticle.articles.map((article) => (
-                                            <Grid.Column width={6} key={`translated-article-article-${article._id}`}>
-                                                <Card fluid>
-                                                    <Card.Header style={{ padding: '1rem', fontWeight: 'bold' }}>
-                                                        <Link to={routes.translationArticle(translatedArticle.video.article) + `?lang=${article.langCode}`}>
-                                                            {isoLangs[article.langCode] ? isoLangs[article.langCode].name : article.langCode}
-                                                        </Link>
-                                                    </Card.Header>
-                                                    <Card.Content>
-                                                        <Link to={routes.translationArticle(translatedArticle.video.article, article.langCode)}>
-                                                            <Button color="blue">
-                                                                {article.metrics.completed.total}% Completed
+                                        <Button fluid color="blue" onClick={() => {
+                                            this.props.setSelectedVideo(translatedArticle.video);
+                                            this.props.setAddHumanVoiceModalVisible(true);
+                                        }}>Translate</Button>
+                                    </Card>
+                                </Grid.Column>
+                                <Grid.Column width={12}>
+                                    <Grid>
+                                        <Grid.Row>
+                                            {translatedArticle.articles.map((article) => (
+                                                <Grid.Column width={6} key={`translated-article-article-${article._id}`}>
+                                                    <Card fluid>
+                                                        <Card.Header style={{ padding: '1rem', fontWeight: 'bold' }}>
+                                                            <Link to={routes.translationArticle(translatedArticle.video.article) + `?lang=${article.langCode}`}>
+                                                                {isoLangs[article.langCode] ? isoLangs[article.langCode].name : article.langCode}
+                                                            </Link>
+                                                        </Card.Header>
+                                                        <Card.Content>
+                                                            <Link to={routes.translationArticle(translatedArticle.video.article, article.langCode)}>
+                                                                <Button color="blue">
+                                                                    {article.metrics.completed.total}% Completed
                                                                 </Button>
-                                                        </Link>
-                                                        <h3 style={{ marginTop: '1rem' }}>Voice translations</h3>
-                                                        {article.metrics.speakersMetrics.map(speakerMetric => (
-                                                            <div key={`speaker-voice-metric-${speakerMetric.speaker.speakerNumber}`}>
-                                                                <p>Speaker {speakerMetric.speaker.speakerNumber} ( {speakerMetric.speaker.speakerGender} )</p>
-                                                                <Progress progress indicating percent={speakerMetric.progress} style={{ marginTop: '0.5rem' }} />
-                                                            </div>
-                                                        ))}
-                                                        <h3 style={{ marginTop: '1rem' }}>Text translations</h3>
-                                                        <Progress progress indicating percent={article.metrics.completed.text} />
-                                                    </Card.Content>
-                                                </Card>
-                                            </Grid.Column>
-                                        ))}
-                                    </Grid.Row>
-                                </Grid>
-                            </Grid.Column>
-                        </Grid.Row>
-                    ))}
+                                                            </Link>
+                                                            <h3 style={{ marginTop: '1rem' }}>Voice translations</h3>
+                                                            {article.metrics.speakersMetrics.map(speakerMetric => (
+                                                                <div key={`speaker-voice-metric-${speakerMetric.speaker.speakerNumber}`}>
+                                                                    <p>Speaker {speakerMetric.speaker.speakerNumber} ( {speakerMetric.speaker.speakerGender} )</p>
+                                                                    <Progress progress indicating percent={speakerMetric.progress} style={{ marginTop: '0.5rem' }} />
+                                                                </div>
+                                                            ))}
+                                                            <h3 style={{ marginTop: '1rem' }}>Text translations</h3>
+                                                            <Progress progress indicating percent={article.metrics.completed.text} />
+                                                        </Card.Content>
+                                                    </Card>
+                                                </Grid.Column>
+                                            ))}
+                                        </Grid.Row>
+                                    </Grid>
+                                </Grid.Column>
+                            </Grid.Row>
+                        ))}
 
-                    {this._renderAddHumanVoiceModal()}
+                        {this._renderAddHumanVoiceModal()}
                     </LoaderComponent>
-
-                </Grid>
+                </RoleRenderer>
+            </Grid>
         )
     }
 }
@@ -156,4 +158,4 @@ const mapDispatchToProps = (dispatch) => ({
     fetchTranslatedArticles: (organization, page) => dispatch(videoActions.fetchTranslatedArticles(organization, page))
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(withRouter(authorizeUser(Translated, ['admin', 'translate'])));
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Translated));
