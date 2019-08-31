@@ -49,6 +49,8 @@ class Dashboard extends React.Component {
     }
 
     componentDidMount = () => {
+        this.props.setNewOrganizationLogo(null);
+        this.props.setNewOrganizationName('');
         this.websocketConnection = websockets.createWebsocketConnection(WEBSOCKET_SERVER_URL, {
             path: '/socket.io',
             transports: ['websocket'],
@@ -191,20 +193,20 @@ class Dashboard extends React.Component {
             <Dropdown icon={<Avatar name={user.email} size={40} round="50%" />} floating labeled direction="left">
                 <Dropdown.Menu style={{ minWidth: 200 }}>
                     <Dropdown.Header>MY Organizations</Dropdown.Header>
-                    {user.organizationRoles.map((role) => (
-                        <Dropdown.Item
-                            active={organization._id === role.organization._id}
-                            key={`organization-dropdown-${role.organization._id}`}
-                            onClick={() => this.onSwitchOrganization(role)}
-                        >
-                            {role.organization.name}
-                            {organization._id !== role.organization._id && (
-                                <div className="pull-right">
-                                    <Icon name="arrow right" />
-                                </div>
-                            )}
-                        </Dropdown.Item>
-                    ))}
+                        {user.organizationRoles.map((role) => (
+                            <Dropdown.Item
+                                active={organization._id === role.organization._id}
+                                key={`organization-dropdown-${role.organization._id}`}
+                                onClick={() => this.onSwitchOrganization(role)}
+                            >
+                                {role.organization.name}
+                                {organization._id !== role.organization._id && (
+                                    <div className="pull-right">
+                                        <Icon name="arrow right" />
+                                    </div>
+                                )}
+                            </Dropdown.Item>
+                        ))}
                     <Dropdown.Divider />
                     <Dropdown.Item onClick={() => this.setState({ createOrganizationModalVisible: true })}>
                         Create Organization
@@ -232,8 +234,11 @@ class Dashboard extends React.Component {
                                     {this.canUpload() && (
                                         <React.Fragment>
 
-                                            <div className={`upload-container ${!organization.logo ? 'visible' : ''}`}>
-                                                <Button onClick={() => this.uploadLogoRef.click()}>
+                                            <div
+                                                onClick={() => this.uploadLogoRef.click()}
+                                                className={`upload-container ${!organization.logo ? 'visible' : ''}`}
+                                            >
+                                                <Button>
                                                     Upload Logo
                                                 </Button>
                                             </div>
@@ -248,7 +253,7 @@ class Dashboard extends React.Component {
 
                                         </React.Fragment>
                                     )}
-                                    <img src={this.props.organization && this.props.organization.logo ? this.props.organization.logo : '/img/logo.png'} alt="Video Wiki Logo" />
+                                    <img style={{ width: '100%' }} src={this.props.organization && this.props.organization.logo ? this.props.organization.logo : '/img/logo.png'} alt="Logo" />
 
                                     <Dimmer active={this.props.uploadLogoLoading}>
                                         <Loader />
@@ -286,7 +291,7 @@ class Dashboard extends React.Component {
                                                         onClick={() => this.setState({ uploadFormOpen: true })} style={{ marginRight: 20 }}>
                                                         <Icon name="upload" />
                                                         Upload New Video
-                                                </Button>
+                                                    </Button>
                                                     <UploadNewVideoModal
                                                         open={this.state.uploadFormOpen}
                                                         onClose={() => this.setState({ uploadFormOpen: false })}

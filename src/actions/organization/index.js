@@ -74,7 +74,7 @@ export const createOrganization = (name, logoFile) => dispatch => {
     dispatch(setCreateOrganizationLoading(true));
     const req = requestAgent.post(Api.organization.createOrganization())
     .field('name', name)
-    if (logoFile && Object.keys(logoFile).length > 0) {
+    if (logoFile) {
         req.attach('logo', logoFile);
     }
     req.then((res) => {
