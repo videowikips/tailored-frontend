@@ -458,11 +458,11 @@ class VideoTimeline extends React.Component {
                     const nearestSubtitle = subtitles.reverse().find((s) => s.startTime < newSubtitle.startTime && s.endTime < newSubtitle.endTime)
                     // If the nearest subtitle doesn't exist, then there's no subtitle before that ( it's in the first slide )
                     if (nearestSubtitle) {
-                        newSubtitle.slideIndex = nearestSubtitle.slideIndex;
-                        newSubtitle.subslideIndex = nearestSubtitle.subslideIndex;
+                        newSubtitle.slidePosition = nearestSubtitle.slidePosition;
+                        newSubtitle.subslidePosition = nearestSubtitle.subslidePosition;
                     } else {
-                        newSubtitle.slideIndex = 0;
-                        newSubtitle.subslideIndex = 0;
+                        newSubtitle.slidePosition = 0;
+                        newSubtitle.subslidePosition = 0;
                     }
 
                     newSubtitle.startTime /= 1000;

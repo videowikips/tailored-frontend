@@ -99,8 +99,8 @@ class Convert extends React.Component {
     onSubtitleChange = (subtitle, subtitleIndex, changes) => {
         // this.props.onSaveSubtitle(subtitle, index)
         // this.props.setSubtitles(subtitles);
-        const { slideIndex, subslideIndex } = subtitle;
-        this.props.updateSubslide(slideIndex, subslideIndex, subtitle);
+        const { slidePosition, subslidePosition } = subtitle;
+        this.props.updateSubslide(slidePosition, subslidePosition, subtitle);
     }
 
     onVideoLoad = (e) => {
@@ -148,8 +148,8 @@ class Convert extends React.Component {
     }
 
     onSaveSubtitle = (subtitle, subtitleIndex, changes) => {
-        const { slideIndex, subslideIndex } = subtitle;
-        this.props.updateSubslide(slideIndex, subslideIndex, changes);
+        const { slidePosition, subslidePosition } = subtitle;
+        this.props.updateSubslide(slidePosition, subslidePosition, changes);
     }
 
     onAddSubtitle = (subtitle) => {
@@ -157,15 +157,13 @@ class Convert extends React.Component {
     }
 
     onSubslideDelete = (subtitle, subtitleIndex) => {
-        const { slideIndex, subslideIndex } = subtitle;
-        console.log(subtitle, subtitleIndex)
-        this.props.onDeleteSubslide(slideIndex, subslideIndex);
+        const { slidePosition, subslidePosition } = subtitle;
+        this.props.onDeleteSubslide(slidePosition, subslidePosition);
     }
 
     onSubtitleSplit = (subtitle, wordIndex) => {
-        const { slideIndex, subslideIndex } = subtitle;
-        console.log(slideIndex, subslideIndex, wordIndex)
-        this.props.onSplitSubslide(slideIndex, subslideIndex, wordIndex)
+        const { slidePosition, subslidePosition } = subtitle;
+        this.props.onSplitSubslide(slidePosition, subslidePosition, wordIndex)
     }
 
     onSpeakerGenderChange = (speaker, gender) => {
@@ -636,10 +634,10 @@ const mapDispatchToProps = (dispatch) => ({
     convertVideoToArticle: (videoId, articleId, toEnglish) => dispatch(videoActions.convertVideoToArticle(videoId, articleId, toEnglish)),
     setToEnglish: (toEnglish) => dispatch(articleActions.setToEnglish(toEnglish)),
     fetchArticleByVideoId: id => dispatch(articleActions.fetchArticleByVideoId(id)),
-    updateSubslide: (slideIndex, subslideIndex, changes) => dispatch(articleActions.updateSubslide(slideIndex, subslideIndex, changes)),
-    onSplitSubslide: (slideIndex, subslideIndex, wordIndex) => dispatch(articleActions.splitSubslide(slideIndex, subslideIndex, wordIndex)),
+    updateSubslide: (slidePosition, subslidePosition, changes) => dispatch(articleActions.updateSubslide(slidePosition, subslidePosition, changes)),
+    onSplitSubslide: (slidePosition, subslidePosition, wordIndex) => dispatch(articleActions.splitSubslide(slidePosition, subslidePosition, wordIndex)),
     addSubslide: subslide => dispatch(articleActions.addSubslide(subslide)),
-    onDeleteSubslide: (slideIndex, subslideIndex) => dispatch(articleActions.deleteSubslide(slideIndex, subslideIndex)),
+    onDeleteSubslide: (slidePosition, subslidePosition) => dispatch(articleActions.deleteSubslide(slidePosition, subslidePosition)),
     setSlidesToSubtitles: slides => dispatch(articleActions.setSlidesToSubtitles(slides)),
     setSubtitles: subtitles => dispatch(articleActions.setSubtitles(subtitles)),
     setSelectedSubtitle: (subtitle, index) => dispatch(articleActions.setSelectedSubtitle(subtitle, index)),

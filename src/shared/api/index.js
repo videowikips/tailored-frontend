@@ -12,10 +12,10 @@ export default {
     article: {
         getById: id => `${API_ROOT}/article/${id}`,
         getbyVideoId: id => `${API_ROOT}/article/by_video_id?videoId=${id}`,
-        updateSubslide: (articleId, slideIndex, subslideIndex) => `${API_ROOT}/article/${articleId}/slides/${slideIndex}/content/${subslideIndex}`,
-        splitSubslide: (articleId, slideIndex, subslideIndex) => `${API_ROOT}/article/${articleId}/slides/${slideIndex}/content/${subslideIndex}/split`,
-        addSubslide: (articleId, slideIndex, subslideIndex) => `${API_ROOT}/article/${articleId}/slides/${slideIndex}/content/${subslideIndex}`,
-        deleteSubslide: (articleId, slideIndex, subslideIndex) => `${API_ROOT}/article/${articleId}/slides/${slideIndex}/content/${subslideIndex}`,
+        updateSubslide: (articleId, slidePosition, subslidePosition) => `${API_ROOT}/article/${articleId}/slides/${slidePosition}/content/${subslidePosition}`,
+        splitSubslide: (articleId, slidePosition, subslidePosition) => `${API_ROOT}/article/${articleId}/slides/${slidePosition}/content/${subslidePosition}/split`,
+        addSubslide: (articleId, slidePosition, subslidePosition) => `${API_ROOT}/article/${articleId}/slides/${slidePosition}/content/${subslidePosition}`,
+        deleteSubslide: (articleId, slidePosition, subslidePosition) => `${API_ROOT}/article/${articleId}/slides/${slidePosition}/content/${subslidePosition}`,
         updateSpeakers: (articleId) => `${API_ROOT}/article/${articleId}/speakersProfile`,
         getTranslatedArticles: (params) => `${API_ROOT}/article/translations?${querystring.encode(params)}`,
 

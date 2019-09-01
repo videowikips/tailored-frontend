@@ -3,13 +3,14 @@ import Api from '../../shared/api';
 import requestAgent from '../../shared/utils/requestAgent';
 import { SPEAKER_BACKGROUND_COLORS } from '../../shared/constants';
 import NotificationService from '../../shared/utils/NotificationService';
+import { getSlideAndSubslideIndexFromPosition } from '../../shared/utils/helpers';
 
 function formatSubslideToSubtitle(subslide) {
     return ({ ...subslide, startTime: subslide.startTime * 1000, endTime: subslide.endTime * 1000, text: subslide.text, speakerNumber: subslide.speakerProfile.speakerNumber, backgroundColor: SPEAKER_BACKGROUND_COLORS[subslide.speakerProfile.speakerNumber] })
 }
 
 function generateSubtitlesFromSlides(slides) {
-    return slides.reduce((acc, slide, slideIndex) => acc.concat(slide.content.map((s, subslideIndex) => ({ ...s, slideIndex, subslideIndex }))), [])
+    return slides.reduce((acc, slide, slideIndex) => acc.concat(slide.content.map((s, subslideIndex) => ({ ...s, slidePosition: slide.position, subslidePosition: s.position, slideIndex, subslideIndex }))), [])
         .filter((s) => !s.silent)
         .map(formatSubslideToSubtitle);
 }
@@ -102,14 +103,15 @@ export const fetchArticleByVideoId = videoId => dispatch => {
         })
 }
 
-export const deleteSubslide = (slideIndex, subslideIndex) => (dispatch, getState) => {
+export const deleteSubslide = (slidePosition, subslidePosition) => (dispatch, getState) => {
     dispatch(updateSubslideLoading());
     const article = { ...getState().article.article };
     console.log(article);
     requestAgent
-        .delete(Api.article.deleteSubslide(article._id, slideIndex, subslideIndex))
+        .delete(Api.article.deleteSubslide(article._id, slidePosition, subslidePosition))
         .then((res) => {
             // const article = res.body;
+            const { slideIndex, subslideIndex } = getSlideAndSubslideIndexFromPosition(article.slides, slidePosition, subslidePosition);
             article.slides[slideIndex].content.splice(subslideIndex, 1);
             dispatch(setSlidesToSubtitles(article.slides));
             dispatch(updateSubslideSuccess(article));
@@ -122,13 +124,14 @@ export const deleteSubslide = (slideIndex, subslideIndex) => (dispatch, getState
         })
 }
 
-export const updateSubslide = (slideIndex, subslideIndex, changes) => (dispatch, getState) => {
+export const updateSubslide = (slidePosition, subslidePosition, changes) => (dispatch, getState) => {
     dispatch(updateSubslideLoading());
     const article = { ...getState().article.article };
     const { selectedSubtitle } = getState().article;
     requestAgent
-        .patch(Api.article.updateSubslide(article._id, slideIndex, subslideIndex), changes)
+        .patch(Api.article.updateSubslide(article._id, slidePosition, subslidePosition), changes)
         .then((res) => {
+            const { slideIndex, subslideIndex } = getSlideAndSubslideIndexFromPosition(article.slides, slidePosition, subslidePosition);
             // const article = res.body;
             Object.keys(res.body.changes).forEach(key => {
                 article.slides[slideIndex].content[subslideIndex][key] = res.body.changes[key];
@@ -151,12 +154,11 @@ export const updateSubslide = (slideIndex, subslideIndex, changes) => (dispatch,
         })
 }
 
-export const splitSubslide = (slideIndex, subslideIndex, wordIndex) => (dispatch, getState) => {
+export const splitSubslide = (slidePosition, subslidePosition, wordIndex) => (dispatch, getState) => {
     dispatch(updateSubslideLoading());
     const article = { ...getState().article.article };
-
     requestAgent
-    .post(Api.article.splitSubslide(article._id, slideIndex, subslideIndex), { wordIndex })
+    .post(Api.article.splitSubslide(article._id, slidePosition, subslidePosition), { wordIndex })
     .then((res) => {
         const { article } = res.body;
         dispatch(updateSubslideSuccess(article));
@@ -176,19 +178,20 @@ export const splitSubslide = (slideIndex, subslideIndex, wordIndex) => (dispatch
 
 export const addSubslide = (subslide) => (dispatch, getState) => {
     const article = { ...getState().article.article };
-    const { slideIndex, subslideIndex } = subslide;
+    const { slidePosition, subslidePosition } = subslide;
     console.log('subslide', subslide)
     requestAgent
-        .post(Api.article.addSubslide(article._id, slideIndex, subslideIndex), subslide)
+        .post(Api.article.addSubslide(article._id, slidePosition, subslidePosition), subslide)
         .then((res) => {
             // const article = res.body;
             const { article } = res.body;
-            const subtitles = generateSubtitlesFromSlides(article.slides)
-            const selectedSubtitleIndex = subtitles.findIndex((s) => s.slideIndex === slideIndex && s.subslideIndex === subslideIndex);
+            // const subtitles = generateSubtitlesFromSlides(article.slides)
+            // const { slideIndex, subslideIndex } = getSlideAndSubslideIndexFromPosition(article.slides, slidePosition, subslidePosition);
+            // const selectedSubtitleIndex = subtitles.findIndex((s) => s.slidePosition === slidePosition && s.subslidePosition === subslidePosition);
 
             dispatch(setSlidesToSubtitles(article.slides));
             dispatch(updateSubslideSuccess(article));
-            dispatch(setSelectedSubtitle(subtitles[selectedSubtitleIndex], selectedSubtitleIndex));
+            // dispatch(setSelectedSubtitle(subtitles[selectedSubtitleIndex], selectedSubtitleIndex));
 
         })
         .catch(err => {

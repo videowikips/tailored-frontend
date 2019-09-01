@@ -72,3 +72,11 @@ export function canUserAccess(user, organization, requiredRoles) {
   }
   return canView;
 }
+
+
+export function getSlideAndSubslideIndexFromPosition(slides, slidePosition, subslidePosition) {
+  const slideIndex = slides.findIndex((s) => parseInt(s.position) === parseInt(slidePosition));
+  if (slideIndex === -1) return { };
+  const subslideIndex = slides[slideIndex].content.findIndex((s) => parseInt(s.position) === parseInt(subslidePosition));
+  return { slideIndex, subslideIndex };
+}
