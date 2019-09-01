@@ -60,13 +60,13 @@ export function cloneObject(obj) {
   return JSON.parse(JSON.stringify(obj))
 }
 
-export function userCanView(user, organization, roles) {
+export function canUserAccess(user, organization, requiredRoles) {
   const userRole = user.organizationRoles.find((r) => r.organization._id === organization._id)
   let canView = false;
   if (userRole && userRole.organizationOwner) {
     canView = true;
   } else if (userRole) {
-    if (userRole && userRole.permissions.some(p => roles.indexOf(p) !== -1)) {
+    if (userRole && userRole.permissions.some(p => requiredRoles.indexOf(p) !== -1)) {
       canView = true;
     }
   }

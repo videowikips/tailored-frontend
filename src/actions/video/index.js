@@ -115,9 +115,9 @@ export const fetchVideoById = videoId => dispatch => {
         })
 }
 
-export const convertVideoToArticle = (videoId, articleId) => (dispatch, getState) => {
+export const convertVideoToArticle = (videoId, articleId, toEnglish) => (dispatch, getState) => {
     requestAgent
-        .post(Api.video.convertVideo(videoId), { articleId })
+        .post(Api.video.convertVideo(videoId), { articleId, toEnglish })
         .then(res => {
             console.log(res);
             const { stages } = getState().video.convertStages;

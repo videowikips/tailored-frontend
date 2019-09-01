@@ -47,6 +47,11 @@ const updateSubslideFailed = (err) => ({
     payload: err,
 })
 
+export const setToEnglish = toEnglish => ({
+    type: actionTypes.SET_TO_ENGLISH,
+    payload: toEnglish,
+})
+
 export const setSubtitles = (subtitles) => ({
     type: actionTypes.SET_SUBTITLES,
     payload: [...subtitles],

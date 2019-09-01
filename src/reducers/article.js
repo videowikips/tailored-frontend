@@ -9,7 +9,8 @@ const INITIAL_STATE = {
     selectedSubtitle: {
         subtitle: null,
         subtitleIndex: null,
-    }
+    },
+    toEnglish: false,
 }
 
 export default function (state = INITIAL_STATE, action) {
@@ -32,6 +33,8 @@ export default function (state = INITIAL_STATE, action) {
             return { ...state, article: action.payload };
         case actionTypes.SET_SELECTED_SUBTITLE:
             return { ...state, selectedSubtitle: action.payload };
+        case actionTypes.SET_TO_ENGLISH:
+            return { ...state, toEnglish: action.payload };
         default:
             return state;
     }

@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { Progress, Grid, Dropdown, Button, Icon, Modal } from 'semantic-ui-react';
-
+import Switch from 'react-switch';
 import * as articleActions from '../../actions/article';
 import * as videoActions from '../../actions/video';
 import ProgressBoxes from '../../shared/components/ProgressBoxes';
@@ -35,6 +35,7 @@ class Convert extends React.Component {
     componentWillMount() {
         this.startPoller();
         this.props.fetchArticleByVideoId(this.props.match.params.videoId);
+        this.props.setToEnglish(false);
     }
 
     componentWillUnmount() {
@@ -231,7 +232,7 @@ class Convert extends React.Component {
 
     onConvertVideo = () => {
         this.setState({ isConfirmConvertModalVisible: false });
-        this.props.convertVideoToArticle(this.props.video._id, this.props.article._id)
+        this.props.convertVideoToArticle(this.props.video._id, this.props.article._id, this.props.toEnglish)
     }
 
     renderConvertConfirmModal = () => {
@@ -434,6 +435,26 @@ class Convert extends React.Component {
                                         Save and Convert <Icon name={"arrow right"} />
                                     </Button>
                                 </div>
+
+                                <div style={{ width: '90%', margin: '2rem auto', justifyContent: 'flex-end', display: 'flex', alignItems: 'center', color: 'white' }}>
+                                    Convert directly to English
+                                   <div style={{ display: 'inline-block', marginLeft: 20 }}>
+                                        <Switch
+                                            checked={this.props.toEnglish}
+                                            onChange={this.props.setToEnglish}
+                                            onColor="#86d3ff"
+                                            onHandleColor="#2693e6"
+                                            handleDiameter={30}
+                                            uncheckedIcon={false}
+                                            checkedIcon={false}
+                                            boxShadow="0px 1px 5px rgba(0, 0, 0, 0.6)"
+                                            activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
+                                            height={20}
+                                            width={48}
+                                        />
+                                    </div>
+                                </div>
+
                                 <Grid.Row>
                                     <Grid.Column width={16}>
                                         <Grid style={{ display: 'flex', justifyContent: 'center', marginBottom: '.2rem' }}>
@@ -603,10 +624,14 @@ const mapStateToProps = ({ video, article }) => ({
     selectedSubtitle: article.selectedSubtitle,
     stages: video.convertStages.stages,
     activeStageIndex: video.convertStages.activeStageIndex,
+    toEnglish: article.toEnglish,
 })
 
 const mapDispatchToProps = (dispatch) => ({
     fetchVideoById: (id) => dispatch(videoActions.fetchVideoById(id)),
+    resetState: () => dispatch(videoActions.reset()),
+    convertVideoToArticle: (videoId, articleId, toEnglish) => dispatch(videoActions.convertVideoToArticle(videoId, articleId, toEnglish)),
+    setToEnglish: (toEnglish) => dispatch(articleActions.setToEnglish(toEnglish)),
     fetchArticleByVideoId: id => dispatch(articleActions.fetchArticleByVideoId(id)),
     updateSubslide: (slideIndex, subslideIndex, changes) => dispatch(articleActions.updateSubslide(slideIndex, subslideIndex, changes)),
     onSplitSubslide: (slideIndex, subslideIndex, wordIndex) => dispatch(articleActions.splitSubslide(slideIndex, subslideIndex, wordIndex)),
@@ -616,8 +641,6 @@ const mapDispatchToProps = (dispatch) => ({
     setSubtitles: subtitles => dispatch(articleActions.setSubtitles(subtitles)),
     setSelectedSubtitle: (subtitle, index) => dispatch(articleActions.setSelectedSubtitle(subtitle, index)),
     onSpeakersChange: speakers => dispatch(articleActions.updateSpeakers(speakers)),
-    convertVideoToArticle: (videoId, articleId) => dispatch(videoActions.convertVideoToArticle(videoId, articleId)),
-    resetState: () => dispatch(videoActions.reset())
 })
 
 export default withRouter(
