@@ -15,6 +15,7 @@ import UploadNewVideoModal from '../../shared/components/UploadNewVideoModal';
 import NotificationService from '../../shared/utils/NotificationService';
 import { uploadVideo } from '../../actions/video';
 import * as organizationActions from '../../actions/organization';
+import * as pollerActions from '../../actions/poller';
 import routes from '../../shared/routes';
 
 const NAV_LINKS = [
@@ -31,6 +32,8 @@ const NAV_LINKS = [
         route: routes.organizationUsers()
     }
 ]
+
+const AUTHENTICATE_USER_JOB = 'AUTHENTICATE_USER_JOB';
 
 class Dashboard extends React.Component {
     state = {
@@ -66,7 +69,9 @@ class Dashboard extends React.Component {
                     this.props.history.push(routes.logout())
                 }, 1000);
             })
-            websockets.emitEvent(websockets.websocketsEvents.AUTHENTICATE, { organization: this.props.organization._id, token: this.props.userToken });
+            this.props.startJob({ jobName: AUTHENTICATE_USER_JOB, interval: 60 * 1000, immediate: true }, () => {
+                websockets.emitEvent(websockets.websocketsEvents.AUTHENTICATE, { organization: this.props.organization._id, token: this.props.userToken });
+            })   
         }
     }
 
@@ -339,7 +344,8 @@ const mapDispatchToProps = (dispatch) => ({
     setNewOrganizationName: name => dispatch(organizationActions.setNewOrganizationName(name)),
     setNewOrganizationLogo: file => dispatch(organizationActions.setNewOrganizationLogo(file)),
     createOrganization: (name, logoFile) => dispatch(organizationActions.createOrganization(name, logoFile)),
-    updateOrganizationLogo: (file) => dispatch(organizationActions.updateOrganizationLogo(file))
+    updateOrganizationLogo: (file) => dispatch(organizationActions.updateOrganizationLogo(file)),
+    startJob: (options, callFunc) => dispatch(pollerActions.startJob(options, callFunc))
 })
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Dashboard));
