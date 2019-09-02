@@ -118,6 +118,7 @@ class Workstation extends React.Component {
         this.toggleRecording();
         if (recordedBlob) {
             const { slide, subslide } = this.getCurrentSlideAndSubslide();
+            console.log('recorded blob', recordedBlob)
             this.props.saveRecordedTranslation(slide.position, subslide.position, recordedBlob);
         }
     }

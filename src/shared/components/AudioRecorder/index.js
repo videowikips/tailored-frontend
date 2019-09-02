@@ -6,6 +6,8 @@ import NotificationService from '../../utils/NotificationService';
 import { Button, Icon } from 'semantic-ui-react';
 import moment from 'moment';
 import { formatTime } from '../../utils/helpers';
+import RecordRTC from 'recordrtc';
+import { getWaveHeader, decodeWaveData } from 'super-tiny-wave-decoder'
 
 // shim for AudioContext when it's not avb.
 window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
@@ -58,10 +60,8 @@ class AudioRecorder extends React.Component {
 
   componentWillUnmount = () => {
     try {
-      if (this.gumStream) {
-        this.gumStream.getAudioTracks().forEach((track) => track.stop());
-      }
-    } catch(e) {
+      this.stopMediaStream();
+    } catch (e) {
       console.log(e);
     }
   }
@@ -80,7 +80,7 @@ class AudioRecorder extends React.Component {
     const constraints = { audio: true, video: false }
     if (this.rec) {
       this.setState({ recording: true, startTime: Date.now() }, () => {
-        this.rec.start();
+        this.rec.startRecording();
         this.props.onStart();
       });
       return;
@@ -89,14 +89,14 @@ class AudioRecorder extends React.Component {
 
       getUserMedia(constraints).then((stream) => {
         console.log('getUserMedia() success, stream created, initializing Recorder.js ...');
-        this.audioContext = new AudioContext();
-        console.log('audio context', this.audioContext);
-        /*  assign to gumStream for later use  */
         this.gumStream = stream;
-        /* use the stream */
-        this.rec = new Recorder(this.audioContext, {
-          numChannels: 1,
-          onAnalysed: (waveData) => {
+
+        this.rec = RecordRTC(stream, {
+          type: 'audio',
+          mimeType: 'audio/wav',
+          recorderType: RecordRTC.StereoAudioRecorder,
+          timeSlice: 100,
+          ondataavailable: (blob) => {
             if (this.state.recording) {
               let remainingMS = null;
               if (this.state.recording && this.props.maxDuration && this.state.startTime) {
@@ -106,16 +106,16 @@ class AudioRecorder extends React.Component {
                   this.stopRecording();
                 }
               }
-
-              this.setState({ waveData, remainingMS });
+              this.setState({ remainingMS });
             }
-          },
-        })
+          }
+        });
 
         // start the recording process
-        this.rec.init(stream);
+        // this.rec.init(stream);
         this.setState({ recording: true, startTime: Date.now() }, () => {
-          this.rec.start();
+          this.rec.startRecording();
+          // this.rec.start();
           this.props.onStart();
         });
       }).catch((err) => {
@@ -128,16 +128,24 @@ class AudioRecorder extends React.Component {
     }
   }
 
-  stopRecording(cancel) {
+  stopMediaStream = () => {
+    if (this.rec) {
+      this.rec.stopRecording(() => {
+        this.rec.destroy();
+        this.gumStream.getAudioTracks().forEach((track) => track.stop());
+        this.gumStream = null;
+        this.rec = null;
+      })
+    }
+  }
+
+  stopRecording = (cancel) => {
     // tell the recorder to stop the recording
     this.setState({ waveData: null, recording: false, startTime: null, remainingMS: null }, () => {
       if (this.rec) {
-        this.rec.stop()
-          .then(({ blob }) => {
-            this.props.onStop(cancel ? null : blob);
-            // stop microphone access
-            // this.gumStream.getAudioTracks().forEach((track) => track.stop());
-          })
+        let blob = this.rec.getBlob();
+        this.props.onStop(cancel ? null : blob);
+        this.stopMediaStream();
       }
     });
   }
@@ -182,7 +190,7 @@ class AudioRecorder extends React.Component {
             {formatTime(this.state.remainingMS)}
           </div>
         )}
-        {this.state.waveData && (
+        {/* {this.state.waveData && (
           <div
             style={{ 'display': this.state.recording ? 'block' : 'none' }}
           >
@@ -193,7 +201,7 @@ class AudioRecorder extends React.Component {
               strokeColor="#000000"
             />
           </div>
-        )}
+        )} */}
 
       </div>
     )
