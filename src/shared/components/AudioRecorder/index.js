@@ -7,7 +7,6 @@ import { Button, Icon } from 'semantic-ui-react';
 import moment from 'moment';
 import { formatTime } from '../../utils/helpers';
 import RecordRTC from 'recordrtc';
-import { getWaveHeader, decodeWaveData } from 'super-tiny-wave-decoder'
 
 // shim for AudioContext when it's not avb.
 window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
@@ -130,12 +129,10 @@ class AudioRecorder extends React.Component {
 
   stopMediaStream = () => {
     if (this.rec) {
-      this.rec.stopRecording(() => {
-        this.rec.destroy();
-        this.gumStream.getAudioTracks().forEach((track) => track.stop());
-        this.gumStream = null;
-        this.rec = null;
-      })
+      this.rec.destroy();
+      this.gumStream.getAudioTracks().forEach((track) => track.stop());
+      this.gumStream = null;
+      this.rec = null;
     }
   }
 
@@ -143,9 +140,11 @@ class AudioRecorder extends React.Component {
     // tell the recorder to stop the recording
     this.setState({ waveData: null, recording: false, startTime: null, remainingMS: null }, () => {
       if (this.rec) {
-        let blob = this.rec.getBlob();
-        this.props.onStop(cancel ? null : blob);
-        this.stopMediaStream();
+        this.rec.stopRecording(() => {
+          let blob = this.rec.getBlob();
+          this.props.onStop(cancel ? null : blob);
+          this.stopMediaStream();
+        })
       }
     });
   }
