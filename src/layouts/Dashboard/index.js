@@ -79,6 +79,7 @@ class Dashboard extends React.Component {
         if (this.websocketConnection) {
             websockets.disconnectConnection();
         }
+        this.props.stopJob(AUTHENTICATE_USER_JOB);
     }
 
     componentWillReceiveProps = (nextProps) => {
@@ -345,7 +346,8 @@ const mapDispatchToProps = (dispatch) => ({
     setNewOrganizationLogo: file => dispatch(organizationActions.setNewOrganizationLogo(file)),
     createOrganization: (name, logoFile) => dispatch(organizationActions.createOrganization(name, logoFile)),
     updateOrganizationLogo: (file) => dispatch(organizationActions.updateOrganizationLogo(file)),
-    startJob: (options, callFunc) => dispatch(pollerActions.startJob(options, callFunc))
+    startJob: (options, callFunc) => dispatch(pollerActions.startJob(options, callFunc)),
+    stopJob: jobName => dispatch(pollerActions.stopJob(jobName)),
 })
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Dashboard));

@@ -16,11 +16,9 @@ export const startJob = ({ jobName, interval, immediate }, callFunc) => (dispatc
 
 export const stopJob = jobName => (dispatch, getState) => {
     const { jobs } = getState().poller;
-    if (!jobs[jobName]) {
-        throw new Error('Invalid job name');
+    if (jobs[jobName]) {
+        clearInterval(jobs[jobName].id);
+        dispatch({ type: actionTypes.STOP_JOB, payload: { id: jobs[jobName].id, jobName } });
     }
-
-    clearInterval(jobs[jobName].id);
-    dispatch({ type: actionTypes.STOP_JOB, payload: { id: jobs[jobName].id, jobName } });
 
 }
