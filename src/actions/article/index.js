@@ -106,13 +106,10 @@ export const fetchArticleByVideoId = videoId => dispatch => {
 export const deleteSubslide = (slidePosition, subslidePosition) => (dispatch, getState) => {
     dispatch(updateSubslideLoading());
     const article = { ...getState().article.article };
-    console.log(article);
     requestAgent
         .delete(Api.article.deleteSubslide(article._id, slidePosition, subslidePosition))
         .then((res) => {
-            // const article = res.body;
-            const { slideIndex, subslideIndex } = getSlideAndSubslideIndexFromPosition(article.slides, slidePosition, subslidePosition);
-            article.slides[slideIndex].content.splice(subslideIndex, 1);
+            const { article } = res.body;
             dispatch(setSlidesToSubtitles(article.slides));
             dispatch(updateSubslideSuccess(article));
             dispatch(setSelectedSubtitle(null, null));
@@ -179,19 +176,12 @@ export const splitSubslide = (slidePosition, subslidePosition, wordIndex) => (di
 export const addSubslide = (subslide) => (dispatch, getState) => {
     const article = { ...getState().article.article };
     const { slidePosition, subslidePosition } = subslide;
-    console.log('subslide', subslide)
     requestAgent
         .post(Api.article.addSubslide(article._id, slidePosition, subslidePosition), subslide)
         .then((res) => {
-            // const article = res.body;
             const { article } = res.body;
-            // const subtitles = generateSubtitlesFromSlides(article.slides)
-            // const { slideIndex, subslideIndex } = getSlideAndSubslideIndexFromPosition(article.slides, slidePosition, subslidePosition);
-            // const selectedSubtitleIndex = subtitles.findIndex((s) => s.slidePosition === slidePosition && s.subslidePosition === subslidePosition);
-
-            dispatch(setSlidesToSubtitles(article.slides));
             dispatch(updateSubslideSuccess(article));
-            // dispatch(setSelectedSubtitle(subtitles[selectedSubtitleIndex], selectedSubtitleIndex));
+            dispatch(setSlidesToSubtitles(article.slides));
 
         })
         .catch(err => {

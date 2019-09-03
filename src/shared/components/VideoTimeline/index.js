@@ -450,10 +450,10 @@ class VideoTimeline extends React.Component {
                 }
 
                 // Check if the new subtitle has enough length and doesnt overflow with other subtitles
-                // const crossedSubtitleBackward = subtitles.find((s) => newSubtitle.startTime >= s.startTime & newSubtitle.startTime <= s.endTime)
-                // const crossedSubtitleForward = subtitles.find((s) => newSubtitle.endTime >= s.startTime & newSubtitle.endTime <= s.endTime)
-                const crossed = subtitles.find(s => newSubtitle.endTime < s.endTime && newSubtitle.startTime > s.startTime)
-                if (!crossed) {
+                const crossedSubtitleBackward = subtitles.find((s) => newSubtitle.startTime > s.startTime && newSubtitle.startTime < s.endTime)
+                const crossedSubtitleForward = subtitles.find((s) => newSubtitle.endTime > s.startTime && newSubtitle.endTime < s.endTime)
+                // const crossed = subtitles.find(s => newSubtitle.endTime < s.endTime && newSubtitle.startTime > s.startTime)
+                if (!crossedSubtitleBackward && !crossedSubtitleForward) {
                     // Find nearest subtitle to add the new one to it's slide
                     const nearestSubtitle = subtitles.reverse().find((s) => s.startTime < newSubtitle.startTime && s.endTime < newSubtitle.endTime)
                     // If the nearest subtitle doesn't exist, then there's no subtitle before that ( it's in the first slide )
