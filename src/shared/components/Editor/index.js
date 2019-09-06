@@ -65,11 +65,11 @@ class Editor extends Component {
         if (oldSlideIndex === 0) {
           tmpSlideIndex = 1;
         } else {
-          if (nextProps.article.slides.length === 1) {
-            tmpSlideIndex = 0;
-          } else {
-            tmpSlideIndex = oldSlideIndex - 1;
-          }
+          tmpSlideIndex = 0;
+          // if (nextProps.article.slides.length === 1) {
+          // } else {
+          //   tmpSlideIndex = oldSlideIndex - 1;
+          // }
         }
         this.setState({
           isPlaying: false,
