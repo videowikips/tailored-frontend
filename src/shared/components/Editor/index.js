@@ -63,7 +63,11 @@ class Editor extends Component {
         let tmpSlideIndex;
         const tmpSubslideIndex = 0 ;
         if (oldSlideIndex === 0) {
-          tmpSlideIndex = 1;
+          if (nextProps.article.slides.length === 1) {
+            tmpSlideIndex = 0;
+          } else {
+            tmpSlideIndex = 1;
+          }
         } else {
           tmpSlideIndex = 0;
           // if (nextProps.article.slides.length === 1) {
