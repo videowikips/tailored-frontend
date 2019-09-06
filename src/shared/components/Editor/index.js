@@ -58,20 +58,32 @@ class Editor extends Component {
     // If the isPlaying changes from the props, change in the state too
     if (this.props.isPlaying !== nextProps.isPlaying) {
       if (nextProps.isPlaying) {
-        const oldIndex = this.state.currentSlideIndex;
-        let tempIndex;
-        if (oldIndex === 0) {
-          tempIndex = 1;
+        const oldSlideIndex = this.state.currentSlideIndex;
+        const oldSubslideIndex = this.state.currentSubslideIndex;
+        let tmpSlideIndex;
+        const tmpSubslideIndex = 0 ;
+        if (oldSlideIndex === 0) {
+          tmpSlideIndex = 1;
         } else {
-          tempIndex = oldIndex - 1;
+          if (nextProps.article.slides.length === 1) {
+            tmpSlideIndex = 0;
+          } else {
+            tmpSlideIndex = oldSlideIndex - 1;
+          }
         }
         this.setState({
           isPlaying: false,
-          currentSlideIndex: tempIndex,
+          currentSlideIndex: tmpSlideIndex,
+          currentSubslideIndex: tmpSubslideIndex,
           showTextTransition: false,
         }, () => {
           setTimeout(() => {
-            this.setState({ isPlaying: true, currentSlideIndex: oldIndex, showTextTransition: true });
+            this.setState({
+                isPlaying: true,
+                currentSlideIndex: oldSlideIndex,
+                currentSubslideIndex: oldSubslideIndex,
+                showTextTransition: true,
+              });
           }, 50);
         })
       } else {
