@@ -18,4 +18,5 @@ export const SPEAKER_BACKGROUND_COLORS = {
 }
 
 
-export const WEBSOCKET_SERVER_URL = process.env.NODE_ENV === 'development' ? 'http://localhost:4000' : 'https://videowiki.org';
+export const WEBSOCKET_SERVER_URL = process.env.NODE_ENV === 'development' ? 'http://localhost:4000' : 'Fargate-tvw-backend-loadbalancer-426334897.eu-west-1.elb.amazonaws.com';
+export const API_ROOT = process.env.API_ROOT ? process.env.API_ROOT : (process.env.NODE_ENV === 'development' ? 'http://localhost:4000/api' : 'Fargate-tvw-backend-loadbalancer-426334897.eu-west-1.elb.amazonaws.com');
