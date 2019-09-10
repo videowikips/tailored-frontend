@@ -51,7 +51,8 @@
     "dev": "npm run start:dev",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "docker:prod": "node server.js"
   },
   "eslintConfig": {
     "extends": "react-app"
