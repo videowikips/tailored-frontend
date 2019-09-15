@@ -439,8 +439,9 @@ class VideoTimeline extends React.Component {
             if (e.dataTransfer.getData('text') && JSON.parse(e.dataTransfer.getData('text')).speaker) {
                 const { subtitles } = this.props
                 const left = this.state.barHalfSize - durationToPixels(this.state.currentTime - this.state.deltaMS, SCALE) + this.containerRef.getBoundingClientRect().x;
-                const deltaDur = Math.abs(parseInt((Math.round(left - e.clientX) / 100)) * 1000);
-                const startTime = Math.abs(this.state.deltaMS + deltaDur);
+                const deltaDur = Math.abs(parseFloat(((left - e.clientX) / 100)) * 1000);
+                const startTime = Math.abs(this.state.deltaMS + deltaDur - pixelsToDuration(this.containerRef.getBoundingClientRect().x, SCALE) / 10);
+                // debugger;
                 const { speaker } = JSON.parse(e.dataTransfer.getData('text'));
                 const newSubtitle = {
                     startTime: startTime,
