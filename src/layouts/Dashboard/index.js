@@ -213,10 +213,10 @@ class Dashboard extends React.Component {
                             )}
                         </Dropdown.Item>
                     ))}
-                    <Dropdown.Divider />
+                    {/* <Dropdown.Divider />
                     <Dropdown.Item onClick={() => this.setState({ createOrganizationModalVisible: true })}>
                         Create Organization
-                    </Dropdown.Item>
+                    </Dropdown.Item> */}
                     <Dropdown.Divider />
                     <Dropdown.Item onClick={() => this.props.history.push('/logout')}  >
                         <Icon name="log out" />
