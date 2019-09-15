@@ -71,7 +71,7 @@ class Dashboard extends React.Component {
             })
             this.props.startJob({ jobName: AUTHENTICATE_USER_JOB, interval: 60 * 1000, immediate: true }, () => {
                 websockets.emitEvent(websockets.websocketsEvents.AUTHENTICATE, { organization: this.props.organization._id, token: this.props.userToken });
-            })   
+            })
         }
     }
 
@@ -199,20 +199,20 @@ class Dashboard extends React.Component {
             <Dropdown icon={<Avatar name={user.email} size={40} round="50%" />} floating labeled direction="left">
                 <Dropdown.Menu style={{ minWidth: 200 }}>
                     <Dropdown.Header>MY Organizations</Dropdown.Header>
-                        {user.organizationRoles.map((role) => (
-                            <Dropdown.Item
-                                active={organization._id === role.organization._id}
-                                key={`organization-dropdown-${role.organization._id}`}
-                                onClick={() => this.onSwitchOrganization(role)}
-                            >
-                                {role.organization.name}
-                                {organization._id !== role.organization._id && (
-                                    <div className="pull-right">
-                                        <Icon name="arrow right" />
-                                    </div>
-                                )}
-                            </Dropdown.Item>
-                        ))}
+                    {user.organizationRoles.map((role) => (
+                        <Dropdown.Item
+                            active={organization._id === role.organization._id}
+                            key={`organization-dropdown-${role.organization._id}`}
+                            onClick={() => this.onSwitchOrganization(role)}
+                        >
+                            {role.organization.name}
+                            {organization._id !== role.organization._id && (
+                                <div className="pull-right">
+                                    <Icon name="arrow right" />
+                                </div>
+                            )}
+                        </Dropdown.Item>
+                    ))}
                     <Dropdown.Divider />
                     <Dropdown.Item onClick={() => this.setState({ createOrganizationModalVisible: true })}>
                         Create Organization
@@ -239,15 +239,27 @@ class Dashboard extends React.Component {
                                 <Card.Content className="logo-container">
                                     {this.canUpload() && (
                                         <React.Fragment>
-
-                                            <div
-                                                onClick={() => this.uploadLogoRef.click()}
-                                                className={`upload-container ${!organization.logo ? 'visible' : ''}`}
-                                            >
-                                                <Button>
-                                                    Upload Logo
+                                            {!organization.logo && (
+                                                <div
+                                                    onClick={() => this.uploadLogoRef.click()}
+                                                    className={`upload-container visible`}
+                                                >
+                                                    <Button>
+                                                        Upload Logo
                                                 </Button>
-                                            </div>
+                                                </div>
+                                            )}
+                                            {organization.logo && (
+                                                <div className="edit-logo-container">
+                                                    <Button
+                                                        // color="blue"
+                                                        onClick={() => this.uploadLogoRef.click()}
+                                                        basic
+                                                        icon="upload"
+                                                    />
+                                                    {/* <Icon name="edit" /> */}
+                                                </div>
+                                            )}
 
                                             <input
                                                 accept="image/*"

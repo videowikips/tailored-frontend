@@ -20,7 +20,11 @@
     background: rgba(0,0,0,0.4);
     visibility: hidden;
 }
-
+.edit-logo-container {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+}
 .upload-container.visible {
     visibility: visible;
 }
