@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Link } from 'react-router-dom';
 import { Progress, Grid, Dropdown, Button, Icon, Modal } from 'semantic-ui-react';
 import Switch from 'react-switch';
 import * as articleActions from '../../actions/article';
@@ -14,6 +14,7 @@ import loadingLottie from '../../shared/lottie/loading.json';
 import ProofreadingVideoPlayer from './ProofreadingVideoPlayer';
 import SplitterIcon from '../../shared/components/SplitterIcon';
 import SpeakerDragItem from './SpeakerDragItem';
+import routes from '../../shared/routes';
 
 class Convert extends React.Component {
 
@@ -426,13 +427,22 @@ class Convert extends React.Component {
                     <Grid.Row>
                         <Grid.Column width={16} style={{ padding: 0, backgroundColor: '#30343f' }}>
                             <Grid style={{ marginLeft: 0 }}>
-                                <div style={{ width: '90%', margin: '2rem auto', justifyContent: 'flex-end', display: 'flex', }}>
+                                <Grid.Row>
+                                    <Grid.Column width={16}>
 
-                                    {this.renderConvertConfirmModal()}
-                                    <Button color="green" onClick={() => this.setState({ isConfirmConvertModalVisible: true })} >
-                                        Save and Convert <Icon name={"arrow right"} />
-                                    </Button>
-                                </div>
+                                        <div style={{ width: '95%', margin: '1rem auto', justifyContent: 'space-between', display: 'flex', }}>
+                                            <Link to={routes.organizationVideos()} style={{ position: 'relative', left: '-2rem' }}>
+                                                <Button color="green">
+                                                    <Icon name={"arrow left"} /> Back
+                                            </Button>
+                                            </Link>
+                                            {this.renderConvertConfirmModal()}
+                                            <Button color="green" onClick={() => this.setState({ isConfirmConvertModalVisible: true })} >
+                                                Save and Convert <Icon name={"arrow right"} />
+                                            </Button>
+                                        </div>
+                                    </Grid.Column>
+                                </Grid.Row>
 
                                 {this.props.article && this.props.article.langCode !== 'en-US' && (
 
