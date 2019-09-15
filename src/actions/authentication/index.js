@@ -5,6 +5,7 @@ import Api from '../../shared/api';
 import requestAgent from '../../shared/utils/requestAgent';
 import { push } from 'connected-react-router';
 import routes from '../../shared/routes';
+import NotificationService from '../../shared/utils/NotificationService';
 
 export const authenticationSuccess = (userData) => ({
     type: actionTypes.AUTHENTICATION_SUCCESS,
@@ -40,6 +41,11 @@ const setUser = user => ({
     payload: user,
 })
 
+const setSignupLoading = loading => ({
+    type: actionTypes.SET_SIGNUP_LOADING,
+    payload: loading,
+})
+
 export const getUserDetails = () => (dispatch) => {
     dispatch(setGetUserDetailsLoading(true))
     requestAgent.get(Api.user.getUserDetails())
@@ -72,6 +78,8 @@ export const login = ({ email, password }) => dispatch => {
             })
             setTimeout(() => {
                 dispatch(authenticationSuccess({ token, user }));
+                dispatch(push(routes.organizationVideos()));
+
             }, 500);
         } else {
             dispatch(authenticationFailed('Email or Password in invalid'));
@@ -79,20 +87,32 @@ export const login = ({ email, password }) => dispatch => {
     });
 }
 
-export const signUp = ({ orgName, email, password }) => dispatch => {
+export const signUp = ({ orgName, email, password, logo }) => dispatch => {
+    dispatch(setSignupLoading(true))
+    const req = requestAgent.post(Api.authentication.register)
+    .field('email', email)
+    .field('password', password)
+    .field('orgName', orgName);
+    if (logo) {
+        req.attach('logo', logo);
+    }
 
-    requestAgent.post(Api.authentication.register, {
-        orgName,
-        email,
-        password
-    }).then(result => {
+    req.then(result => {
         const { success, message } = result.body;
 
         if (success) {
             dispatch(signUpSuccess());
+            login({email, password})(dispatch)
         } else {
             dispatch(signUpFaild(message));
         }
+        dispatch(setSignupLoading(false));
+
+    })
+    .catch((err) => {
+        console.log(err);
+        dispatch(setSignupLoading(false));
+        NotificationService.responseError(err);
     })
 }
 

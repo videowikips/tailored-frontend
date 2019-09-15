@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { Message } from 'semantic-ui-react';
+import { Message, Button } from 'semantic-ui-react';
 
 import { signUp } from '../../actions/authentication';
 
@@ -9,7 +9,8 @@ export class SignupForm extends Component {
     state = {
         orgName: '',
         email: '',
-        password: ''
+        password: '',
+        logo: null,
     }
 
     onFormSubmit = (e) => {
@@ -18,12 +19,13 @@ export class SignupForm extends Component {
     }
 
     registerUser() {
-        const { orgName, email, password } = this.state;
+        const { orgName, email, password, logo } = this.state;
 
         this.props.signUp({
             orgName,
             email,
-            password
+            password,
+            logo,
         });
     }
 
@@ -37,24 +39,42 @@ export class SignupForm extends Component {
         });
     }
 
+    onLogoChange = (event) => {
+        const file = event.target.files[0];
+        this.setState({ logo: file });
+    }
+
     render() {
         return (
             <div>
-                <h2>Sign up</h2>
-
                 <form className="ui form" method="POST" onSubmit={this.onFormSubmit}>
                     <div className="field">
-                        <label>Organization Name</label>
+                        <label>
+                            Organization Name
+                        <span style={{ color: 'red' }}> *</span>
+
+
+                        </label>
                         <input name="orgName" value={this.state.orgName} onChange={this.handleChange} />
                     </div>
                     <div className="field">
-                        <label>Email id</label>
+                        <label>Email
+                            <span style={{ color: 'red' }}> *</span>
+                        </label>
                         <input name="email" value={this.state.email} onChange={this.handleChange} />
                     </div>
 
                     <div className="field">
-                        <label>Password</label>
+                        <label>
+                            Password
+                            <span style={{ color: 'red' }}> *</span>
+                        </label>
                         <input name="password" type="password" value={this.state.password} onChange={this.handleChange} />
+                    </div>
+
+                    <div className="field">
+                        <label>Logo</label>
+                        <input name="logo" type="file" onChange={this.onLogoChange} />
                     </div>
 
                     {
@@ -74,7 +94,7 @@ export class SignupForm extends Component {
                         ) : null
                     }
 
-                    <button type="submit" className="ui green button">Sign up</button>
+                    <Button type="submit" className="ui green button pull-right" loading={this.props.signupLoading} disabled={this.props.signupLoading}>Sign up</Button>
                 </form>
             </div>
         )
@@ -86,7 +106,7 @@ const mapStateToProps = ({ authentication }) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-    signUp: ({ orgName, email, password }) => dispatch(signUp({ orgName, email, password }))
+    signUp: ({ orgName, email, password, logo }) => dispatch(signUp({ orgName, email, password, logo }))
 })
 
 export default withRouter(

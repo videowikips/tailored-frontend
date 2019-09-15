@@ -55,12 +55,11 @@ class LoginForm extends Component {
     render() {
         return (
             <div>
-                <h2>Log in</h2>
 
                 <form className="ui form" method="POST" onSubmit={this.onFormSubmit}>
 
                     <div className="field">
-                        <label>Email id</label>
+                        <label>Email</label>
                         <input name="email" value={this.state.email} onChange={this.handleChange} />
                     </div>
 
@@ -77,7 +76,7 @@ class LoginForm extends Component {
                         ): null
                     }
 
-                    <button type="submit" className="ui green button">Log in</button>
+                    <button type="submit" className="ui green button pull-right">Log in</button>
                 </form>
             </div>
         )

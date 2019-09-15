@@ -3,18 +3,18 @@ import { Modal } from 'semantic-ui-react'
 import SignupForm from './SignupForm';
 import LoginForm from './LoginForm';
 
-class OrganizationSignupModal extends Component {
+class LoginModal extends Component {
     render = () => {
         return (
             <Modal
                 trigger={
-                    <button className="large ui green button">
-                        Sign up
+                    <button className="large ui default button">
+                        Log in
                     </button>
                 }
                 size='tiny'
             >
-                <Modal.Header>Organization Sign up</Modal.Header>
+                <Modal.Header>Login</Modal.Header>
 
                 <Modal.Content>
                     <div>
@@ -22,16 +22,15 @@ class OrganizationSignupModal extends Component {
 
                             <div className="ui very relaxed one column grid">
 
-                                <div className="column">
-                                    <SignupForm/>
-                                </div>
-
                                 {/* <div className="column">
-                                    <LoginForm />
+                                    <SignupForm/>
                                 </div> */}
 
+                                <div className="column">
+                                    <LoginForm />
+                                </div>
+
                             </div>
-                            {/* <div className="ui vertical divider">OR</div> */}
                         </div>
                     </div>
                 </Modal.Content>
@@ -39,4 +38,4 @@ class OrganizationSignupModal extends Component {
         )
     }
 }
-export default OrganizationSignupModal;
+export default LoginModal;

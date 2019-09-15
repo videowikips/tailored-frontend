@@ -10,6 +10,7 @@ const INITIAL_STATE = {
     signUpMessage: null,
     signUpSuccess: null,
     getUserDetailsLoading: false,
+    signupLoading: false,
 }
 
 export default function (state = INITIAL_STATE, action) {
@@ -64,6 +65,8 @@ export default function (state = INITIAL_STATE, action) {
 
         case actionTypes.SET_GET_USER_DETAILS_LOADING:
             return { ...state, getUserDetailsLoading: action.payload };
+        case actionTypes.SET_SIGNUP_LOADING:
+            return { ...state, signupLoading: action.payload };
         default:
             return state;
     }

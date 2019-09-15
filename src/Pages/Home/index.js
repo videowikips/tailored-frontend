@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import OrganizationSignupModal from './OrganizationSignupModal';
+import LoginModal from './LoginModal';
 
 export default class Home extends React.Component {
     onOrganizationSignup = () => {
@@ -17,8 +18,8 @@ export default class Home extends React.Component {
                         <img src="/img/logo.png" className="logo" alt="Video Wiki Logo" />
 
                         <div className="pull-right" style={{ display: 'flex', justifyContent: 'center', alignItems: 'stretch'}}>
+                            <LoginModal />
                             <OrganizationSignupModal/>
-
                             {/* <Link to="/demo" className="large ui blue button" style={{ paddingTop: 20 }}>
                                 Demo
                             </Link> */}
