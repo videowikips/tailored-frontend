@@ -97,9 +97,9 @@ class Translated extends React.Component {
                                 </Grid.Column>
                                 <Grid.Column width={12}>
                                     <Grid>
-                                        <Grid.Row>
+                                        <Grid.Row style={{ maxHeight: 400, overflowY: 'scroll', border: '2px solid #eee', padding: 20 }}>
                                             {translatedArticle.articles.map((article) => (
-                                                <Grid.Column width={6} key={`translated-article-article-${article._id}`}>
+                                                <Grid.Column width={8} key={`translated-article-article-${article._id}`} style={{ marginBottom: 20 }}>
                                                     <Card fluid>
                                                         <Card.Header style={{ padding: '1rem', fontWeight: 'bold' }}>
                                                             <Link to={routes.translationArticle(translatedArticle.video.article) + `?lang=${article.langCode}`}>
