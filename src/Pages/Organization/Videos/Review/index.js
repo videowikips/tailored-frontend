@@ -116,20 +116,18 @@ class Review extends React.Component {
                     </Grid.Row>
                     <Grid.Row>
                         <Grid.Column width={13}>
-                            <div className="pull-right">
+                            <div className="pull-right" style={{ marginLeft: '2rem' }}>
                                 {this.renderPagination()}
                             </div>
-
-                            <div className="pull-right" style={{ height: '100%', marginRight: 20 }}>
-                                <Input
-                                    style={{ height: '100%' }}
-                                    type="text"
-                                    icon="search"
-                                    placeholder="Search"
-                                    value={this.props.searchFilter}
-                                    onChange={(e, { value }) => this.onSearchChange(value)}
-                                />
-                            </div>
+                            <Input
+                                fluid
+                                style={{ height: '100%' }}
+                                type="text"
+                                icon="search"
+                                placeholder="Search"
+                                value={this.props.searchFilter}
+                                onChange={(e, { value }) => this.onSearchChange(value)}
+                            />
                         </Grid.Column>
                         <Grid.Column width={3}>
                             <Dropdown
