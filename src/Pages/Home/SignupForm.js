@@ -74,7 +74,7 @@ export class SignupForm extends Component {
 
                     <div className="field">
                         <label>Logo</label>
-                        <input name="logo" type="file" onChange={this.onLogoChange} />
+                        <input name="logo" type="file" accept="image/*" onChange={this.onLogoChange} />
                     </div>
 
                     {

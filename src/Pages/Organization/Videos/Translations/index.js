@@ -95,7 +95,8 @@ class Translated extends React.Component {
                                 </Grid.Column>
                                 <Grid.Column width={12}>
                                     <Grid>
-                                        <Grid.Row style={{ maxHeight: 400, overflowY: 'scroll', border: '2px solid #eee', padding: 20 }}>
+                                        {translatedArticle.articles && translatedArticle.articles.length > 0 && (
+                                            <Grid.Row style={{ maxHeight: 400, overflowY: 'scroll', border: '2px solid #eee', padding: 20 }}>
                                             {translatedArticle.articles.map((article) => (
                                                 <Grid.Column width={8} key={`translated-article-article-${article._id}`} style={{ marginBottom: 20 }}>
                                                     <Card fluid>
@@ -123,7 +124,8 @@ class Translated extends React.Component {
                                                     </Card>
                                                 </Grid.Column>
                                             ))}
-                                        </Grid.Row>
+                                            </Grid.Row>
+                                        )}
                                     </Grid>
                                 </Grid.Column>
                             </Grid.Row>
