@@ -7,6 +7,8 @@ function mapSpeakersToDropdownOptions(speakers) {
     return speakers.map((speaker) => ({ text: speaker.speakerNumber === -1 ? 'Background Music' : `Speaker ${speaker.speakerNumber}`, value: speaker.speakerNumber }));
 }
 
+const DELETE_KEY_CODE = 46;
+
 export default class SubtitleForm extends React.Component {
     state = {
         text: '',
@@ -15,6 +17,13 @@ export default class SubtitleForm extends React.Component {
     }
 
     componentDidMount = () => {
+        window.onkeyup = (e) => {
+            if (!this.props.subtitle) return;
+            const key = Object.keys(e).indexOf('which') !== -1 ? e.which : e.keyCode;
+            if (key !== DELETE_KEY_CODE) return;
+            this.onDeleteSubtitle()
+        }
+
         if (this.props.subtitle) {
             const { text, speakerNumber } = this.props.subtitle;
             this.setState({ text, speakerNumber });
@@ -30,6 +39,10 @@ export default class SubtitleForm extends React.Component {
             const { speakerNumber } = nextProps.subtitle.speakerProfile
             this.setState({ text, speakerNumber });
         }
+    }
+
+    componentWillUnmount = () => {
+        window.onkeyup = null;
     }
 
     isSaveDisabled = () => {
