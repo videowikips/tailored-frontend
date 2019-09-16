@@ -77,23 +77,21 @@ class Translated extends React.Component {
                         </Grid.Row>
                         {this.props.translatedArticles.map((translatedArticle) => (
                             <Grid.Row key={`translated-article-container-${translatedArticle.video._id}`}>
-                                <Grid.Column width={16} style={{ textAlign: 'left', margin: '1rem' }}>
-                                    <h3>{translatedArticle.video.title}</h3>
-                                </Grid.Column>
                                 <Grid.Column width={4}>
-                                    <Card fluid>
+
+                                    <Card fluid style={{ marginTop: -15 }}>
+                                        <Card.Content>
+                                            <Link to={routes.organizationArticle(translatedArticle.video.article)}>
+                                                <h3>{translatedArticle.video.title}</h3>
+                                            </Link>
+                                        </Card.Content>
                                         <video src={translatedArticle.video.url} width="100%" height="100%" controls preload="false" />
-                                        {/* <Card.Content>
-                                        <Link to={routes.organizationArticle(translatedArticle.video.article)}>
-                                            Original {this.getLanguage(translatedArticle.video.langCode)}
-                                        </Link>
-                                        <p>Number of speakers {translatedArticle.video.numberOfSpeakers}</p>
-                                    </Card.Content> */}
                                         <Button fluid color="blue" onClick={() => {
                                             this.props.setSelectedVideo(translatedArticle.video);
                                             this.props.setAddHumanVoiceModalVisible(true);
                                         }}>Translate</Button>
                                     </Card>
+
                                 </Grid.Column>
                                 <Grid.Column width={12}>
                                     <Grid>
