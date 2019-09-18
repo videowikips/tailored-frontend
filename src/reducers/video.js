@@ -61,6 +61,9 @@ export default function (state = INITIAL_STATE, action) {
             return { ...state, organizationVideos: { ...state.organizationVideos, tabs: action.payload } };
         case actionTypes.SET_UPLOAD_VIDEO_FORM:
             return { ...state, uploadVideoForm: action.payload };
+        case actionTypes.RESET_UPLOAD_VIDEO_FORM:
+            console.log('reset upload video form', INITIAL_STATE.uploadVideoForm)
+            return { ...state, uploadVideoForm: { ...INITIAL_STATE.uploadVideoForm } };
         case actionTypes.RESET:
             return { ...INITIAL_STATE };
         default:

@@ -54,6 +54,10 @@ export const reset = () => ({
     type: actionTypes.RESET,
 })
 
+export const resetUploadVideoForm = () => ({
+    type: actionTypes.RESET_UPLOAD_VIDEO_FORM
+})
+
 export const uploadMultiVideos = ({ videos, subtitles, organization }) => (dispatch, getState) => {
     const { uploadVideoForm } = getState().video;
     dispatch(uploadVideoLoading());
@@ -74,11 +78,15 @@ export const uploadMultiVideos = ({ videos, subtitles, organization }) => (dispa
             }
     
             req.on('progress', function (e) {
-                dispatch(uploadVideoProgress(e.percent))
-                video.progress = e.percent;
-                dispatch(setUploadVideoForm({ ...uploadVideoForm, videos }));
+                if (e.percent) {
+                    dispatch(uploadVideoProgress(e.percent))
+                    video.progress = e.percent;
+                    dispatch(setUploadVideoForm({ ...uploadVideoForm, videos }));
+                }
             })
             .then(res => {
+                video.percent = 100;
+                dispatch(setUploadVideoForm({ ...uploadVideoForm, videos }));
                 cb(null, res.body);
             })
             .catch(err => {
@@ -92,6 +100,7 @@ export const uploadMultiVideos = ({ videos, subtitles, organization }) => (dispa
             dispatch(uploadVideoFailed(err));
         } else {
             dispatch(uploadVideoDone(result[0]));
+            dispatch(resetUploadVideoForm());
         }
     })
 }
@@ -114,6 +123,7 @@ export const uploadVideo = ({ title, numberOfSpeakers, video, langCode, organiza
         })
         .then(res => {
             dispatch(uploadVideoDone(res.body));
+            dispatch(resetUploadVideoForm());
         })
         .catch(err => {
             const reason = err.response ? err.response.text : 'Something went wrong';

@@ -71,14 +71,14 @@ class UploadNewVideoModal extends React.Component {
                 menuItem: 'Single',
                 render: () =>
                     <Tab.Pane style={{ minHeight: 500 }}>
-                        <SingleUpload {...this.props} onChange={this.onUploadFormChange} onSubmit={this.onSubmit} langsOptions={langsOptions} speakersOptions={speakersOptions} />
+                        <SingleUpload {...this.props} onChange={this.onUploadFormChange} value={this.props.uploadVideoForm} onSubmit={this.onSubmit} langsOptions={langsOptions} speakersOptions={speakersOptions} />
                     </Tab.Pane>
             },
             {
                 menuItem: 'Multiple',
                 render: () =>
                     <Tab.Pane style={{ minHeight: 500 }}>
-                        <MultipleUpload {...this.props} onChange={this.onUploadFormChange} onSubmit={this.onSubmit} langsOptions={langsOptions} speakersOptions={speakersOptions} />
+                        <MultipleUpload {...this.props} onChange={this.onUploadFormChange} value={this.props.uploadVideoForm} onSubmit={this.onSubmit} langsOptions={langsOptions} speakersOptions={speakersOptions} />
                     </Tab.Pane>
             }
         ]
@@ -97,7 +97,7 @@ class UploadNewVideoModal extends React.Component {
                 <Modal.Actions>
                     <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                         <Button onClick={this.props.onClose} size={'large'}>Cancel</Button>
-                        <Button onClick={this.onSubmit} icon="upload" disabled={!(this.isFormValid() && !this.props.loading)} loading={this.props.loading} primary size={'large'}>
+                        <Button onClick={() => this.onSubmit(this.props.uploadVideoForm)} icon="upload" disabled={!(this.isFormValid() && !this.props.loading)} loading={this.props.loading} primary size={'large'}>
                             <Icon name="upload" />
                             Upload
                     </Button>
@@ -125,8 +125,7 @@ const mapStateToProps = ({ video, organization }) => ({
     loading: video.uploadState === 'loading',
     uploadState: video.uploadState,
     uploadError: video.uploadError,
-    uploadVideoForm: video.uploadVideoForm,
-    value: video.uploadVideoForm,
+    uploadVideoForm: { ...video.uploadVideoForm },
     video: video.video,
     organization: organization.organization,
 })
