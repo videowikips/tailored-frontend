@@ -30,6 +30,7 @@ class Review extends React.Component {
         super(props);
 
         this.debouncedSearch = debounce((searchTerm) => {
+            this.props.setCurrentPageNumber(1);
             this.props.fetchVideos();
         }, 500)
     }

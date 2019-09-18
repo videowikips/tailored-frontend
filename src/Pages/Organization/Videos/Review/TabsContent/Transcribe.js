@@ -58,7 +58,7 @@ class Transcribe extends React.Component {
                         <div style={{ margin: 50 }}>No videos requires preview</div>
                     ) : this.props.videos && this.props.videos.map((video) => {
                         return (
-                            <Grid.Column key={video._id} width={4}>
+                            <Grid.Column key={video._id} width={4} style={{ marginBottom: 30 }}>
                                 <Icon
                                     name="check circle"
                                     size="large"
@@ -77,7 +77,7 @@ class Transcribe extends React.Component {
                                         </Card.Header>
                                     </Card.Content>
 
-                                    <video src={video.url} controls preload={'false'} width={'100%'} />
+                                    <video src={video.url} controls preload={'false'} width={'100%'} height={200} />
 
                                     <Card.Content style={{ padding: 0 }}>
                                         <Button fluid color="blue" onClick={() => this.onReviewVideo(video)} 
