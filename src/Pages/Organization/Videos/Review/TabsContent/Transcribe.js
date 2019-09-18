@@ -52,7 +52,14 @@ class Transcribe extends React.Component {
         return (
 
             <LoaderComponent active={this.props.videosLoading}>
-
+                <Grid.Row>
+                    <Grid.Column width={16}>
+                        <Button
+                            className="pull-right"
+                            onClick={() => this.onReviewVideo({ _id: 'all' })}
+                        >Transcribe All</Button>
+                    </Grid.Column>
+                </Grid.Row>
                 <Grid.Row>
                     {this.props.videos && this.props.videos.length === 0 ? (
                         <div style={{ margin: 50 }}>No videos requires preview</div>
@@ -80,10 +87,10 @@ class Transcribe extends React.Component {
                                     <video src={video.url} controls preload={'false'} width={'100%'} height={200} />
 
                                     <Card.Content style={{ padding: 0 }}>
-                                        <Button fluid color="blue" onClick={() => this.onReviewVideo(video)} 
+                                        <Button fluid color="blue" onClick={() => this.onReviewVideo(video)}
                                             loading={['uploading', 'transcriping', 'cutting'].indexOf(video.status) !== -1}
                                             disabled={['uploading', 'transcriping', 'cutting'].indexOf(video.status) !== -1}
-                                            >
+                                        >
                                             AI Transcribe
                                         </Button>
                                     </Card.Content>

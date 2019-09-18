@@ -89,7 +89,8 @@ class UploadNewVideoModal extends React.Component {
                 </Modal.Header>
                 <Modal.Content>
                     <Tab
-                        activeIndex={this.state.activeIndex}
+                        activeIndex={this.state.activeTabIndex}
+                        // activeIndex={this.state.activeIndex}
                         onTabChange={(e, { activeIndex }) => this.setState({ activeTabIndex: activeIndex })}
                         panes={tabItems}
                     />

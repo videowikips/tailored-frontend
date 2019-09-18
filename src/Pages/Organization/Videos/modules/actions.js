@@ -110,15 +110,20 @@ export const fetchTranslatedArticles = (organization, page) => (dispatch, getSta
 }
 
 export const reviewVideo = video => (dispatch, getState) => {
+    const { organization } = getState().organization;
     dispatch(setVideoLoading(true));
     requestAgent
-        .post(Api.video.reviewVideo(video._id))
+        .post(Api.video.reviewVideo(video._id), { organization: organization._id })
         .then((res) => {
             console.log(res);
             const { success, queued } = res.body;
             if (queued) {
                 dispatch(fetchVideos())
-                NotificationService.success('The vide has been queued successfully!');
+                if (video._id === 'all') {
+                    NotificationService.success('Videos have been queued successfully!');
+                } else {
+                    NotificationService.success('The video has been queued successfully!');
+                }
             } else {
                 dispatch(push(routes.convertProgress(video._id)));
             }
