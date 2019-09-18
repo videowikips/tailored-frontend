@@ -9,7 +9,6 @@ import { isoLangs, supportedLangs } from '../../../../shared/constants/langs';
 import routes from '../../../../shared/routes';
 
 import * as videoActions from '../modules/actions';
-import authorizeUser from '../../../../shared/hoc/authorizeUser';
 import AddHumanVoiceModal from '../../../../shared/components/AddHumanVoiceModal';
 import VideosTabs from '../VideosTabs';
 import RoleRenderer from '../../../../shared/containers/RoleRenderer';

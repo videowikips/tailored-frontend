@@ -6,7 +6,6 @@ import { Grid, Dropdown, Pagination, Input } from 'semantic-ui-react';
 import * as videoActions from '../modules/actions';
 import VideosTabs from '../VideosTabs';
 
-import authorizeUser from '../../../../shared/hoc/authorizeUser';
 import Tabs from '../../../../shared/components/Tabs';
 import Proofread from './TabsContent/Proofread';
 import Completed from './TabsContent/Completed';

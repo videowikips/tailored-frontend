@@ -7,8 +7,6 @@ import LoaderComponent from '../../../shared/components/LoaderComponent';
 import { isoLangs, supportedLangs } from '../../../shared/constants/langs';
 
 import * as actions from './modules/actions';
-// import authorizeUser from '../../../../shared/hoc/authorizeUser';
-import authorizeUser from '../../../shared/hoc/authorizeUser';
 
 class Archive extends React.Component {
     componentWillMount = () => {
@@ -117,4 +115,4 @@ const mapDispatchToProps = (dispatch) => ({
     fetchArchivedTranslatedArticles: (organization, page) => dispatch(actions.fetchArchivedTranslatedArticles(organization, page))
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(authorizeUser(Archive, ['admin']));
+export default connect(mapStateToProps, mapDispatchToProps)(Archive);

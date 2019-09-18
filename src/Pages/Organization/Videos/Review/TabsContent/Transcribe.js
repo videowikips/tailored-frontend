@@ -56,6 +56,8 @@ class Transcribe extends React.Component {
                     <Grid.Column width={16}>
                         <Button
                             className="pull-right"
+                            color="blue"
+                            disabled={this.props.videos.length === 0}
                             onClick={() => this.onReviewVideo({ _id: 'all' })}
                         >Transcribe All</Button>
                     </Grid.Column>

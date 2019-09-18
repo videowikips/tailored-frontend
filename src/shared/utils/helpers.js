@@ -73,6 +73,10 @@ export function canUserAccess(user, organization, requiredRoles) {
   return canView;
 }
 
+export function getUserOrganziationRole(user, organization) {
+  return user.organizationRoles.find((r) => r.organization._id === organization._id);
+}
+
 
 export function getSlideAndSubslideIndexFromPosition(slides, slidePosition, subslidePosition) {
   const slideIndex = slides.findIndex((s) => parseInt(s.position) === parseInt(slidePosition));

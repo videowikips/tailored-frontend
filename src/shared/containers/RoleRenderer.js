@@ -1,11 +1,12 @@
 import React from 'react';
 import {connect} from 'react-redux';
+import { getUserOrganziationRole } from '../utils/helpers';
 
 class RoleRenderer extends React.Component {
 
     canView = () => {
         if (!this.props.user || !this.props.user.organizationRoles) return false;
-        const userRole = this.props.user.organizationRoles.find((r) => r.organization._id === this.props.organization._id)
+        const userRole = getUserOrganziationRole(this.props.user, this.props.organization);
         if (userRole && userRole.organizationOwner) {
             return true;
         } else if (userRole) {
@@ -17,7 +18,13 @@ class RoleRenderer extends React.Component {
     }
 
     render() {
-        return this.canView() ? this.props.children : <div>You don't have permissions to view this page</div>
+        if (this.canView()) {
+            return this.props.children;
+        } else if (this.props.message) {
+            return <div>{this.props.message}</div>
+        } else {
+            return null;
+        }
     }
 }
 

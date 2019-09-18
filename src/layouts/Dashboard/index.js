@@ -16,19 +16,23 @@ import NotificationService from '../../shared/utils/NotificationService';
 import * as organizationActions from '../../actions/organization';
 import * as pollerActions from '../../actions/poller';
 import routes from '../../shared/routes';
+import RoleRenderer from '../../shared/containers/RoleRenderer';
 
 const NAV_LINKS = [
     {
         title: 'Videos',
         route: routes.organizationVideos(),
+        roles: ['admin', 'translate', 'review'],
     },
     {
         title: 'Archive',
         route: routes.organizationArchive(),
+        roles: ['admin'],
     },
     {
         title: 'Users',
-        route: routes.organizationUsers()
+        route: routes.organizationUsers(),
+        roles: ['admin'],
     }
 ]
 
@@ -255,11 +259,16 @@ class Dashboard extends React.Component {
                             style={{ color: 'white', border: 'none' }}
                         >
                             {NAV_LINKS.map((l) => (
-                                <Link
-                                    key={l.title + l.route} to={l.route}
-                                    style={{ backgroundColor: this.props.location.pathname.indexOf(l.route) === 0 ? '#eee' : 'transparent', color: this.props.location.pathname.indexOf(l.route) === 0 ? 'black' : 'white', width: '100%', padding: 15, display: 'block' }}
-                                    onClick={() => this.setState({ currentLocation: l.route })}
-                                >{l.title}</Link>
+                                <RoleRenderer
+                                    roles={l.roles}
+                                    key={l.title + l.route}
+                                >
+                                    <Link
+                                        to={l.route}
+                                        style={{ backgroundColor: this.props.location.pathname.indexOf(l.route) === 0 ? '#eee' : 'transparent', color: this.props.location.pathname.indexOf(l.route) === 0 ? 'black' : 'white', width: '100%', padding: 15, display: 'block' }}
+                                        onClick={() => this.setState({ currentLocation: l.route })}
+                                    >{l.title}</Link>
+                                </RoleRenderer>
                             ))}
                         </Menu>
 

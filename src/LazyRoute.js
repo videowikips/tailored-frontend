@@ -9,6 +9,7 @@ import DocumentMeta from 'react-document-meta';
 import LoaderOverlay from './shared/components/LoaderOverlay';
 import { connect } from 'react-redux';
 import { isValidToken } from './actions/authentication';
+import authorizeUser from './shared/hoc/authorizeUser';
 
 class LazyRoute extends React.Component {
   shouldComponentUpdate(nextProps) {
@@ -24,7 +25,7 @@ class LazyRoute extends React.Component {
   }
 
   render() {
-    const { loader, title, isPrivateRoute, ...rest } = this.props;
+    const { loader, title, isPrivateRoute, authorize, ...rest } = this.props;
 
     const LoadableComponent = Loadable({
       loader,
@@ -61,15 +62,16 @@ class LazyRoute extends React.Component {
     }
 
     const LayoutComp = this.props.layout;
+    let RenderedComp;
     if (!LayoutComp) {
 
-      return (
+      RenderedComp =  (
         <DocumentMeta title={title || 'Videowiki'}>
           <Route {...rest} component={LoadableComponent} />
         </DocumentMeta>
       )
     } else {
-      return (
+      RenderedComp = (
         <DocumentMeta title={title || 'Videowiki'}>
           <LayoutComp>
             <Route {...rest} component={LoadableComponent} />
@@ -77,6 +79,18 @@ class LazyRoute extends React.Component {
         </DocumentMeta>
       )
     }
+
+    // Check for authorization roles
+    if (!authorize || authorize.length === 0) {
+      return RenderedComp;
+    }
+    class WrappedAuthorizedComp extends React.Component {
+      render() {
+        return RenderedComp;
+      }
+    }
+    const AuthorizedComp = authorizeUser(WrappedAuthorizedComp, authorize)
+    return <AuthorizedComp />;
 
   }
 }
