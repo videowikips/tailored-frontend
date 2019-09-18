@@ -80,3 +80,32 @@ export function getSlideAndSubslideIndexFromPosition(slides, slidePosition, subs
   const subslideIndex = slides[slideIndex].content.findIndex((s) => parseInt(s.position) === parseInt(subslidePosition));
   return { slideIndex, subslideIndex };
 }
+
+
+export function removeExtension(fileName) {
+  let newFileName = fileName.split('.');
+  newFileName.pop();
+  return newFileName.join('.');
+}
+
+export function removeExtensionAndLowercase(fileName) {
+  return removeExtension(fileName).toLowerCase()
+}
+
+
+export function matchVideosWithSubtitels(videos, subtitles) {
+  if (videos.length === 0) return videos;
+  if (subtitles.length === 0) return videos;
+
+  // Remove subtitles
+  const subtitlesNames = subtitles.map((s) => removeExtensionAndLowercase(s.content.name));
+  videos.forEach((video) => {
+      const videoName = removeExtensionAndLowercase(video.content.name);
+      if (subtitlesNames.indexOf(videoName) !== -1) {
+          video.hasSubtitle = true;
+          video.subtitle = subtitles[subtitlesNames.indexOf(videoName)];
+      }
+  })
+
+  return videos;
+}

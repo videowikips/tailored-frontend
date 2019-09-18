@@ -13,7 +13,6 @@ import { WEBSOCKET_SERVER_URL } from '../../shared/constants';
 
 import UploadNewVideoModal from '../../shared/components/UploadNewVideoModal';
 import NotificationService from '../../shared/utils/NotificationService';
-import { uploadVideo } from '../../actions/video';
 import * as organizationActions from '../../actions/organization';
 import * as pollerActions from '../../actions/poller';
 import routes from '../../shared/routes';
@@ -38,15 +37,6 @@ const AUTHENTICATE_USER_JOB = 'AUTHENTICATE_USER_JOB';
 class Dashboard extends React.Component {
     state = {
         uploadFormOpen: false,
-        videoForm: {
-            title: '',
-            numberOfSpeakers: 1,
-            langCode: 'en-US',
-            video: null,
-            fileContent: null,
-            withSubtitle: false,
-            subtitle: null,
-        },
         createOrganizationModalVisible: false,
         currentLocation: '/organization',
     }
@@ -94,20 +84,6 @@ class Dashboard extends React.Component {
         }
     }
 
-    onUploadFormChange = (changes) => {
-        this.setState(state => {
-            const { videoForm } = state;
-            Object.keys(changes).forEach((key) => {
-                videoForm[key] = changes[key];
-            })
-            return { videoForm };
-        });
-    }
-
-    onSubmit = (values) => {
-        this.props.uploadVideo({ ...values, organization: this.props.organization._id });
-    }
-
     onCreateOrganization = () => {
         const { newOrganizationName, newOrganizationLogo } = this.props;
         this.props.createOrganization(newOrganizationName, newOrganizationLogo);
@@ -117,13 +93,6 @@ class Dashboard extends React.Component {
         if (file) {
             this.props.updateOrganizationLogo(file);
         }
-    }
-
-    isFormValid = () => {
-        const { videoForm } = this.state;
-        const { title, numberOfSpeakers, langCode, video } = videoForm;
-        if (!title || !numberOfSpeakers || !langCode || !video) return false;
-        return true;
     }
 
     canUpload = () => {
@@ -313,12 +282,6 @@ class Dashboard extends React.Component {
                                                     <UploadNewVideoModal
                                                         open={this.state.uploadFormOpen}
                                                         onClose={() => this.setState({ uploadFormOpen: false })}
-                                                        onChange={this.onUploadFormChange}
-                                                        onSubmit={this.onSubmit}
-                                                        value={this.state.videoForm}
-                                                        valid={this.isFormValid() && this.props.uploadState !== 'loading'}
-                                                        loading={this.props.uploadState === 'loading'}
-                                                        uploadProgress={this.props.uploadProgress}
                                                     />
                                                 </React.Fragment>
                                             )}
@@ -344,7 +307,6 @@ const mapStateToProps = ({ authentication, organization, video, router }) => ({
     newOrganizationName: organization.newOrganizationName,
     newOrganizationLogo: organization.newOrganizationLogo,
     uploadLogoLoading: organization.uploadLogoLoading,
-    uploadProgress: video.uploadProgress,
     uploadState: video.uploadState,
     uploadError: video.uploadError,
     video: video.video,
@@ -352,7 +314,6 @@ const mapStateToProps = ({ authentication, organization, video, router }) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-    uploadVideo: values => dispatch(uploadVideo(values)),
     setOrganization: org => dispatch(organizationActions.setOrganization(org)),
     setNewOrganizationName: name => dispatch(organizationActions.setNewOrganizationName(name)),
     setNewOrganizationLogo: file => dispatch(organizationActions.setNewOrganizationLogo(file)),

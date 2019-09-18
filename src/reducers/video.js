@@ -18,6 +18,17 @@ const INITIAL_STATE = {
         stages: [],
         activeStageIndex: null,
     },
+    uploadVideoForm: {
+        title: '',
+        numberOfSpeakers: 1,
+        langCode: 'en-US',
+        video: null,
+        fileContent: null,
+        withSubtitle: false,
+        subtitle: null,
+        videos: [],
+        subtitles: [],
+    },
 }
 
 export default function (state = INITIAL_STATE, action) {
@@ -48,6 +59,8 @@ export default function (state = INITIAL_STATE, action) {
             return { ...state, organizationVideos: { ...state.organizationVideos, activeTabIndex: action.payload } };
         case actionTypes.SET_ORGANIZATION_VIDEOS_TABS:
             return { ...state, organizationVideos: { ...state.organizationVideos, tabs: action.payload } };
+        case actionTypes.SET_UPLOAD_VIDEO_FORM:
+            return { ...state, uploadVideoForm: action.payload };
         case actionTypes.RESET:
             return { ...INITIAL_STATE };
         default:

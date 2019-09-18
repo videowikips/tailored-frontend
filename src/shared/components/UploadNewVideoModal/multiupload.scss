@@ -1,0 +1,13 @@
+.video-lang-cell {
+    display: flex;
+    justify-content: space-around;
+    align-content: center;
+    align-items: center;
+}
+.video-lang-cell-edit {
+    visibility: hidden;
+}
+
+.video-row:hover .video-lang-cell-edit {
+    visibility: visible;
+}

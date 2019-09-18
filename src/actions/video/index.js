@@ -1,10 +1,11 @@
 import * as actionTypes from './types';
 import Api from '../../shared/api';
 import requestAgent from '../../shared/utils/requestAgent';
-import { generateConvertStages } from '../../shared/utils/helpers';
+import { generateConvertStages, matchVideosWithSubtitels, removeExtension } from '../../shared/utils/helpers';
 import NotificationService from '../../shared/utils/NotificationService';
 import { push } from 'connected-react-router';
 import routes from '../../shared/routes';
+import asyncSeries from 'async/series';
 
 const uploadVideoLoading = () => ({
     type: actionTypes.UPLOAD_VIDEO_LOADING
@@ -44,9 +45,56 @@ const setStages = (stages, activeStageIndex) => ({
     payload: { stages, activeStageIndex },
 })
 
+export const setUploadVideoForm = uploadVideoForm => ({
+    type: actionTypes.SET_UPLOAD_VIDEO_FORM,
+    payload: uploadVideoForm,
+})
+
 export const reset = () => ({
     type: actionTypes.RESET,
 })
+
+export const uploadMultiVideos = ({ videos, subtitles, organization }) => (dispatch, getState) => {
+    const { uploadVideoForm } = getState().video;
+    dispatch(uploadVideoLoading());
+    videos = matchVideosWithSubtitels(videos, subtitles);
+    const uploadVideoFuncArray = [];
+    videos.forEach(video => {
+        uploadVideoFuncArray.push((cb) => {
+            const { numberOfSpeakers, langCode, content } = video;
+            const req = requestAgent
+            .post(Api.video.uploadVideo)
+            .field('title', removeExtension(content.name))
+            .field('numberOfSpeakers', numberOfSpeakers)
+            .field('langCode', langCode)
+            .field('organization', organization || '')
+            .attach('video', content)
+            if (video.subtitle) {
+                req.attach('subtitle', video.subtitle.content);
+            }
+    
+            req.on('progress', function (e) {
+                dispatch(uploadVideoProgress(e.percent))
+                video.progress = e.percent;
+                dispatch(setUploadVideoForm({ ...uploadVideoForm, videos }));
+            })
+            .then(res => {
+                cb(null, res.body);
+            })
+            .catch(err => {
+                const reason = err.response ? err.response.text : 'Something went wrong';
+                cb(reason);
+            })
+        })
+    })
+    asyncSeries(uploadVideoFuncArray, (err, result) => {
+        if (err) {
+            dispatch(uploadVideoFailed(err));
+        } else {
+            dispatch(uploadVideoDone(result[0]));
+        }
+    })
+}
 
 export const uploadVideo = ({ title, numberOfSpeakers, video, langCode, organization, subtitle }) => (dispatch) => {
     dispatch(uploadVideoLoading());
