@@ -107,6 +107,23 @@ export const deleteVideo = (videoId) => (dispatch) => {
     })
 }      
 
+export const deleteArticle = articleId => (dispatch, getState) => {
+    dispatch(setVideoLoading(true));
+    dispatch(setTranslatedArticles([]))
+    requestAgent
+        .delete(Api.article.deleteById(articleId))
+        .then((res) => {
+            const { organization } = getState().organization;
+            const { currentPageNumber } = getState()[moduleName];
+            NotificationService.success('Deleted succesfully')
+            dispatch(fetchTranslatedArticles(organization._id, currentPageNumber));
+        })
+        .catch((err) => {
+            NotificationService.responseError(err);
+            dispatch(setVideoLoading(false))
+        })   
+}
+
 export const fetchTranslatedArticles = (organization, page) => (dispatch, getState) => {
     dispatch(setVideoLoading(true));
     dispatch(setTranslatedArticles([]))

@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
-import { Grid, Card, Progress, Button, Pagination } from 'semantic-ui-react';
+import { Grid, Card, Progress, Button, Pagination, Modal } from 'semantic-ui-react';
 
 import LoaderComponent from '../../../../shared/components/LoaderComponent';
 
@@ -12,8 +12,13 @@ import * as videoActions from '../modules/actions';
 import AddHumanVoiceModal from '../../../../shared/components/AddHumanVoiceModal';
 import VideosTabs from '../VideosTabs';
 import RoleRenderer from '../../../../shared/containers/RoleRenderer';
+import ArticleSummaryCard from '../../../../shared/components/ArticleSummaryCard';
 
 class Translated extends React.Component {
+    state = {
+        deletedArticle: null,
+        deleteArticleModalVisible: false,
+    }
     componentWillMount = () => {
         this.props.setCurrentPageNumber(1);
         this.props.fetchTranslatedArticles(this.props.organization._id, 1);
@@ -36,6 +41,39 @@ class Translated extends React.Component {
         this.props.setAddHumanVoiceModalVisible(false);
         this.props.history.push(routes.translationArticle(this.props.selectedVideo.article) + `?lang=${lang}`);
     }
+
+    onDeleteArticleClick = (article) => {
+        this.setState({ deletedArticle: article, deleteArticleModalVisible: true });
+    }
+
+    deleteSelectedArticle = () => {
+        this.props.deleteArticle(this.state.deletedArticle._id);
+        this.setState({ deleteArticle: null, deleteArticleModalVisible: false });
+    }
+
+    _renderDeleteArticleModal = () => (
+        <Modal open={this.state.deleteArticleModalVisible} size="tiny">
+            <Modal.Header>
+                Delete Translation
+            </Modal.Header>
+            <Modal.Content>
+                Are you sure you want to delete this translation?
+            </Modal.Content>
+            <Modal.Actions>
+                <Button
+                    onClick={() => this.setState({ deleteArticleModalVisible: false, deletedArticle: null })}
+                >
+                    Cancel
+                </Button>
+                <Button
+                    color="red"
+                    onClick={this.deleteSelectedArticle}
+                >
+                    Yes
+                </Button>
+            </Modal.Actions>
+        </Modal>
+    )
 
     renderPagination = () => (
         <Pagination
@@ -96,33 +134,16 @@ class Translated extends React.Component {
                                     <Grid>
                                         {translatedArticle.articles && translatedArticle.articles.length > 0 && (
                                             <Grid.Row style={{ maxHeight: 400, overflowY: 'scroll', border: '2px solid #eee', padding: 20 }}>
-                                            {translatedArticle.articles.map((article) => (
-                                                <Grid.Column width={8} key={`translated-article-article-${article._id}`} style={{ marginBottom: 20 }}>
-                                                    <Card fluid>
-                                                        <Card.Header style={{ padding: '1rem', fontWeight: 'bold' }}>
-                                                            <Link to={routes.translationArticle(translatedArticle.video.article) + `?lang=${article.langCode}`}>
-                                                                {isoLangs[article.langCode] ? isoLangs[article.langCode].name : article.langCode}
-                                                            </Link>
-                                                        </Card.Header>
-                                                        <Card.Content>
-                                                            <Link to={routes.translationArticle(translatedArticle.video.article, article.langCode)}>
-                                                                <Button color="blue">
-                                                                    {article.metrics.completed.total}% Completed
-                                                                </Button>
-                                                            </Link>
-                                                            <h3 style={{ marginTop: '1rem' }}>Voice translations</h3>
-                                                            {article.metrics.speakersMetrics.map(speakerMetric => (
-                                                                <div key={`speaker-voice-metric-${speakerMetric.speaker.speakerNumber}`}>
-                                                                    <p>Speaker {speakerMetric.speaker.speakerNumber} ( {speakerMetric.speaker.speakerGender} )</p>
-                                                                    <Progress progress indicating percent={speakerMetric.progress} style={{ marginTop: '0.5rem' }} />
-                                                                </div>
-                                                            ))}
-                                                            <h3 style={{ marginTop: '1rem' }}>Text translations</h3>
-                                                            <Progress progress indicating percent={article.metrics.completed.text} />
-                                                        </Card.Content>
-                                                    </Card>
-                                                </Grid.Column>
-                                            ))}
+                                                {translatedArticle.articles.map((article) => (
+                                                    <Grid.Column width={8} key={`translated-article-article-${article._id}`} style={{ marginBottom: 20 }}>
+                                                        <ArticleSummaryCard
+                                                            article={article}
+                                                            lang={isoLangs[article.langCode] ? isoLangs[article.langCode].name : article.langCode}
+                                                            onTitleClick={() => this.props.history.push(routes.translationArticle(translatedArticle.video.article) + `?lang=${article.langCode}`)}
+                                                            onDeleteClick={() => this.onDeleteArticleClick(article)}
+                                                        />
+                                                    </Grid.Column>
+                                                ))}
                                             </Grid.Row>
                                         )}
                                     </Grid>
@@ -131,6 +152,7 @@ class Translated extends React.Component {
                         ))}
 
                         {this._renderAddHumanVoiceModal()}
+                        {this._renderDeleteArticleModal()}
                     </LoaderComponent>
                 </RoleRenderer>
             </Grid>
@@ -154,7 +176,8 @@ const mapDispatchToProps = (dispatch) => ({
     setSelectedVideo: video => dispatch(videoActions.setSelectedVideo(video)),
     setAddHumanVoiceModalVisible: visible => dispatch(videoActions.setAddHumanVoiceModalVisible(visible)),
     setCurrentPageNumber: pageNumber => dispatch(videoActions.setCurrentPageNumber(pageNumber)),
-    fetchTranslatedArticles: (organization, page) => dispatch(videoActions.fetchTranslatedArticles(organization, page))
+    fetchTranslatedArticles: (organization, page) => dispatch(videoActions.fetchTranslatedArticles(organization, page)),
+    deleteArticle: (articleId) => dispatch(videoActions.deleteArticle(articleId))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Translated));

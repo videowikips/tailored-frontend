@@ -7,18 +7,19 @@ class VideoCard extends React.Component {
     render() {
         const { title, url, buttonTitle, loading, disabled, onButtonClick, onDeleteVideoClick } = this.props;
         return (
-            <div className="video-container">
+            <div className="video-card">
                 <RoleRenderer roles={['admin']}>
                     <Button
                         basic
-                        icon="times circle outline large"
+                        icon="times circle outline"
+                        size="large"
                         onClick={onDeleteVideoClick}
-                        className="video-container__delete_btn"
+                        className="video-card__delete_btn"
                     />
                 </RoleRenderer>
                 <Card fluid>
                     <Card.Content>
-                        <Card.Header className="video-container__header">
+                        <Card.Header className="video-card__header">
                             {title}
                         </Card.Header>
                     </Card.Content>

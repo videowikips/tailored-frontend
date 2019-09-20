@@ -1,9 +1,12 @@
-.video-card {
+.article-summary-card {
     &:hover &__delete_btn {
         visibility: visible;
     }
-    &__header {
-        text-align: center;
+    &__card_header {
+        padding: 1rem;
+        font-weight: bold;
+        color: #4183c4;
+        cursor: pointer;
     }
     &__delete_btn {
         visibility: hidden;
@@ -15,4 +18,3 @@
         box-shadow: none !important;
     }
 }
-

@@ -13,6 +13,7 @@ export default {
     },
     article: {
         getById: id => `${API_ROOT}/article/${id}`,
+        deleteById: id => `${API_ROOT}/article/${id}`,
         getbyVideoId: id => `${API_ROOT}/article/by_video_id?videoId=${id}`,
         updateSubslide: (articleId, slidePosition, subslidePosition) => `${API_ROOT}/article/${articleId}/slides/${slidePosition}/content/${subslidePosition}`,
         splitSubslide: (articleId, slidePosition, subslidePosition) => `${API_ROOT}/article/${articleId}/slides/${slidePosition}/content/${subslidePosition}/split`,
