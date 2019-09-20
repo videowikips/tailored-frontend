@@ -1,21 +1,24 @@
 import React from 'react';
 import { Card, Button } from 'semantic-ui-react';
 import './style.scss';
+import RoleRenderer from '../../containers/RoleRenderer';
 
 class VideoCard extends React.Component {
     render() {
         const { title, url, buttonTitle, loading, disabled, onButtonClick, onDeleteVideoClick } = this.props;
         return (
             <div className="video-container">
-                <Button
-                    basic
-                    icon="times circle outline large"
-                    onClick={onDeleteVideoClick}
-                    className="video-delete-btn"
-                />
+                <RoleRenderer roles={['admin']}>
+                    <Button
+                        basic
+                        icon="times circle outline large"
+                        onClick={onDeleteVideoClick}
+                        className="video-container__delete_btn"
+                    />
+                </RoleRenderer>
                 <Card fluid>
                     <Card.Content>
-                        <Card.Header style={{ textAlign: 'center' }}>
+                        <Card.Header className="video-container__header">
                             {title}
                         </Card.Header>
                     </Card.Content>
