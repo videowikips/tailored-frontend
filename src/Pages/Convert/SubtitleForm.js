@@ -30,7 +30,7 @@ export default class SubtitleForm extends React.Component {
         }
         this.debouncedSave = debounce(() => {
             this.props.onSave({ text: this.state.text, speakerNumber: this.state.speakerNumber });
-        }, 500)
+        }, 3000)
     }
 
     componentWillReceiveProps = (nextProps) => {
@@ -85,25 +85,21 @@ export default class SubtitleForm extends React.Component {
                                     value={this.state.text}
                                     onChange={(e) => this.setState({ text: e.target.value }, this.onSave)}
                                 />
-                            </Grid.Column>
-                            <Grid.Column width={2} style={{ display: 'flex', alignItems: 'center' }}>
-                                <Button icon="trash" onClick={this.onDeleteSubtitle} color="red" />
-                            </Grid.Column>
-                        </Grid.Row>
-                        {/* <Grid.Row>
-                            <Grid.Column width={4}>
-                            </Grid.Column>
-                            <Grid.Column width={10} style={{ display: 'flex', justifyContent: 'flex-end' }}>
                                 <Button
+                                    className="pull-right"
+                                    style={{ marginTop: 10 }}
                                     color="blue"
                                     onClick={this.onSave}
-                                    loading={loading}
+                                    loading={this.props.loading}
                                     disabled={this.isSaveDisabled()}
                                 >
                                     Save
                                 </Button>
                             </Grid.Column>
-                        </Grid.Row> */}
+                            <Grid.Column width={2} style={{ display: 'flex', alignItems: 'center' }}>
+                                <Button icon="trash" onClick={this.onDeleteSubtitle} color="red" />
+                            </Grid.Column>
+                        </Grid.Row>
                     </React.Fragment>
                 ) : null}
                 <Modal open={this.state.isDeleteModalVisible} size="tiny" onClose={() => this.setState({ isDeleteModalVisible: false })}>

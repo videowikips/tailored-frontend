@@ -11,7 +11,7 @@ class TranslateBox extends React.Component {
     }
     this.saveValue = debounce((value, currentSlideIndex, currentSubslideIndex) => {
       this.props.onSave(value, currentSlideIndex, currentSubslideIndex)
-    }, 1000)
+    }, 2000)
   }
 
   componentDidMount() {
