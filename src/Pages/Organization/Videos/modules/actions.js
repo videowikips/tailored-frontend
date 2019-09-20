@@ -113,10 +113,8 @@ export const deleteArticle = articleId => (dispatch, getState) => {
     requestAgent
         .delete(Api.article.deleteById(articleId))
         .then((res) => {
-            const { organization } = getState().organization;
-            const { currentPageNumber } = getState()[moduleName];
             NotificationService.success('Deleted succesfully')
-            dispatch(fetchTranslatedArticles(organization._id, currentPageNumber));
+            dispatch(fetchTranslatedArticles());
         })
         .catch((err) => {
             NotificationService.responseError(err);
@@ -124,11 +122,14 @@ export const deleteArticle = articleId => (dispatch, getState) => {
         })   
 }
 
-export const fetchTranslatedArticles = (organization, page) => (dispatch, getState) => {
+export const fetchTranslatedArticles = () => (dispatch, getState) => {
     dispatch(setVideoLoading(true));
     dispatch(setTranslatedArticles([]))
+    const { organization } = getState().organization;
+    const { currentPageNumber, searchFilter } = getState()[moduleName];
+
     requestAgent
-        .get(Api.article.getTranslatedArticles({ organization, page }))
+        .get(Api.article.getTranslatedArticles({ organization: organization._id, page: currentPageNumber, search: searchFilter }))
         .then((res) => {
             const { videos, pagesCount } = res.body;
             dispatch(setTranslatedArticles(videos));

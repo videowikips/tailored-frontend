@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
-import { Grid, Card, Progress, Button, Pagination, Modal } from 'semantic-ui-react';
+import { Grid, Card, Progress, Button, Pagination, Modal, Input } from 'semantic-ui-react';
 
 import LoaderComponent from '../../../../shared/components/LoaderComponent';
 
@@ -13,15 +13,25 @@ import AddHumanVoiceModal from '../../../../shared/components/AddHumanVoiceModal
 import VideosTabs from '../VideosTabs';
 import RoleRenderer from '../../../../shared/containers/RoleRenderer';
 import ArticleSummaryCard from '../../../../shared/components/ArticleSummaryCard';
+import { debounce } from '../../../../shared/utils/helpers';
 
 class Translated extends React.Component {
     state = {
         deletedArticle: null,
         deleteArticleModalVisible: false,
     }
+    constructor(props) {
+        super(props);
+        this.debouncedSearch = debounce((searchTerm) => {
+            this.props.setCurrentPageNumber(1);
+            this.props.fetchTranslatedArticles();
+        }, 500)
+
+    }
     componentWillMount = () => {
+        this.props.setSearchFilter('');
         this.props.setCurrentPageNumber(1);
-        this.props.fetchTranslatedArticles(this.props.organization._id, 1);
+        this.props.fetchTranslatedArticles();
     }
 
     getLanguage = langCode => {
@@ -35,6 +45,11 @@ class Translated extends React.Component {
     onPageChange = (e, { activePage }) => {
         this.props.setCurrentPageNumber(activePage);
         this.props.fetchTranslatedArticles(this.props.organization._id, activePage);
+    }
+
+    onSearchChange = (searchTerm) => {
+        this.props.setSearchFilter(searchTerm);
+        this.debouncedSearch()
     }
 
     onAddHumanVoice = lang => {
@@ -77,6 +92,7 @@ class Translated extends React.Component {
 
     renderPagination = () => (
         <Pagination
+            style={{ marginLeft: 20 }}
             activePage={this.props.currentPageNumber}
             onPageChange={this.onPageChange}
             totalPages={this.props.totalPagesCount}
@@ -104,14 +120,24 @@ class Translated extends React.Component {
                     </Grid.Column>
                 </Grid.Row>
                 <RoleRenderer roles={['admin', 'translate']}>
+                    <Grid.Row style={{ marginBottom: 20 }}>
+                        <Grid.Column width={16}>
+                            <div className="pull-right">
+                                {this.renderPagination()}
+                            </div>
+
+                            <Input
+                                fluid
+                                style={{ height: '100%' }}
+                                type="text"
+                                icon="search"
+                                placeholder="Search"
+                                value={this.props.searchFilter}
+                                onChange={(e, { value }) => this.onSearchChange(value)}
+                            />
+                        </Grid.Column>
+                    </Grid.Row>
                     <LoaderComponent active={this.props.videosLoading}>
-                        <Grid.Row>
-                            <Grid.Column width={16}>
-                                <div className="pull-right">
-                                    {this.renderPagination()}
-                                </div>
-                            </Grid.Column>
-                        </Grid.Row>
                         {this.props.translatedArticles.map((translatedArticle) => (
                             <Grid.Row key={`translated-article-container-${translatedArticle.video._id}`}>
                                 <Grid.Column width={4}>
@@ -171,13 +197,15 @@ const mapStateToProps = ({ organization, authentication, organizationVideos }) =
     selectedVideo: organizationVideos.selectedVideo,
     addHumanVoiceModalVisible: organizationVideos.addHumanVoiceModalVisible,
     currentPageNumber: organizationVideos.currentPageNumber,
+    searchFilter: organizationVideos.searchFilter,
 })
 const mapDispatchToProps = (dispatch) => ({
     setSelectedVideo: video => dispatch(videoActions.setSelectedVideo(video)),
     setAddHumanVoiceModalVisible: visible => dispatch(videoActions.setAddHumanVoiceModalVisible(visible)),
     setCurrentPageNumber: pageNumber => dispatch(videoActions.setCurrentPageNumber(pageNumber)),
-    fetchTranslatedArticles: (organization, page) => dispatch(videoActions.fetchTranslatedArticles(organization, page)),
-    deleteArticle: (articleId) => dispatch(videoActions.deleteArticle(articleId))
+    fetchTranslatedArticles: () => dispatch(videoActions.fetchTranslatedArticles()),
+    deleteArticle: (articleId) => dispatch(videoActions.deleteArticle(articleId)),
+    setSearchFilter: filter => dispatch(videoActions.setSearchFilter(filter)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Translated));

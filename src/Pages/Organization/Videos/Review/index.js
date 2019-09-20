@@ -37,6 +37,7 @@ class Review extends React.Component {
     }
 
     componentWillMount = () => {
+        this.props.setSearchFilter('');
         const { activeTab } = queryString.parse(this.props.location.search);
         if (activeTab) {
             switch (activeTab) {
