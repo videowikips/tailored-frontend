@@ -5,6 +5,7 @@ export default {
     video: {
         uploadVideo: `${API_ROOT}/video/upload`,
         getVideoById: (id) => `${API_ROOT}/video/${id}`,
+        deleteById: (id) => `${API_ROOT}/video/${id}`,
         convertVideo: (id) => `${API_ROOT}/video/${id}/convert`,
         getVideos: (params = {}) => `${API_ROOT}/video?${querystring.encode(params)}`,
         getOrganizationVideos: (id) => `${API_ROOT}/video?organization=${id}`,

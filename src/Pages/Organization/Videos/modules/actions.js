@@ -73,7 +73,6 @@ export const updateLocalVideo = (videoId, newVideo) => (dispatch, getState) => {
 
 export const fetchVideos = () => (dispatch, getState) => {
     // const { }
-    dispatch(setVideoLoading(true));
     dispatch(setVideos([]))
     const { videoStatusFilter, currentPageNumber, languageFilter, searchFilter } = getState()[moduleName];
     const { organization } = getState().organization;
@@ -91,6 +90,22 @@ export const fetchVideos = () => (dispatch, getState) => {
             dispatch(setVideoLoading(false))
         })
 }
+
+export const deleteVideo = (videoId) => (dispatch) => {
+    dispatch(setVideoLoading(true));
+    requestAgent
+    .delete(Api.video.deleteById(videoId))
+    .then(res => {
+        dispatch(setVideoLoading(false));
+        NotificationService.success('Deleted successfully!');
+        dispatch(fetchVideos());
+    })
+    .catch(err => {
+        dispatch(setVideoLoading(false));
+        console.log(err);
+        NotificationService.responseError(err);
+    })
+}      
 
 export const fetchTranslatedArticles = (organization, page) => (dispatch, getState) => {
     dispatch(setVideoLoading(true));

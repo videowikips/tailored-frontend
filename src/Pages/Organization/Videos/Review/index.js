@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import { Grid, Dropdown, Pagination, Input } from 'semantic-ui-react';
+import { Grid, Dropdown, Pagination, Input, Modal, Button } from 'semantic-ui-react';
 
 import * as videoActions from '../modules/actions';
 import VideosTabs from '../VideosTabs';
@@ -23,6 +23,8 @@ const langsOptions = langsToUse.map((lang) => ({ key: lang.code, value: lang.cod
 class Review extends React.Component {
     state = {
         activeTab: 0,
+        deletedVideo: null,
+        deleteVideoModalVisible: false,
     }
 
     constructor(props) {
@@ -72,6 +74,14 @@ class Review extends React.Component {
         this.props.fetchVideos({ organization: this.props.organization._id })
     }
 
+    onDeleteVideoClick = (video) => {
+        this.setState({ deleteVideoModalVisible: true, deletedVideo: video });
+    }
+
+    deleteSelectedVideo = () => {
+        this.props.deleteVideo(this.state.deletedVideo._id);
+        this.setState({ deletedVideo: null, deleteVideoModalVisible: false });
+    }
 
     renderPagination = () => (
         <Pagination
@@ -81,16 +91,39 @@ class Review extends React.Component {
         />
     )
 
+    _renderDeleteVideoModal = () => (
+        <Modal open={this.state.deleteVideoModalVisible} size="tiny">
+            <Modal.Header>Delete Video</Modal.Header>
+            <Modal.Content>
+                Are you sure you want to delete this video? <small>(All associated content/articles will be deleted)</small>
+            </Modal.Content>
+            <Modal.Actions>
+                <Button
+                    onClick={() => this.setState({ deleteVideoModalVisible: false, deletedVideo: null })}
+                >
+                    Cancel
+                </Button>
+                <Button
+                    color="red"
+                    onClick={this.deleteSelectedVideo}
+                >
+                    Yes
+                </Button>
+            </Modal.Actions>
+        </Modal>
+    )
+
     _renderTabContent = () => {
+        const tabProps = { onDeleteVideoClick: this.onDeleteVideoClick };
         switch (this.state.activeTab) {
             case 0:
-                return <Transcribe />
+                return <Transcribe {...tabProps} />
             case 1:
-                return <Proofread />
+                return <Proofread {...tabProps} />
             case 2:
-                return <Completed />
+                return <Completed {...tabProps} />
             default:
-                return <Transcribe />
+                return <Transcribe {...tabProps} />
         }
     }
 
@@ -141,6 +174,7 @@ class Review extends React.Component {
                         </Grid.Column>
                     </Grid.Row>
                     {this._renderTabContent()}
+                    {this._renderDeleteVideoModal()}
                 </RoleRenderer>
             </Grid>
         )
@@ -161,6 +195,7 @@ const mapStateToProps = ({ organization, authentication, organizationVideos }) =
 
 const mapDispatchToProps = (dispatch) => ({
     fetchVideos: (params) => dispatch(videoActions.fetchVideos(params)),
+    deleteVideo: videoId => dispatch(videoActions.deleteVideo(videoId)),
     reviewVideo: video => dispatch(videoActions.reviewVideo(video)),
     setLanguageFilter: (langCode) => dispatch(videoActions.setLanguageFilter(langCode)),
     setCurrentPageNumber: pageNumber => dispatch(videoActions.setCurrentPageNumber(pageNumber)),

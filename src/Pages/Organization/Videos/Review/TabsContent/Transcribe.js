@@ -10,6 +10,7 @@ import routes from '../../../../../shared/routes';
 import LoaderComponent from '../../../../../shared/components/LoaderComponent';
 import websockets from '../../../../../websockets';
 import NotificationService from '../../../../../shared/utils/NotificationService';
+import VideoCard from '../../../../../shared/components/VideoCard';
 
 const videoSTATUS = ['uploaded', 'uploading', 'transcriping', 'cutting'];
 
@@ -68,36 +69,15 @@ class Transcribe extends React.Component {
                     ) : this.props.videos && this.props.videos.map((video) => {
                         return (
                             <Grid.Column key={video._id} width={4} style={{ marginBottom: 30 }}>
-                                <Icon
-                                    name="check circle"
-                                    size="large"
-                                    color="green"
-                                    style={{ position: 'absolute', right: 0, top: 5, zIndex: 2, visibility: video.status === 'done' ? 'visible' : 'hidden' }}
+                                <VideoCard
+                                    url={video.url}
+                                    title={video.title}
+                                    buttonTitle="AI Transcribe"
+                                    loading={['uploading', 'transcriping', 'cutting'].indexOf(video.status) !== -1}
+                                    disabled={['uploading', 'transcriping', 'cutting'].indexOf(video.status) !== -1}
+                                    onButtonClick={() => this.onReviewVideo(video)}
+                                    onDeleteVideoClick={() => this.props.onDeleteVideoClick(video)}
                                 />
-                                <Card fluid>
-
-                                    <Card.Content>
-                                        <Card.Header style={{ textAlign: 'center' }}>
-                                            {video.status === 'done' ? (
-                                                <Link to={routes.organizationArticle(video.article)} >
-                                                    {video.title}
-                                                </Link>
-                                            ) : video.title}
-                                        </Card.Header>
-                                    </Card.Content>
-
-                                    <video src={video.url} controls preload={'false'} width={'100%'} height={200} />
-
-                                    <Card.Content style={{ padding: 0 }}>
-                                        <Button fluid color="blue" onClick={() => this.onReviewVideo(video)}
-                                            loading={['uploading', 'transcriping', 'cutting'].indexOf(video.status) !== -1}
-                                            disabled={['uploading', 'transcriping', 'cutting'].indexOf(video.status) !== -1}
-                                        >
-                                            AI Transcribe
-                                        </Button>
-                                    </Card.Content>
-
-                                </Card>
                             </Grid.Column>
                         )
                     })}

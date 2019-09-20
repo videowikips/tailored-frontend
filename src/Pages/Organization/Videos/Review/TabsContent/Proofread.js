@@ -1,12 +1,13 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import { Grid, Icon, Card, Button } from 'semantic-ui-react';
 import routes from '../../../../../shared/routes';
 import LoaderComponent from '../../../../../shared/components/LoaderComponent';
 import * as videoActions from '../../modules/actions';
 import websockets from '../../../../../websockets';
 import NotificationService from '../../../../../shared/utils/NotificationService';
+import VideoCard from '../../../../../shared/components/VideoCard';
 
 const videoSTATUS = ['proofreading', 'converting'];
 
@@ -27,6 +28,10 @@ class Proofread extends React.Component {
         }
     }
 
+    navigateToConvertProgresss = videoId => {
+        this.props.history.push(routes.convertProgress(videoId));
+    }
+
     render() {
         return (
             <LoaderComponent active={this.props.videosLoading}>
@@ -37,34 +42,15 @@ class Proofread extends React.Component {
                     ) : this.props.videos && this.props.videos.map((video) => {
                         return (
                             <Grid.Column key={video._id} width={4}>
-                                <Icon
-                                    name="check circle"
-                                    size="large"
-                                    color="green"
-                                    style={{ position: 'absolute', right: 0, top: 5, zIndex: 2, visibility: video.status === 'done' ? 'visible' : 'hidden' }}
+                                <VideoCard
+                                    url={video.url}
+                                    title={video.title}
+                                    buttonTitle="Proofread"
+                                    loading={video.status === 'converting'}
+                                    disabled={video.status === 'converting'}
+                                    onButtonClick={() => this.navigateToConvertProgresss(video._id)}
+                                    onDeleteVideoClick={() => this.props.onDeleteVideoClick(video)}
                                 />
-                                <Card fluid>
-
-                                    <Card.Content>
-                                        <Card.Header style={{ textAlign: 'center' }}>
-                                            {video.title}
-                                        </Card.Header>
-                                    </Card.Content>
-
-                                    <video src={video.url} controls preload={'false'} width={'100%'} />
-
-                                    <Card.Content style={{ padding: 0 }}>
-                                        <Link to={routes.convertProgress(video._id)} style={{ color: 'white' }}>
-                                            <Button fluid color="blue"
-                                                disabled={video.status === 'converting'}
-                                                loading={video.status === 'converting'}
-                                            >
-                                                Proofread
-                                        </Button>
-                                        </Link>
-                                    </Card.Content>
-
-                                </Card>
                             </Grid.Column>
                         )
                     })}
@@ -97,4 +83,4 @@ const mapDispatchToProps = (dispatch) => ({
 
 
 
-export default connect(mapStateToProps, mapDispatchToProps)(Proofread);
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Proofread));

@@ -7,6 +7,7 @@ import LoaderComponent from '../../../../../shared/components/LoaderComponent';
 import * as videoActions from '../../modules/actions';
 import websockets from '../../../../../websockets';
 import NotificationService from '../../../../../shared/utils/NotificationService';
+import VideoCard from '../../../../../shared/components/VideoCard';
 
 const videoSTATUS = ['done'];
 
@@ -31,7 +32,7 @@ class Completed extends React.Component {
             websockets.unsubscribeFromEvent(websockets.websocketsEvents.VIDEO_DONE);
         }
     }
-    
+
     onReviewVideo = video => {
         console.log('on review', video);
         this.props.reviewVideo(video);
@@ -80,34 +81,13 @@ class Completed extends React.Component {
                     ) : this.props.videos && this.props.videos.map((video) => {
                         return (
                             <Grid.Column key={video._id} width={4}>
-                                <Icon
-                                    name="check circle"
-                                    size="large"
-                                    color="green"
-                                    style={{ position: 'absolute', right: 0, top: 5, zIndex: 2, visibility: video.status === 'done' ? 'visible' : 'hidden' }}
+                                <VideoCard
+                                    url={video.url}
+                                    title={video.title}
+                                    buttonTitle="Re-review"
+                                    onButtonClick={() => () => this.onReviewVideoClick(video)}
+                                    onDeleteVideoClick={() => this.props.onDeleteVideoClick(video)}
                                 />
-                                <Card fluid>
-
-                                    <Card.Content>
-                                        <Card.Header style={{ textAlign: 'center' }}>
-                                            {/* {video.status === 'done' ? (
-                                                <Link to={routes.organizationArticle(video.article)} >
-                                                    {video.title}
-                                                </Link>
-                                            ) : } */}
-                                            {video.title}
-                                        </Card.Header>
-                                    </Card.Content>
-
-                                    <video src={video.url} controls preload={'false'} width={'100%'} />
-
-                                    <Card.Content style={{ padding: 0 }}>
-                                        <Button fluid color="blue" onClick={() => this.onReviewVideoClick(video)}>
-                                            Re-review
-                                        </Button>
-                                    </Card.Content>
-
-                                </Card>
                             </Grid.Column>
                         )
                     })}
