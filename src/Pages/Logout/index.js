@@ -7,6 +7,9 @@ class Logout extends React.Component {
 
     componentWillMount() {
         this.props.logout();
+        if (!this.props.isAuthenticated) {
+            this.props.history.push('/');
+        }
     }
 
     componentWillReceiveProps(nextProps) {

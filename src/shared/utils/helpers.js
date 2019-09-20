@@ -74,6 +74,7 @@ export function canUserAccess(user, organization, requiredRoles) {
 }
 
 export function getUserOrganziationRole(user, organization) {
+  if (!user || !organization) return null;
   return user.organizationRoles.find((r) => r.organization._id === organization._id);
 }
 

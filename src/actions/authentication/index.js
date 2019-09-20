@@ -60,6 +60,38 @@ export const getUserDetails = () => (dispatch) => {
     })
 }
 
+export const redirectToSwitchOrganization = (token, organization) => dispatch => {
+    const { protocol, hostname } = window.location;
+    const hostParts = hostname.split('.')
+    window.location.href = `${protocol}//${organization.name}.${hostParts[hostParts.length - 2]}.${hostParts[hostParts.length - 1]}${routes.loginRedirect()}?t=${token}&o=${organization._id}`;
+}
+
+export const authenticateWithToken = (token, organizationId) => dispatch => {
+    requestAgent.post(Api.authentication.refreshToken, {
+        token,
+    }).then(result => {
+        const { success, token, user } = result.body;
+
+        const defaultOrg = user.organizationRoles.find(r => r.organization._id === organizationId).organization;
+        if (success) {
+            dispatch({
+                type: orgActionTypes.SET_ORGANIZATION,
+                payload: defaultOrg
+            })
+            setTimeout(() => {
+                dispatch(authenticationSuccess({ token, user }));
+                // Redirect to subroute of organization
+                dispatch(push(routes.organizationHome()))
+            }, 500);
+        }
+    })
+    .catch(err => {
+        console.log(err);
+        NotificationService.responseError(err);
+        dispatch(push(routes.logout()));
+    })
+}
+
 export const logout = () => ({
     type: actionTypes.LOGOUT,
 })
@@ -67,19 +99,21 @@ export const logout = () => ({
 export const login = ({ email, password }) => dispatch => {
     requestAgent.post(Api.authentication.login, {
         email,
-        password
+        password,
+        temp: true,
     }).then(result => {
         const { success, token, user } = result.body;
 
+        const defaultOrg = user.organizationRoles[0].organization;
         if (success) {
             dispatch({
                 type: orgActionTypes.SET_ORGANIZATION,
-                payload: user.organizationRoles[0].organization
+                payload: defaultOrg
             })
             setTimeout(() => {
                 dispatch(authenticationSuccess({ token, user }));
-                dispatch(push(routes.organizationVideos()));
-
+                // Redirect to subroute of organization
+                dispatch(redirectToSwitchOrganization(token, defaultOrg));
             }, 500);
         } else {
             dispatch(authenticationFailed('Email or Password in invalid'));
@@ -122,7 +156,7 @@ export const isValidToken = () => (dispatch, getState) => {
         dispatch(validateToken(isValid))
         console.log('isvalid token')
         if (user && user.organizationRoles) {
-            dispatch(authenticationSuccess(user));
+            dispatch(authenticationSuccess({ user }));
             // dispatch({
             //     type: orgActionTypes.SET_ORGANIZATION,
             //     payload: user.organizationRoles[0].organization

@@ -37,6 +37,7 @@ export default {
     },
     authentication: {
         login: `${API_ROOT}/auth/login`,
+        refreshToken: `${API_ROOT}/auth/refreshToken`,
         register: `${API_ROOT}/auth/register`
     },
     organization: {

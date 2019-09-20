@@ -78,9 +78,7 @@ export const createOrganization = (name, logoFile) => dispatch => {
         req.attach('logo', logoFile);
     }
     req.then((res) => {
-        const { organization } = res.body;
         dispatch(setCreateOrganizationLoading(false));
-        dispatch(setOrganization(organization));
         dispatch(setNewOrganizationName(''));
         dispatch(setNewOrganizationLogo(null));
         NotificationService.success('Organization created successfully');

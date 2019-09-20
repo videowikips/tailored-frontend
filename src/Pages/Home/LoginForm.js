@@ -39,10 +39,6 @@ class LoginForm extends Component {
     componentWillReceiveProps(nextProps) {
         console.log(nextProps);
 
-        if (nextProps.isAuthenticated) {
-            this.props.history.push(routes.organizationVideos());
-        }
-
         if (nextProps.errorMessage) {
             this.setState({
                 email: '',

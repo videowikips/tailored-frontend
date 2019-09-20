@@ -1,5 +1,6 @@
 export default {
     home: () => '/',
+    loginRedirect: () => '/lr',
     logout: () => '/logout',
     demo: () => '/demo',
     convertProgress: (videoId = ':videoId') => `/convert/${videoId}`,

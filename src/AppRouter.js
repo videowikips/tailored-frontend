@@ -17,6 +17,7 @@ import DashboardLayout from './layouts/Dashboard';
 import * as authenticationActions from './actions/authentication';
 
 const Home = () => import('./Pages/Home');
+const LoginRedirect = () => import('./Pages/LoginRedirect');
 const Demo = () => import('./Pages/Demo');
 const Convert = () => import('./Pages/Convert');
 const Logout = () => import('./Pages/Logout');
@@ -52,6 +53,12 @@ class AppRouter extends React.Component {
               path={routes.home()}
               title="VideoWiki"
               loader={Home}
+            />
+            <LazyRoute
+              exact
+              path={routes.loginRedirect()}
+              title="VideoWiki"
+              loader={LoginRedirect}
             />
             <LazyRoute
               exact

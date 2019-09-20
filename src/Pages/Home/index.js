@@ -1,9 +1,17 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import queryString from 'query-string';
 import OrganizationSignupModal from './OrganizationSignupModal';
 import LoginModal from './LoginModal';
 
 export default class Home extends React.Component {
+    componentWillMount = () => {
+        const { hostname, protocol } = window.location;
+        const hostnameParts = hostname.split('.');
+        if (hostnameParts.length > 2) {
+            window.location.href = `${protocol}//${hostnameParts[hostnameParts.length -2]}.${hostnameParts[hostnameParts.length - 1]}`;
+        }
+    }
     onOrganizationSignup = () => {
         this.setState({
             isOrganizationSignupOpen: true

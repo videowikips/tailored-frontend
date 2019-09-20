@@ -5,7 +5,6 @@ import { withRouter } from 'react-router-dom';
 import { Button, Icon, Menu, Grid, Card, Dropdown, Modal, Input, Loader, Dimmer } from 'semantic-ui-react'
 import './style.scss';
 import Avatar from 'react-avatar';
-import LoaderComponent from '../../shared/components/LoaderComponent';
 
 import websockets from '../../websockets';
 
@@ -15,6 +14,7 @@ import UploadNewVideoModal from '../../shared/components/UploadNewVideoModal';
 import NotificationService from '../../shared/utils/NotificationService';
 import * as organizationActions from '../../actions/organization';
 import * as pollerActions from '../../actions/poller';
+import { redirectToSwitchOrganization } from '../../actions/authentication'
 import routes from '../../shared/routes';
 import RoleRenderer from '../../shared/containers/RoleRenderer';
 
@@ -109,10 +109,9 @@ class Dashboard extends React.Component {
     }
 
     onSwitchOrganization = organizationRole => {
+        const { userToken } = this.props;
         this.props.setOrganization(organizationRole.organization);
-        setTimeout(() => {
-            window.location.reload();
-        }, 500);
+        this.props.redirectToSwitchOrganization(userToken, organizationRole.organization);
     }
 
     renderCreateOrganizationModal = () => (
@@ -330,6 +329,7 @@ const mapDispatchToProps = (dispatch) => ({
     updateOrganizationLogo: (file) => dispatch(organizationActions.updateOrganizationLogo(file)),
     startJob: (options, callFunc) => dispatch(pollerActions.startJob(options, callFunc)),
     stopJob: jobName => dispatch(pollerActions.stopJob(jobName)),
+    redirectToSwitchOrganization: (token, organization) => dispatch(redirectToSwitchOrganization(token, organization))
 })
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Dashboard));
