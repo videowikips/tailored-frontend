@@ -74,7 +74,7 @@ jobs:
 workflows:
   build-and-deploy:
     jobs:
-    - build-and-push-image
+    - build-and-push-image:
         filters:
           branches:
             only:
