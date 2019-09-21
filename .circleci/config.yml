@@ -75,6 +75,10 @@ workflows:
   build-and-deploy:
     jobs:
     - build-and-push-image
+        filters:
+          branches:
+            only:
+              - master
     - aws-ecs/deploy-service-update:
         requires:
           - build-and-push-image
