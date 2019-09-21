@@ -103,9 +103,8 @@ export const login = ({ email, password }) => dispatch => {
         temp: true,
     }).then(result => {
         const { success, token, user } = result.body;
-
-        const defaultOrg = user.organizationRoles[0].organization;
         if (success) {
+            const defaultOrg = user.organizationRoles[0].organization;
             dispatch({
                 type: orgActionTypes.SET_ORGANIZATION,
                 payload: defaultOrg
