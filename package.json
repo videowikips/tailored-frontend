@@ -6,7 +6,7 @@
     "classnames": "^2.2.6",
     "clipboard-copy": "^3.0.0",
     "connected-react-router": "^6.5.2",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "lodash": "^4.17.15",
     "moment": "^2.24.0",
     "prop-types": "^15.7.2",
